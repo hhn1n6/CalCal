@@ -7,8 +7,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CalCal">
 <title>CalCal Food Tracker</title>
-<link rel="stylesheet" href="./css/colors.css?v=1.0.17">
-<link rel="stylesheet" href="./css/styles.css?v=1.0.17">
+<link rel="stylesheet" href="./css/colors.css?v=1.0.23">
+<link rel="stylesheet" href="./css/styles.css?v=1.0.23">
 </head>
 <body>
 
@@ -22,7 +22,7 @@
   <div class="page-header">
     <div>
       <div class="page-title"><span id="home-ddmm"></span> <span id="sync-dot"></span></div>
-      <div style="font-size:11px;color:var(--text3);margin-top:3px;">v1.0.22</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:3px;">v1.0.23</div>
     </div>
     <button class="btn btn-primary btn-sm" onclick="openGoalModal()">Goals</button>
   </div>
@@ -67,7 +67,7 @@
       <div class="water-quick" onclick="addWaterQuick(500)">+500</div>
       <div class="water-quick" onclick="addWaterQuick(1500)">+1500</div>
       <input type="number" id="water-input" placeholder="Custom ml" min="1">
-      <button class="btn btn-danger btn-sm" onclick="resetWater()">Reset</button>
+      <button class="btn btn-danger btn-sm water-reset" onclick="resetWater()" aria-label="Reset water intake" title="Reset water intake"><img src="./assets/reset.png" width="22" height="22" alt=""></button>
     </div>
   </div>
 
@@ -218,6 +218,6 @@
 </nav>
 
 <!-- Firebase SDK -->
-<script type="module" src="./js/app.js?v=1.0.17"></script>
+<script type="module" src="./js/app.js?v=1.0.23"></script>
 </body>
 </html>

@@ -18,7 +18,10 @@ let state = {
 
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 
-const TODAY = () => new Date().toISOString().slice(0,10);
+const TODAY = () => {
+  const now=new Date();
+  return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+};
 const syncDot = document.getElementById('sync-dot');
 function setSyncStatus(s){ syncDot.className = s; }
 
@@ -30,7 +33,7 @@ const REF = {
   day:       (d) => doc(db,'days', d),
 };
 
-async function fbGet(ref){ try{ const s=await getDoc(ref); return s.exists()?s.data():null; }catch(e){return null;} }
+async function fbGet(ref){ const s=await getDoc(ref); return s.exists()?s.data():null; }
 async function fbSet(ref,data){ setSyncStatus('loading'); try{ await setDoc(ref,data); setSyncStatus('ok'); }catch(e){ setSyncStatus('err'); throw e; } }
 
 // ── LOAD FROM FIREBASE ───────────────────────────────────
@@ -96,7 +99,7 @@ function renderHome(){
   const _now=new Date();
   const _dd=String(_now.getDate()).padStart(2,'0');
   const _mm=String(_now.getMonth()+1).padStart(2,'0');
-  document.getElementById('home-ddmm').textContent=`${_dd}/${_mm}`;
+  document.getElementById('home-ddmm').textContent=`${_dd}/${_mm}/${_now.getFullYear()}`;
 
   // Ring
   document.getElementById('ring-consumed-big').textContent = Math.round(t.cal);
@@ -439,7 +442,6 @@ window.addWaterQuick=async ml=>{
   await saveDayDoc(date); renderHome();
 };
 window.resetWater=async()=>{
-  if(!confirm('Reset today’s water intake?'))return;
   const date=TODAY(); state.water[date]=0;
   await saveDayDoc(date); renderHome();
 };
