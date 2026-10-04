@@ -1,37 +1,31 @@
-/* CalCal color settings — reference palette.
-   Change the five palette values below to customize the app. */
+/* CalCal color settings — black and white.
+   Grayscale surfaces and borders provide contrast without color. */
 :root {
   color-scheme: light;
-  --linen: #F5E9E2;
-  --almond-silk: #E3B5A4;
-  --lobster-pink: #D44D5C;
-  --wine-plum: #773344;
-  --midnight-violet: #160029;
+  --bg: #FFFFFF;
+  --surface: #FFFFFF;
+  --surface2: #F2F2F2;
+  --border: #CCCCCC;
+  --text: #000000;
+  --text2: #444444;
+  --text3: #595959;
 
-  --bg: var(--linen);
-  --surface: var(--linen);
-  --surface2: var(--almond-silk);
-  --border: var(--almond-silk);
-  --text: var(--midnight-violet);
-  --text2: var(--wine-plum);
-  --text3: var(--wine-plum);
-
-  --accent: var(--wine-plum);
-  --accent-hover: var(--midnight-violet);
-  --accent-soft: var(--almond-silk);
-  --accent2: var(--wine-plum);
-  --water-start: var(--lobster-pink);
-  --water-soft: var(--almond-silk);
+  --accent: #000000;
+  --accent-hover: #333333;
+  --accent-soft: #E6E6E6;
+  --accent2: #000000;
+  --water-start: #666666;
+  --water-soft: #E6E6E6;
   /* Existing nutrient/status names remain compatible with the app. */
-  --green: var(--wine-plum);
-  --green-soft: var(--almond-silk);
-  --success-end: var(--lobster-pink);
-  --orange: var(--wine-plum);
-  --orange-soft: var(--almond-silk);
-  --yellow: var(--midnight-violet);
-  --yellow-soft: var(--almond-silk);
-  --red: var(--wine-plum);
-  --danger-soft: var(--almond-silk);
-  --on-accent: var(--linen);
-  --overlay: rgba(22, 0, 41, .4);
+  --green: #000000;
+  --green-soft: #E6E6E6;
+  --success-end: #666666;
+  --orange: #000000;
+  --orange-soft: #E6E6E6;
+  --yellow: #000000;
+  --yellow-soft: #E6E6E6;
+  --red: #000000;
+  --danger-soft: #E6E6E6;
+  --on-accent: #FFFFFF;
+  --overlay: rgba(0, 0, 0, .4);
 }
