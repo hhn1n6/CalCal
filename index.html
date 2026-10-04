@@ -28,7 +28,7 @@
     box-sizing: border-box;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { background: var(--bg); color: var(--text); touch-action: manipulation; font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif; overflow: hidden; position: fixed; width: 100%; }
+  html, body { background: var(--bg); color: var(--text); touch-action: manipulation; font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif; overflow: hidden; margin: 0; padding: 0; }
   body { display: flex; flex-direction: column; }
 
   /* NAV */
@@ -172,7 +172,7 @@
   <div class="page-header">
     <div>
       <div class="page-title"><span id="home-ddmm"></span> <span id="sync-dot"></span></div>
-      <div style="font-size:11px;color:var(--text3);margin-top:3px;">v1.0.3</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:3px;">v1.0.4</div>
     </div>
     <button class="btn btn-secondary btn-sm" onclick="openGoalModal()">⚙ 目標</button>
   </div>
@@ -805,8 +805,13 @@ document.querySelectorAll('.modal-overlay').forEach(o=>{
 // Lock layout height on startup — prevents keyboard resize from shifting nav bar
 (function lockHeight(){
   const h = window.innerHeight;
-  document.documentElement.style.height = h + 'px';
+  const s = document.documentElement.style;
+  s.height = h + 'px';
+  s.maxHeight = h + 'px';
+  s.overflow = 'hidden';
   document.body.style.height = h + 'px';
+  document.body.style.maxHeight = h + 'px';
+  document.body.style.overflow = 'hidden';
 })();
 
 document.getElementById('water-input').addEventListener('keydown',e=>{ if(e.key==='Enter') window.addWater(); });
