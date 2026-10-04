@@ -20,12 +20,10 @@
     touch-action: manipulation;
     overflow: hidden;
 
-    font-family:
-      -apple-system,
-      'SF Pro Display',
-      'Helvetica Neue',
-      sans-serif;
+    font-family: 'Times New Roman', Times, serif;
   }
+
+  button, input, select, textarea { font-family: inherit; }
 
   body {
     display: flex;
