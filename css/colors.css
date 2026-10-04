@@ -1,37 +1,37 @@
-/* CalCal color settings. Edit this file to change the entire app theme.
-   Pale colors are used for backgrounds; deeper shades keep text readable. */
+/* CalCal color settings — reference palette.
+   Change the five palette values below to customize the app. */
 :root {
   color-scheme: light;
-  --bg: #E6DFD3;
-  --surface: #F5F0E9;
-  --surface2: #EEE8E1;
-  --border: #C3BBC8;
-  --text: #403C4B;
-  --text2: #676376;
-  --text3: #72697B;
+  --linen: #F5E9E2;
+  --almond-silk: #E3B5A4;
+  --lobster-pink: #D44D5C;
+  --wine-plum: #773344;
+  --midnight-violet: #160029;
 
-  --lavender: #BBB4D8;
-  --pink: #E0C2D4;
-  --peach: #F3BBB1;
-  --apricot: #FDBA9D;
-  --blush: #F4CBBE;
+  --bg: var(--linen);
+  --surface: var(--linen);
+  --surface2: var(--almond-silk);
+  --border: var(--almond-silk);
+  --text: var(--midnight-violet);
+  --text2: var(--wine-plum);
+  --text3: var(--wine-plum);
 
-  --accent: #655580;
-  --accent-hover: #514367;
-  --accent-soft: var(--lavender);
-  --accent2: #805C78;
-  --water-start: var(--pink);
-  --water-soft: var(--pink);
+  --accent: var(--wine-plum);
+  --accent-hover: var(--midnight-violet);
+  --accent-soft: var(--almond-silk);
+  --accent2: var(--wine-plum);
+  --water-start: var(--lobster-pink);
+  --water-soft: var(--almond-silk);
   /* Existing nutrient/status names remain compatible with the app. */
-  --green: #655580;
-  --green-soft: var(--lavender);
-  --success-end: #BBB4D8;
-  --orange: #925038;
-  --orange-soft: var(--apricot);
-  --yellow: #825C31;
-  --yellow-soft: var(--blush);
-  --red: #9B4249;
-  --danger-soft: var(--peach);
-  --on-accent: #FFFFFF;
-  --overlay: rgba(64, 60, 75, .38);
+  --green: var(--wine-plum);
+  --green-soft: var(--almond-silk);
+  --success-end: var(--lobster-pink);
+  --orange: var(--wine-plum);
+  --orange-soft: var(--almond-silk);
+  --yellow: var(--midnight-violet);
+  --yellow-soft: var(--almond-silk);
+  --red: var(--wine-plum);
+  --danger-soft: var(--almond-silk);
+  --on-accent: var(--linen);
+  --overlay: rgba(22, 0, 41, .4);
 }
