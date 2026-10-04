@@ -182,25 +182,23 @@ function renderFoodLists(){
   const foods=state.foods.filter(f=>f.listId===state.activeListId);
   if(!foods.length){ grid.innerHTML='<div class="empty"><div class="empty-icon">🥗</div><p>此列表沒有食物，點擊「添加食物」</p></div>'; return; }
   grid.innerHTML=foods.map((f,index)=>`
-    <div class="food-item-wrap">
+    <div class="food-item-wrap" data-food-id="${escapeHtml(f.id)}">
       <div class="food-item" onclick="window._openServe('${f.id}')">
         <div class="food-details">
           <div class="food-name">${escapeHtml(f.name)}</div>
           <div class="food-macros">蛋白 ${formatNutrient(f.protein)}g · 碳水 ${formatNutrient(f.carbs)}g · 脂肪 ${formatNutrient(f.fat)}g</div>
           ${f.ingredients?`<div class="food-ingredients">食材：${escapeHtml(f.ingredients)}</div>`:''}
         </div>
-        <div style="display:flex;align-items:center;gap:10px;">
+        <div class="food-row-controls">
           <div class="food-cal-badge">${f.cal} kcal</div>
+          <button class="btn-icon" aria-label="編輯 ${escapeHtml(f.name)}" ${state._savingFoods?'disabled':''} onclick="event.stopPropagation();window._editFood('${f.id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 3l5 5L8 21H3v-5zM13 6l5 5"/></svg></button>
           <button class="btn-icon" aria-label="刪除 ${escapeHtml(f.name)}" ${state._savingFoods?'disabled':''} onclick="event.stopPropagation();window._deleteFood('${f.id}')">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
           </button>
+          <button class="btn-icon food-drag-handle" aria-label="拖曳排序 ${escapeHtml(f.name)}" title="拖曳排序（鍵盤 ↑ ↓）" ${state._savingFoods?'disabled':''} onclick="event.stopPropagation()" onpointerdown="window._startFoodDrag(event,'${f.id}')" onkeydown="if(event.key==='ArrowUp'||event.key==='ArrowDown'){event.preventDefault();window._moveFood('${f.id}',event.key==='ArrowUp'?-1:1)}">☰</button>
         </div>
       </div>
-      <div class="food-actions">
-        <button class="btn btn-secondary btn-sm" ${state._savingFoods?'disabled':''} onclick="window._editFood('${f.id}')">編輯</button>
-        <button class="btn btn-secondary btn-sm" ${index===0||state._savingFoods?'disabled':''} onclick="window._moveFood('${f.id}',-1)">↑ 上移</button>
-        <button class="btn btn-secondary btn-sm" ${index===foods.length-1||state._savingFoods?'disabled':''} onclick="window._moveFood('${f.id}',1)">↓ 下移</button>
-      </div>
+
     </div>`).join('');
 }
 window._setList=id=>{ state.activeListId=id; renderFoodLists(); };
@@ -223,11 +221,65 @@ window._moveFood=async(id,direction)=>{
   const food=state.foods.find(f=>f.id===id); if(!food)return;
   const categoryFoods=state.foods.filter(f=>f.listId===food.listId);
   const index=categoryFoods.findIndex(f=>f.id===id);
-  const neighbour=categoryFoods[index+direction]; if(!neighbour)return;
-  const next=state.foods.slice();
-  const from=next.findIndex(f=>f.id===id), to=next.findIndex(f=>f.id===neighbour.id);
-  [next[from],next[to]]=[next[to],next[from]];
-  await persistFoods(next);
+  await window._reorderFood(id,index+direction);
+};
+window._reorderFood=async(id,to)=>{
+  if(state._savingFoods)return;
+  const food=state.foods.find(f=>f.id===id); if(!food)return;
+  const categoryFoods=state.foods.filter(f=>f.listId===food.listId);
+  const from=categoryFoods.findIndex(f=>f.id===id);
+  if(!Number.isInteger(to)||to<0||to>=categoryFoods.length||from===to)return;
+  categoryFoods.splice(to,0,categoryFoods.splice(from,1)[0]);
+  let index=0;
+  await persistFoods(state.foods.map(f=>f.listId===food.listId?categoryFoods[index++]:f));
+};
+window._startFoodDrag=(event,id)=>{
+  if(state._savingFoods||event.button!==0||event.isPrimary===false)return;
+  event.stopPropagation();
+  const handle=event.currentTarget, row=handle.closest('.food-item-wrap');
+  const grid=row.parentElement, page=grid.closest('.page');
+  const rows=Array.from(grid.querySelectorAll('.food-item-wrap'));
+  const others=rows.filter(item=>item!==row), listId=state.activeListId;
+  let y=event.clientY, active=false, target=rows.indexOf(row), frame;
+  const startY=y, pointerId=event.pointerId;
+  handle.setPointerCapture(pointerId);
+  function mark(){
+    rows.forEach(item=>item.classList.remove('drop-before','drop-after'));
+    target=others.findIndex(item=>{const rect=item.getBoundingClientRect();return y<rect.top+rect.height/2;});
+    if(target===-1)target=others.length;
+    if(others[target])others[target].classList.add('drop-before');
+    else if(others.length)others.at(-1).classList.add('drop-after');
+  }
+  function scroll(){
+    if(!row.isConnected){finish({type:'pointercancel'});return;}
+    if(active&&page){
+      const rect=page.getBoundingClientRect();
+      const delta=y<rect.top+48?-10:y>rect.bottom-48?10:0;
+      if(delta){page.scrollTop+=delta;mark();}
+    }
+    frame=requestAnimationFrame(scroll);
+  }
+  function move(e){
+    if(e.pointerId!==pointerId)return;
+    y=e.clientY;
+    if(!active&&Math.abs(y-startY)<5)return;
+    active=true;row.classList.add('food-dragging');mark();
+  }
+  function finish(e){
+    if(e.pointerId!==undefined&&e.pointerId!==pointerId)return;
+    if(e.type==='keydown'&&e.key!=='Escape')return;
+    cancelAnimationFrame(frame);
+    handle.removeEventListener('pointermove',move);
+    for(const type of ['pointerup','pointercancel','lostpointercapture'])handle.removeEventListener(type,finish);
+    document.removeEventListener('keydown',finish);
+    rows.forEach(item=>item.classList.remove('food-dragging','drop-before','drop-after'));
+    if(handle.hasPointerCapture(pointerId))handle.releasePointerCapture(pointerId);
+    if(active&&e.type==='pointerup'&&state.activeListId===listId)window._reorderFood(id,target);
+  }
+  handle.addEventListener('pointermove',move);
+  for(const type of ['pointerup','pointercancel','lostpointercapture'])handle.addEventListener(type,finish);
+  document.addEventListener('keydown',finish);
+  frame=requestAnimationFrame(scroll);
 };
 
 // ── GOALS ─────────────────────────────────────────────────

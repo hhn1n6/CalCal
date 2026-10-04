@@ -160,8 +160,15 @@
   .food-details { min-width: 0; flex: 1; }
   .food-name, .food-ingredients { overflow-wrap: anywhere; }
   .food-ingredients { font-size: 12px; color: var(--text2); margin-top: 5px; }
-  .food-actions { display: flex; gap: 8px; margin-top: 6px; }
-  .food-actions .btn { flex: 1; min-height: 40px; }
+  .food-row-controls { display:flex; align-items:center; flex-wrap:wrap; justify-content:flex-end; gap:2px; flex-shrink:0; width:108px; margin-left:8px; }
+  .food-row-controls .food-cal-badge { width:100%; text-align:right; margin-bottom:2px; }
+  .food-row-controls .btn-icon { width:34px; height:40px; justify-content:center; }
+  .food-drag-handle { touch-action:none; cursor:grab; font-size:20px; user-select:none; }
+  .food-drag-handle:active { cursor:grabbing; }
+  .food-dragging { opacity:.45; }
+  .food-item-wrap.drop-before::before, .food-item-wrap.drop-after::after { content:''; position:absolute; left:0; right:0; height:3px; background:var(--accent); pointer-events:none; z-index:1; }
+  .food-item-wrap.drop-before::before { top:0; }
+  .food-item-wrap.drop-after::after { bottom:0; }
   .list-edit-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
   .list-edit-row input { flex: 1; min-width: 130px; width: auto; }
   button:disabled { opacity: .4; cursor: default; }
