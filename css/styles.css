@@ -114,7 +114,8 @@
   .water-input-row { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
   .water-input-row input { flex: 1; min-width: 0; padding: 8px 10px; background: var(--surface2); border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-size: 16px; outline: none; -webkit-appearance: none; }
   .water-input-row input:focus { border-color: var(--accent2); }
-  .water-input-row .water-reset { width: 40px; height: 40px; padding: 8px; flex: 0 0 40px; display: flex; align-items: center; justify-content: center; }
+  .water-input-row .water-reset { width: 40px; padding: 0; flex: 0 0 40px; }
+  .water-input-row .water-reset, .water-input-row .water-quick { height: 34px; display: flex; align-items: center; justify-content: center; }
   .water-reset img { display: block; width: 22px; height: 22px; object-fit: contain; }
   .water-quick { flex-shrink: 0; padding: 8px 12px; border-radius: var(--radius-sm); border: 1.5px solid var(--border); background: var(--surface2); color: var(--text2); font-size: 13px; font-weight: 600; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: all .2s; white-space: nowrap; }
   .water-quick:active { border-color: var(--accent2); color: var(--accent2); background: var(--water-soft); }
