@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, minimum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="FitLog">
@@ -28,11 +28,11 @@
     box-sizing: border-box;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif; overflow: hidden; }
+  html, body { height: 100%; background: var(--bg); color: var(--text); touch-action: manipulation; font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif; overflow: hidden; }
   body { display: flex; flex-direction: column; height: 100dvh; }
 
   /* NAV */
-  .nav { display: flex; justify-content: space-around; align-items: center; background: var(--surface); border-top: 1px solid var(--border); padding: 10px 0 85px; flex-shrink: 0; }
+  .nav { display: flex; justify-content: space-around; align-items: center; background: var(--surface); border-top: 1px solid var(--border); padding: 10px 0 calc(12px + env(safe-area-inset-bottom, 16px)); flex-shrink: 0; }
   .nav-btn { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 16px; border: none; background: none; color: var(--text2); font-size: 10px; cursor: pointer; transition: color .2s; -webkit-tap-highlight-color: transparent; }
   .nav-btn.active { color: var(--accent); }
   .nav-btn svg { width: 22px; height: 22px; }
@@ -71,7 +71,7 @@
   .water-consumed-big { font-size: 28px; font-weight: 700; color: var(--accent2); }
   .water-goal-txt { font-size: 12px; color: var(--text2); }
   .water-input-row { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
-  .water-input-row input { flex: 1; min-width: 0; padding: 8px 10px; background: var(--surface2); border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-size: 14px; outline: none; -webkit-appearance: none; }
+  .water-input-row input { flex: 1; min-width: 0; padding: 8px 10px; background: var(--surface2); border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-size: 16px; outline: none; -webkit-appearance: none; }
   .water-input-row input:focus { border-color: var(--accent2); }
   .water-quick { flex-shrink: 0; padding: 8px 12px; border-radius: var(--radius-sm); border: 1.5px solid var(--border); background: var(--surface2); color: var(--text2); font-size: 13px; font-weight: 600; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: all .2s; white-space: nowrap; }
   .water-quick:active { border-color: var(--accent2); color: var(--accent2); background: rgba(56,189,248,.1); }
@@ -124,7 +124,7 @@
   /* FORM */
   .field { margin-bottom: 14px; }
   .field label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 6px; }
-  .field input, .field select { width: 100%; padding: 12px 14px; background: var(--surface2); border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-size: 14px; outline: none; -webkit-appearance: none; }
+  .field input, .field select { width: 100%; padding: 12px 14px; background: var(--surface2); border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-size: 16px; outline: none; -webkit-appearance: none; }
   .field input:focus, .field select:focus { border-color: var(--accent); }
   .field-row { display: flex; gap: 10px; }
   .field-row .field { flex: 1; }
@@ -369,7 +369,8 @@
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, getDocs, writeBatch, deleteDoc }
+import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, getDocs, writeBatch, deleteDoc,
+         initializeFirestore, persistentLocalCache, persistentMultipleTabManager }
   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 // ── FIREBASE CONFIG ──────────────────────────────────────
@@ -382,7 +383,10 @@ const firebaseConfig = {
   appId: "1:1079426276749:web:e71e57288a1900d178b1c4"
 };
 const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
+// 本地 IndexedDB 快取：首次載入後資料存在裝置，之後秒開
+const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+});
 
 // ── STATE ────────────────────────────────────────────────
 let state = {
