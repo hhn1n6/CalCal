@@ -117,7 +117,7 @@
   .water-input-row input:focus { border-color: var(--accent2); }
   .water-input-row .water-reset { width: 40px; padding: 0; flex: 0 0 40px; }
   .water-input-row .water-reset, .water-input-row .water-quick { display: flex; align-items: center; justify-content: center; }
-  .water-reset img { display: block; width: 22px; height: 22px; object-fit: contain; }
+  .water-reset img { display: block; width: 15px; height: 15px; object-fit: contain; }
   .water-quick { flex-shrink: 0; padding: 8px 12px; border-radius: var(--radius-sm); border: 1.5px solid var(--border); background: var(--surface2); color: var(--text2); font-size: 13px; font-weight: 600; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: all .2s; white-space: nowrap; }
   .water-quick:active { border-color: var(--accent2); color: var(--accent2); background: var(--water-soft); }
 
