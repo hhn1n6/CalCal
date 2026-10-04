@@ -26,19 +26,83 @@
     --radius-sm: 10px;
     padding-top: env(safe-area-inset-top, 0px);
     box-sizing: border-box;
+    --nav-base-height: 64px;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { background: var(--bg); color: var(--text); touch-action: manipulation; font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif; overflow: hidden; margin: 0; padding: 0; }
+  html,
+  body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  
+    background: var(--bg);
+    color: var(--text);
+  
+    touch-action: manipulation;
+    overflow: hidden;
+  
+    font-family:
+      -apple-system,
+      'SF Pro Display',
+      'Helvetica Neue',
+      sans-serif;
+  }
+  
+  body {
+    display: flex;
+    flex-direction: column;
+  
+    min-height: 100dvh;
+    height: 100dvh;
+  }
   body { display: flex; flex-direction: column; }
 
   /* NAV */
-  .nav { display: flex; justify-content: space-around; align-items: center; background: var(--surface); border-top: 1px solid var(--border); padding: 10px 0 34px; flex-shrink: 0; position: relative; z-index: 10; }
+  .nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 50;
+  
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  
+    width: 100%;
+    height: calc(var(--nav-base-height) + env(safe-area-inset-bottom, 0px));
+  
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+  
+    padding:
+      6px 0
+      env(safe-area-inset-bottom, 0px);
+  
+    flex-shrink: 0;
+  
+    transform: translateY(0);
+    transition: transform .18s ease;
+  }
   .nav-btn { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 16px; border: none; background: none; color: var(--text2); font-size: 10px; cursor: pointer; transition: color .2s; -webkit-tap-highlight-color: transparent; }
   .nav-btn.active { color: var(--accent); }
   .nav-btn svg { width: 22px; height: 22px; }
 
   /* PAGES */
-  .page { display: none; flex: 1; overflow-y: auto; padding: 16px; -webkit-overflow-scrolling: touch; }
+  .page {
+    display: none;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  
+    padding:
+      16px
+      16px
+      calc(16px + var(--nav-base-height) + env(safe-area-inset-bottom, 0px));
+  
+    -webkit-overflow-scrolling: touch;
+  }
   .page.active { display: block; }
   .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
   .page-title { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
@@ -157,6 +221,8 @@
   #loading-screen { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; gap: 16px; }
   #loading-screen .logo { font-size: 48px; }
   #loading-screen p { color: var(--text2); font-size: 14px; }
+
+  html.keyboard-open .nav {transform: translateY(100%); pointer-events: none; }
 </style>
 </head>
 <body>
@@ -802,18 +868,6 @@ document.querySelectorAll('.modal-overlay').forEach(o=>{
 });
 
 // ── INIT ──────────────────────────────────────────────────
-// Lock layout height on startup — prevents keyboard resize from shifting nav bar
-(function lockHeight(){
-  const h = window.innerHeight;
-  const s = document.documentElement.style;
-  s.height = h + 'px';
-  s.maxHeight = h + 'px';
-  s.overflow = 'hidden';
-  document.body.style.height = h + 'px';
-  document.body.style.maxHeight = h + 'px';
-  document.body.style.overflow = 'hidden';
-})();
-
 document.getElementById('water-input').addEventListener('keydown',e=>{ if(e.key==='Enter') window.addWater(); });
 
 setSyncStatus('loading');
@@ -826,6 +880,35 @@ loadFromFirebase().then(()=>{
   document.getElementById('loading-screen').querySelector('p').textContent='連接失敗，請檢查網路';
   console.error(err);
 });
+
+(function setupKeyboardHandling() {
+  const vv = window.visualViewport;
+  if (!vv) return;
+
+  let initialHeight = vv.height;
+
+  function updateKeyboardState() {
+    const heightDiff = initialHeight - vv.height;
+
+    const keyboardOpen = heightDiff > 120;
+
+    document.documentElement.classList.toggle(
+      'keyboard-open',
+      keyboardOpen
+    );
+  }
+
+  vv.addEventListener('resize', updateKeyboardState);
+
+  window.addEventListener('orientationchange', () => {
+    setTimeout(() => {
+      initialHeight = vv.height;
+      updateKeyboardState();
+    }, 300);
+  });
+
+  updateKeyboardState();
+})();
 </script>
 </body>
 </html>
