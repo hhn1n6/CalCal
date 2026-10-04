@@ -124,8 +124,8 @@ function renderHome(){
   const wPct=Math.min(100,wCon/wGoal*100);
   document.getElementById('water-bar-fill').style.width=wPct+'%';
   document.getElementById('water-bar-fill').style.background=wCon>=wGoal
-    ?'linear-gradient(90deg,var(--green),#34d399)'
-    :'linear-gradient(90deg,#7dd3fc,var(--accent2))';
+    ?'linear-gradient(90deg,var(--green),var(--success-end))'
+    :'linear-gradient(90deg,var(--water-start),var(--accent2))';
 
   // Supps
   const suppRow=document.getElementById('supp-row');
@@ -487,10 +487,10 @@ window.handlePhotoUpload=evt=>{
         <div style="margin-bottom:8px;font-weight:600;font-size:15px;">🍽 ${_parsedFood.name}</div>
         <div style="color:var(--text2);font-size:12px;margin-bottom:12px;">${_parsedFood.description||''}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <div style="background:rgba(108,99,255,.1);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--accent)">${_parsedFood.cal}</div><div style="font-size:11px;color:var(--text2)">卡路里/100g</div></div>
-          <div style="background:rgba(34,211,165,.1);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--green)">${_parsedFood.protein}g</div><div style="font-size:11px;color:var(--text2)">蛋白質/100g</div></div>
-          <div style="background:rgba(250,204,21,.1);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--yellow)">${_parsedFood.carbs}g</div><div style="font-size:11px;color:var(--text2)">碳水/100g</div></div>
-          <div style="background:rgba(251,146,60,.1);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--orange)">${_parsedFood.fat}g</div><div style="font-size:11px;color:var(--text2)">脂肪/100g</div></div>
+          <div style="background:var(--accent-soft);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--accent)">${_parsedFood.cal}</div><div style="font-size:11px;color:var(--text2)">卡路里/100g</div></div>
+          <div style="background:var(--green-soft);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--green)">${_parsedFood.protein}g</div><div style="font-size:11px;color:var(--text2)">蛋白質/100g</div></div>
+          <div style="background:var(--yellow-soft);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--yellow)">${_parsedFood.carbs}g</div><div style="font-size:11px;color:var(--text2)">碳水/100g</div></div>
+          <div style="background:var(--orange-soft);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--orange)">${_parsedFood.fat}g</div><div style="font-size:11px;color:var(--text2)">脂肪/100g</div></div>
         </div>
         <div style="margin-top:10px;font-size:11px;color:var(--text3);">信心度: ${_parsedFood.confidence==='high'?'🟢 高':_parsedFood.confidence==='medium'?'🟡 中':'🔴 低'}</div>`;
       action.style.display='';

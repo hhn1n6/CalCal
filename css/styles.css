@@ -1,17 +1,4 @@
   :root {
-    --bg: #0f1117;
-    --surface: #1a1d27;
-    --surface2: #22263a;
-    --border: #2e3250;
-    --accent: #6c63ff;
-    --accent2: #38bdf8;
-    --green: #22d3a5;
-    --red: #f87171;
-    --orange: #fb923c;
-    --yellow: #facc15;
-    --text: #e8eaf0;
-    --text2: #8b90a8;
-    --text3: #5a5f7a;
     --radius: 16px;
     --radius-sm: 10px;
     padding-top: env(safe-area-inset-top, 0px);
@@ -122,7 +109,7 @@
   /* WATER */
   .water-bar-wrap { margin-bottom: 12px; }
   .water-bar-track { height: 10px; background: var(--surface2); border-radius: 99px; overflow: hidden; margin-top: 6px; }
-  .water-bar-fill { height: 100%; background: linear-gradient(90deg, #7dd3fc, var(--accent2)); border-radius: 99px; transition: width .4s ease; }
+  .water-bar-fill { height: 100%; background: linear-gradient(90deg, var(--water-start), var(--accent2)); border-radius: 99px; transition: width .4s ease; }
   .water-nums { display: flex; justify-content: space-between; align-items: baseline; }
   .water-consumed-big { font-size: 28px; font-weight: 700; color: var(--accent2); }
   .water-goal-txt { font-size: 12px; color: var(--text2); }
@@ -130,12 +117,12 @@
   .water-input-row input { flex: 1; min-width: 0; padding: 8px 10px; background: var(--surface2); border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-size: 16px; outline: none; -webkit-appearance: none; }
   .water-input-row input:focus { border-color: var(--accent2); }
   .water-quick { flex-shrink: 0; padding: 8px 12px; border-radius: var(--radius-sm); border: 1.5px solid var(--border); background: var(--surface2); color: var(--text2); font-size: 13px; font-weight: 600; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: all .2s; white-space: nowrap; }
-  .water-quick:active { border-color: var(--accent2); color: var(--accent2); background: rgba(56,189,248,.1); }
+  .water-quick:active { border-color: var(--accent2); color: var(--accent2); background: var(--water-soft); }
 
   /* SUPPS */
   .supp-row { display: flex; gap: 8px; flex-wrap: wrap; }
   .supp-chip { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 99px; border: 1.5px solid var(--border); font-size: 12px; cursor: pointer; transition: all .2s; -webkit-tap-highlight-color: transparent; background: var(--surface2); }
-  .supp-chip.done { background: rgba(34,211,165,.15); border-color: var(--green); color: var(--green); }
+  .supp-chip.done { background: var(--green-soft); border-color: var(--green); color: var(--green); }
   .supp-chip svg { width: 14px; height: 14px; }
 
   /* LOG */
@@ -150,7 +137,7 @@
   .list-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 16px; scrollbar-width: none; }
   .list-tabs::-webkit-scrollbar { display: none; }
   .list-tab { flex-shrink: 0; padding: 6px 14px; border-radius: 99px; border: 1.5px solid var(--border); font-size: 13px; cursor: pointer; background: var(--surface2); color: var(--text2); transition: all .2s; -webkit-tap-highlight-color: transparent; white-space: nowrap; }
-  .list-tab.active { border-color: var(--accent); color: var(--accent); background: rgba(108,99,255,.12); }
+  .list-tab.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
   .food-item-wrap { position: relative; overflow: hidden; border-radius: var(--radius-sm); margin-bottom: 8px; }
   .food-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; background: var(--surface2); border-radius: var(--radius-sm); border: 1px solid var(--border); cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .food-item:active { background: var(--surface); }
@@ -175,17 +162,17 @@
 
   /* BUTTONS */
   .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 12px 20px; border-radius: var(--radius-sm); border: none; font-size: 14px; font-weight: 600; cursor: pointer; transition: all .2s; -webkit-tap-highlight-color: transparent; }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:active { background: #5a52e0; }
+  .btn-primary { background: var(--accent); color: var(--on-accent); }
+  .btn-primary:active { background: var(--accent-hover); }
   .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
   .btn-secondary:active { background: var(--border); }
-  .btn-danger { background: rgba(248,113,113,.15); color: var(--red); border: 1px solid var(--red); }
+  .btn-danger { background: var(--danger-soft); color: var(--red); border: 1px solid var(--red); }
   .btn-sm { padding: 7px 14px; font-size: 12px; border-radius: 8px; }
   .btn-full { width: 100%; }
   .btn-row { display: flex; gap: 10px; }
 
   /* MODAL */
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 100; align-items: flex-end; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: var(--overlay); z-index: 100; align-items: flex-end; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
   .modal-overlay.open { display: flex; }
   .modal { background: var(--surface); border-radius: 24px 24px 0 0; padding: 24px; padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); width: 100%; max-height: 90dvh; overflow-y: auto; animation: slideUp .25s ease; }
   @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -215,7 +202,7 @@
   .empty-icon { font-size: 40px; margin-bottom: 8px; }
   .empty p { font-size: 14px; }
   .badge { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
-  .badge-over { background: rgba(248,113,113,.15); color: var(--red); }
+  .badge-over { background: var(--danger-soft); color: var(--red); }
 
   /* SYNC STATUS */
   #sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text3); display: inline-block; margin-left: 6px; vertical-align: middle; transition: background .3s; }
