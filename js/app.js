@@ -180,7 +180,7 @@ function renderFoodLists(){
   ).join('');
   const grid=document.getElementById('food-grid');
   const foods=state.foods.filter(f=>f.listId===state.activeListId);
-  if(!foods.length){ grid.innerHTML='<div class="empty"><div class="empty-icon">🥗</div><p>No foods in this list. Tap Add food to get started.</p></div>'; return; }
+  if(!foods.length){ grid.innerHTML='<div class="empty"><div class="empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle"><circle cx="12" cy="12" r="6"/><path d="M2 3v6m3-6v6M2 6h3M3.5 9v12M21 3v18M21 3c-4 3-4 8 0 8"/></svg></div><p>No foods in this list. Tap Add food to get started.</p></div>'; return; }
   grid.innerHTML=foods.map((f,index)=>`
     <div class="food-item-wrap" data-food-id="${escapeHtml(f.id)}">
       <div class="food-item" onclick="window._openServe('${f.id}')">
@@ -484,7 +484,7 @@ window.handlePhotoUpload=evt=>{
       _parsedFood=JSON.parse(match[0]);
 
       stream.innerHTML=`
-        <div style="margin-bottom:8px;font-weight:600;font-size:15px;">🍽 ${_parsedFood.name}</div>
+        <div style="margin-bottom:8px;font-weight:600;font-size:15px;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle"><circle cx="12" cy="12" r="6"/><path d="M2 3v6m3-6v6M2 6h3M3.5 9v12M21 3v18M21 3c-4 3-4 8 0 8"/></svg> ${_parsedFood.name}</div>
         <div style="color:var(--text2);font-size:12px;margin-bottom:12px;">${_parsedFood.description||''}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
           <div style="background:var(--accent-soft);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--accent)">${_parsedFood.cal}</div><div style="font-size:11px;color:var(--text2)">Calories/100g</div></div>
@@ -499,7 +499,7 @@ window.handlePhotoUpload=evt=>{
         <button class="btn btn-primary btn-full" onclick="window._logAiDirect()">Log for today</button>
       </div>`;
     } catch(err){
-      stream.textContent='⚠ '+( err.message||'Identification failed.');
+      stream.textContent='Error: '+( err.message||'Identification failed.');
     }
   };
   reader.readAsDataURL(file);
