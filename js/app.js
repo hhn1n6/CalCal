@@ -110,8 +110,8 @@ function renderHome(){
     const p=goal>0?Math.min(100,val/goal*100):0;
     document.getElementById('bar-'+id).style.width=p+'%';
     document.getElementById('bar-'+id).style.background=val>goal?'var(--red)':color;
-    document.getElementById('lbl-'+id).textContent=`${t.missing[id]?'已知 ':''}${Math.round(val)}/${goal}g`;
-    document.getElementById('lbl-'+id).title=t.missing[id]?'部分食物未提供此營養數值，僅加總已知數值。':'';
+    document.getElementById('lbl-'+id).textContent=`${t.missing[id]?'Known ':''}${Math.round(val)}/${goal}g`;
+    document.getElementById('lbl-'+id).title=t.missing[id]?'Some foods are missing this nutrient. Only known values are included.':'';
   };
   setBar('protein',t.protein,g.protein,'var(--green)');
   setBar('carbs',t.carbs,g.carbs,'var(--yellow)');
@@ -120,7 +120,7 @@ function renderHome(){
   // Water
   const wGoal=g.waterMl||2000, wCon=state.water[date]||0;
   document.getElementById('water-consumed-big').textContent=wCon;
-  document.getElementById('water-goal-lbl').textContent=`目標 ${wGoal} ml (${(wGoal/1000).toFixed(1)}L)`;
+  document.getElementById('water-goal-lbl').textContent=`Goal: ${wGoal} ml (${(wGoal/1000).toFixed(1)}L)`;
   const wPct=Math.min(100,wCon/wGoal*100);
   document.getElementById('water-bar-fill').style.width=wPct+'%';
   document.getElementById('water-bar-fill').style.background=wCon>=wGoal
@@ -161,7 +161,7 @@ function renderHome(){
     <div class="log-item">
       <div>
         <div class="log-name">${escapeHtml(l.name)} <span style="font-size:11px;color:var(--text3)">×${l.qty}</span></div>
-        <div class="log-meta">蛋白 ${formatNutrient(l.protein)}g · 碳水 ${formatNutrient(l.carbs)}g · 脂肪 ${formatNutrient(l.fat)}g</div>
+        <div class="log-meta">Protein ${formatNutrient(l.protein)}g · Carbs ${formatNutrient(l.carbs)}g · Fat ${formatNutrient(l.fat)}g</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
         <div class="log-cal">${Math.round(l.cal)}</div>
@@ -180,22 +180,22 @@ function renderFoodLists(){
   ).join('');
   const grid=document.getElementById('food-grid');
   const foods=state.foods.filter(f=>f.listId===state.activeListId);
-  if(!foods.length){ grid.innerHTML='<div class="empty"><div class="empty-icon">🥗</div><p>此列表沒有食物，點擊「添加食物」</p></div>'; return; }
+  if(!foods.length){ grid.innerHTML='<div class="empty"><div class="empty-icon">🥗</div><p>No foods in this list. Tap Add food to get started.</p></div>'; return; }
   grid.innerHTML=foods.map((f,index)=>`
     <div class="food-item-wrap" data-food-id="${escapeHtml(f.id)}">
       <div class="food-item" onclick="window._openServe('${f.id}')">
         <div class="food-details">
           <div class="food-name">${escapeHtml(f.name)}</div>
-          <div class="food-macros">蛋白 ${formatNutrient(f.protein)}g · 碳水 ${formatNutrient(f.carbs)}g · 脂肪 ${formatNutrient(f.fat)}g</div>
-          ${f.ingredients?`<div class="food-ingredients">食材：${escapeHtml(f.ingredients)}</div>`:''}
+          <div class="food-macros">Protein ${formatNutrient(f.protein)}g · Carbs ${formatNutrient(f.carbs)}g · Fat ${formatNutrient(f.fat)}g</div>
+          ${f.ingredients?`<div class="food-ingredients">Ingredients: ${escapeHtml(f.ingredients)}</div>`:''}
         </div>
         <div class="food-row-controls">
           <div class="food-cal-badge">${f.cal} kcal</div>
-          <button class="btn-icon" aria-label="編輯 ${escapeHtml(f.name)}" ${state._savingFoods?'disabled':''} onclick="event.stopPropagation();window._editFood('${f.id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 3l5 5L8 21H3v-5zM13 6l5 5"/></svg></button>
-          <button class="btn-icon" aria-label="刪除 ${escapeHtml(f.name)}" ${state._savingFoods?'disabled':''} onclick="event.stopPropagation();window._deleteFood('${f.id}')">
+          <button class="btn-icon" aria-label="Edit ${escapeHtml(f.name)}" ${state._savingFoods?'disabled':''} onclick="event.stopPropagation();window._editFood('${f.id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 3l5 5L8 21H3v-5zM13 6l5 5"/></svg></button>
+          <button class="btn-icon" aria-label="Delete ${escapeHtml(f.name)}" ${state._savingFoods?'disabled':''} onclick="event.stopPropagation();window._deleteFood('${f.id}')">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
           </button>
-          <button class="btn-icon food-drag-handle" aria-label="拖曳排序 ${escapeHtml(f.name)}" title="拖曳排序（鍵盤 ↑ ↓）" ${state._savingFoods?'disabled':''} onclick="event.stopPropagation()" onpointerdown="window._startFoodDrag(event,'${f.id}')" onkeydown="if(event.key==='ArrowUp'||event.key==='ArrowDown'){event.preventDefault();window._moveFood('${f.id}',event.key==='ArrowUp'?-1:1)}">☰</button>
+          <button class="btn-icon food-drag-handle" aria-label="Reorder ${escapeHtml(f.name)}" title="Drag to reorder (keyboard: Up / Down)" ${state._savingFoods?'disabled':''} onclick="event.stopPropagation()" onpointerdown="window._startFoodDrag(event,'${f.id}')" onkeydown="if(event.key==='ArrowUp'||event.key==='ArrowDown'){event.preventDefault();window._moveFood('${f.id}',event.key==='ArrowUp'?-1:1)}">☰</button>
         </div>
       </div>
 
@@ -209,11 +209,11 @@ async function persistFoods(nextFoods){
   document.getElementById('save-food-btn').disabled=true;
   renderFoodLists();
   try{ await saveFoodsDoc(); return true; }
-  catch(err){ state.foods=previous; alert('儲存失敗，請重試。'); return false; }
+  catch(err){ state.foods=previous; alert('Could not save. Please try again.'); return false; }
   finally{ state._savingFoods=false; document.getElementById('save-food-btn').disabled=false; renderFoodLists(); }
 }
 window._deleteFood=async id=>{
-  if(state._savingFoods||!confirm('刪除這個食物？'))return;
+  if(state._savingFoods||!confirm('Delete this food?'))return;
   await persistFoods(state.foods.filter(f=>f.id!==id));
 };
 window._moveFood=async(id,direction)=>{
@@ -308,7 +308,7 @@ window.saveGoals=async()=>{
 // ── ADD FOOD ──────────────────────────────────────────────
 window.openAddFoodModal=(prefill)=>{
   state._editFoodId=null;
-  document.getElementById('add-food-title').textContent='添加食物';
+  document.getElementById('add-food-title').textContent='Add food';
   document.getElementById('f-name').value=prefill?.name||'';
   document.getElementById('f-ingredients').value=prefill?.ingredients||'';
   document.getElementById('f-cal').value=prefill?.cal??'';
@@ -324,23 +324,23 @@ window._editFood=id=>{
   const food=state.foods.find(f=>f.id===id); if(!food)return;
   window.openAddFoodModal(food);
   state._editFoodId=id;
-  document.getElementById('add-food-title').textContent='編輯食物';
+  document.getElementById('add-food-title').textContent='Edit food';
 };
 window.saveFood=async()=>{
   if(state._savingFoods)return;
   const name=document.getElementById('f-name').value.trim();
-  if(!name){alert('請輸入食物名稱');return;}
+  if(!name){alert('Please enter a food name.');return;}
   const listId=document.getElementById('f-list').value;
-  if(!state.foodLists.some(l=>l.id===listId)){alert('請先新增食物列表。');return;}
+  if(!state.foodLists.some(l=>l.id===listId)){alert('Please create a food list first.');return;}
   const nutrients={};
   for(const key of ['cal','protein','carbs','fat']){
     const input=document.getElementById('f-'+key), text=input.value.trim();
     const value=text===''?(key==='cal'?0:null):Number(text);
-    if(input.validity?.badInput||(value!==null&&(!Number.isFinite(value)||value<0))){alert('營養數值必須是零或正數。');return;}
+    if(input.validity?.badInput||(value!==null&&(!Number.isFinite(value)||value<0))){alert('Nutrient values must be zero or positive numbers.');return;}
     nutrients[key]=value;
   }
   const original=state._editFoodId?state.foods.find(f=>f.id===state._editFoodId):null;
-  if(state._editFoodId&&!original){alert('食物已不存在，請重新開啟。');return;}
+  if(state._editFoodId&&!original){alert('This food no longer exists. Please reopen the list.');return;}
   const food={
     ...original, id:original?.id||('f'+Date.now()), listId, name,
     ingredients:document.getElementById('f-ingredients').value.trim(),
@@ -358,21 +358,21 @@ window.openManageListsModal=()=>{ renderManageLists(); openModal('modal-manage-l
 function renderManageLists(){
   document.getElementById('manage-lists-items').innerHTML=state.foodLists.map(l=>`
     <div class="field list-edit-row">
-      <input id="list-name-${l.id}" type="text" aria-label="列表名稱 ${escapeHtml(l.name)}" value="${escapeHtml(l.name)}">
-      <button class="btn btn-secondary btn-sm" ${state._savingLists?'disabled':''} onclick="window._renameList('${l.id}')">儲存</button>
-      <button class="btn btn-danger btn-sm" onclick="window._deleteList('${l.id}')">刪除</button>
+      <input id="list-name-${l.id}" type="text" aria-label="List name ${escapeHtml(l.name)}" value="${escapeHtml(l.name)}">
+      <button class="btn btn-secondary btn-sm" ${state._savingLists?'disabled':''} onclick="window._renameList('${l.id}')">Save</button>
+      <button class="btn btn-danger btn-sm" onclick="window._deleteList('${l.id}')">Delete</button>
     </div>`).join('');
 }
 window._renameList=async id=>{
   if(state._savingLists)return;
   const name=document.getElementById('list-name-'+id).value.trim();
-  if(!name){alert('請輸入列表名稱。');return;}
+  if(!name){alert('Please enter a list name.');return;}
   const previous=state.foodLists;
   state._savingLists=true;
   state.foodLists=state.foodLists.map(l=>l.id===id?{...l,name}:l);
   renderManageLists();
   try{ await saveFoodListsDoc(); renderFoodLists(); }
-  catch(err){ state.foodLists=previous; alert('儲存失敗，請重試。'); }
+  catch(err){ state.foodLists=previous; alert('Could not save. Please try again.'); }
   finally{ state._savingLists=false; renderManageLists(); }
 };
 window.addFoodList=async()=>{
@@ -384,7 +384,7 @@ window.addFoodList=async()=>{
 };
 window._deleteList=async id=>{
   if(state._savingLists||state._savingFoods)return;
-  if(!confirm('刪除此列表及其所有食物？'))return;
+  if(!confirm('Delete this list and all its foods?'))return;
   state.foodLists=state.foodLists.filter(l=>l.id!==id);
   state.foods=state.foods.filter(f=>f.listId!==id);
   if(state.activeListId===id) state.activeListId=state.foodLists[0]?.id||null;
@@ -396,7 +396,7 @@ window._openServe=id=>{
   const f=state.foods.find(x=>x.id===id); if(!f)return;
   state._serveFood=f;
   document.getElementById('serve-food-name').textContent=f.name;
-  document.getElementById('serve-food-info').textContent=`每份(×1): ${f.cal} kcal · 蛋白 ${formatNutrient(f.protein)}g · 碳水 ${formatNutrient(f.carbs)}g · 脂肪 ${formatNutrient(f.fat)}g（— 表示未提供）`;
+  document.getElementById('serve-food-info').textContent=`Per serving (1x): ${f.cal} kcal · Protein ${formatNutrient(f.protein)}g · Carbs ${formatNutrient(f.carbs)}g · Fat ${formatNutrient(f.fat)}g (— means unavailable)`;
   document.getElementById('serve-qty').value=1;
   updateServePreview();
   openModal('modal-serve');
@@ -408,9 +408,9 @@ function updateServePreview(){
   document.getElementById('serve-preview').innerHTML=`
     <div style="display:flex;justify-content:space-around;text-align:center;">
       <div><div style="font-size:20px;font-weight:700;color:var(--accent)">${Math.round(f.cal*q)}</div><div style="font-size:11px;color:var(--text2)">kcal</div></div>
-      <div><div style="font-size:20px;font-weight:700;color:var(--green)">${formatNutrient(scaleNutrient(f.protein,q))}</div><div style="font-size:11px;color:var(--text2)">蛋白 g</div></div>
-      <div><div style="font-size:20px;font-weight:700;color:var(--yellow)">${formatNutrient(scaleNutrient(f.carbs,q))}</div><div style="font-size:11px;color:var(--text2)">碳水 g</div></div>
-      <div><div style="font-size:20px;font-weight:700;color:var(--orange)">${formatNutrient(scaleNutrient(f.fat,q))}</div><div style="font-size:11px;color:var(--text2)">脂肪 g</div></div>
+      <div><div style="font-size:20px;font-weight:700;color:var(--green)">${formatNutrient(scaleNutrient(f.protein,q))}</div><div style="font-size:11px;color:var(--text2)">Protein g</div></div>
+      <div><div style="font-size:20px;font-weight:700;color:var(--yellow)">${formatNutrient(scaleNutrient(f.carbs,q))}</div><div style="font-size:11px;color:var(--text2)">Carbs g</div></div>
+      <div><div style="font-size:20px;font-weight:700;color:var(--orange)">${formatNutrient(scaleNutrient(f.fat,q))}</div><div style="font-size:11px;color:var(--text2)">Fat g</div></div>
     </div>`;
 }
 window.confirmServe=async()=>{
@@ -421,7 +421,7 @@ window.confirmServe=async()=>{
   state.logs[date].push({
     name:f.name, qty:q,
     cal:scaleNutrient(f.cal,q), protein:scaleNutrient(f.protein,q), carbs:scaleNutrient(f.carbs,q), fat:scaleNutrient(f.fat,q),
-    time:new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}),
+    time:new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),
   });
   await saveDayDoc(date); closeModal('modal-serve');
   switchPage('home',document.querySelector('[data-page="home"]')); renderHome();
@@ -439,7 +439,7 @@ window.addWaterQuick=async ml=>{
   await saveDayDoc(date); renderHome();
 };
 window.resetWater=async()=>{
-  if(!confirm('重置今日飲水記錄？'))return;
+  if(!confirm('Reset today’s water intake?'))return;
   const date=TODAY(); state.water[date]=0;
   await saveDayDoc(date); renderHome();
 };
@@ -456,14 +456,14 @@ window.handlePhotoUpload=evt=>{
     const stream=document.getElementById('ai-stream');
     const action=document.getElementById('ai-action');
     box.style.display=''; action.style.display='none';
-    stream.innerHTML='<span class="spinner"></span> AI 正在識別食物...'; _parsedFood=null;
+    stream.innerHTML='<span class="spinner"></span> AI is identifying the food...'; _parsedFood=null;
 
     // Use Claude API via fetch (works when hosted outside claude.ai)
     try {
       const base64=dataUrl.split(',')[1];
       const mediaType=file.type||'image/jpeg';
-      const prompt=`你是一個專業的營養師。請分析這張食物圖片，識別食物名稱，並估算每100g的營養成分。請只回答JSON，不要其他文字：
-{"name":"食物中文名稱","description":"食物簡短描述","cal":卡路里數字,"protein":蛋白質g數,"carbs":碳水g數,"fat":脂肪g數,"confidence":"high/medium/low"}`;
+      const prompt=`Analyze this food photo and estimate nutrients per 100g. Return only JSON. Use English for the name and description, and numbers for nutrients:
+{"name":"Food name in English","description":"Short description in English","cal":0,"protein":0,"carbs":0,"fat":0,"confidence":"high/medium/low"}`;
 
       // Try claude.use('sample') if inside claude.ai iframe
       let resultText='';
@@ -477,29 +477,29 @@ window.handlePhotoUpload=evt=>{
           resultText=res.text;
         }
       }
-      if(!resultText) throw new Error('AI 功能需在 Claude.ai 環境下使用，或請整合自己的 API key');
+      if(!resultText) throw new Error('AI requires a supported Claude environment or an API integration.');
 
       const match=resultText.match(/\{[\s\S]*\}/);
-      if(!match) throw new Error('無法解析回應');
+      if(!match) throw new Error('Could not parse the response.');
       _parsedFood=JSON.parse(match[0]);
 
       stream.innerHTML=`
         <div style="margin-bottom:8px;font-weight:600;font-size:15px;">🍽 ${_parsedFood.name}</div>
         <div style="color:var(--text2);font-size:12px;margin-bottom:12px;">${_parsedFood.description||''}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <div style="background:var(--accent-soft);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--accent)">${_parsedFood.cal}</div><div style="font-size:11px;color:var(--text2)">卡路里/100g</div></div>
-          <div style="background:var(--green-soft);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--green)">${_parsedFood.protein}g</div><div style="font-size:11px;color:var(--text2)">蛋白質/100g</div></div>
-          <div style="background:var(--yellow-soft);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--yellow)">${_parsedFood.carbs}g</div><div style="font-size:11px;color:var(--text2)">碳水/100g</div></div>
-          <div style="background:var(--orange-soft);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--orange)">${_parsedFood.fat}g</div><div style="font-size:11px;color:var(--text2)">脂肪/100g</div></div>
+          <div style="background:var(--accent-soft);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--accent)">${_parsedFood.cal}</div><div style="font-size:11px;color:var(--text2)">Calories/100g</div></div>
+          <div style="background:var(--green-soft);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--green)">${_parsedFood.protein}g</div><div style="font-size:11px;color:var(--text2)">Protein/100g</div></div>
+          <div style="background:var(--yellow-soft);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--yellow)">${_parsedFood.carbs}g</div><div style="font-size:11px;color:var(--text2)">Carbs/100g</div></div>
+          <div style="background:var(--orange-soft);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--orange)">${_parsedFood.fat}g</div><div style="font-size:11px;color:var(--text2)">Fat/100g</div></div>
         </div>
-        <div style="margin-top:10px;font-size:11px;color:var(--text3);">信心度: ${_parsedFood.confidence==='high'?'🟢 高':_parsedFood.confidence==='medium'?'🟡 中':'🔴 低'}</div>`;
+        <div style="margin-top:10px;font-size:11px;color:var(--text3);">Confidence: ${_parsedFood.confidence==='high'?'High':_parsedFood.confidence==='medium'?'Medium':'Low'}</div>`;
       action.style.display='';
       action.innerHTML=`<div class="btn-row">
-        <button class="btn btn-secondary btn-full" onclick="window._addAiToList()">+ 添加到食物列表</button>
-        <button class="btn btn-primary btn-full" onclick="window._logAiDirect()">直接記錄今日</button>
+        <button class="btn btn-secondary btn-full" onclick="window._addAiToList()">+ Add to food list</button>
+        <button class="btn btn-primary btn-full" onclick="window._logAiDirect()">Log for today</button>
       </div>`;
     } catch(err){
-      stream.textContent='⚠ '+( err.message||'識別失敗');
+      stream.textContent='⚠ '+( err.message||'Identification failed.');
     }
   };
   reader.readAsDataURL(file);
@@ -509,7 +509,7 @@ window._logAiDirect=async()=>{
   if(!_parsedFood)return;
   const date=TODAY();
   if(!state.logs[date]) state.logs[date]=[];
-  state.logs[date].push({name:_parsedFood.name,qty:1,cal:_parsedFood.cal,protein:_parsedFood.protein,carbs:_parsedFood.carbs,fat:_parsedFood.fat,time:new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'})});
+  state.logs[date].push({name:_parsedFood.name,qty:1,cal:_parsedFood.cal,protein:_parsedFood.protein,carbs:_parsedFood.carbs,fat:_parsedFood.fat,time:new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})});
   await saveDayDoc(date); switchPage('home',document.querySelector('[data-page="home"]')); renderHome();
 };
 
@@ -540,7 +540,7 @@ loadFromFirebase().then(()=>{
   renderFoodLists();
 }).catch(err=>{
   setSyncStatus('err');
-  document.getElementById('loading-screen').querySelector('p').textContent='連接失敗，請檢查網路';
+  document.getElementById('loading-screen').querySelector('p').textContent='Connection failed. Please check your network.';
   console.error(err);
 });
 

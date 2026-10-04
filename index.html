@@ -1,21 +1,21 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, minimum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CalCal">
-<title>CalCal 飲食追蹤</title>
-<link rel="stylesheet" href="./css/colors.css?v=1.0.12">
-<link rel="stylesheet" href="./css/styles.css?v=1.0.12">
+<title>CalCal Food Tracker</title>
+<link rel="stylesheet" href="./css/colors.css?v=1.0.13">
+<link rel="stylesheet" href="./css/styles.css?v=1.0.13">
 </head>
 <body>
 
 <!-- Loading -->
 <div id="loading-screen">
   <div class="logo">🍽</div>
-  <p>連接中...</p>
+  <p>Connecting...</p>
 </div>
 
 <!-- HOME PAGE -->
@@ -23,9 +23,9 @@
   <div class="page-header">
     <div>
       <div class="page-title"><span id="home-ddmm"></span> <span id="sync-dot"></span></div>
-      <div style="font-size:11px;color:var(--text3);margin-top:3px;">v1.0.12</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:3px;">v1.0.13</div>
     </div>
-    <button class="btn btn-secondary btn-sm" onclick="openGoalModal()">⚙ 目標</button>
+    <button class="btn btn-secondary btn-sm" onclick="openGoalModal()">⚙ Goals</button>
   </div>
 
   <div class="card" style="text-align:center;padding:20px 16px;">
@@ -41,22 +41,22 @@
     </div>
     <div class="macro-row">
       <div class="macro-item">
-        <div class="macro-label"><span>蛋白質</span><span id="lbl-protein">—</span></div>
+        <div class="macro-label"><span>Protein</span><span id="lbl-protein">—</span></div>
         <div class="macro-bar"><div id="bar-protein" class="macro-fill" style="background:var(--green);width:0%"></div></div>
       </div>
       <div class="macro-item">
-        <div class="macro-label"><span>碳水</span><span id="lbl-carbs">—</span></div>
+        <div class="macro-label"><span>Carbs</span><span id="lbl-carbs">—</span></div>
         <div class="macro-bar"><div id="bar-carbs" class="macro-fill" style="background:var(--yellow);width:0%"></div></div>
       </div>
       <div class="macro-item">
-        <div class="macro-label"><span>脂肪</span><span id="lbl-fat">—</span></div>
+        <div class="macro-label"><span>Fat</span><span id="lbl-fat">—</span></div>
         <div class="macro-bar"><div id="bar-fat" class="macro-fill" style="background:var(--orange);width:0%"></div></div>
       </div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title">飲水</div>
+    <div class="card-title">Water</div>
     <div class="water-bar-wrap">
       <div class="water-nums">
         <div><span id="water-consumed-big" class="water-consumed-big">0</span><span style="font-size:14px;color:var(--text2);margin-left:4px;">ml</span></div>
@@ -67,25 +67,25 @@
     <div class="water-input-row">
       <div class="water-quick" onclick="addWaterQuick(500)">+500</div>
       <div class="water-quick" onclick="addWaterQuick(1500)">+1500</div>
-      <input type="number" id="water-input" placeholder="自訂 ml" min="1">
+      <input type="number" id="water-input" placeholder="Custom ml" min="1">
       <button class="btn btn-danger btn-sm" onclick="resetWater()">↩</button>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title">補充劑</div>
+    <div class="card-title">Supplements</div>
     <div id="supp-row" class="supp-row"></div>
-    <div id="supp-empty" class="empty" style="padding:10px 0;display:none;"><p>尚未設定補充劑，請到⚙ 目標設定</p></div>
+    <div id="supp-empty" class="empty" style="padding:10px 0;display:none;"><p>No supplements yet. Add them in Goals.</p></div>
   </div>
 
   <div class="card">
     <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;">
-      <span>飲食記錄</span><span id="log-total-badge"></span>
+      <span>Food diary</span><span id="log-total-badge"></span>
     </div>
     <div id="log-list"></div>
     <div id="log-empty" class="empty" style="padding:16px 0;">
       <div class="empty-icon">🍽</div>
-      <p>點擊下方「食物列表」添加飲食</p>
+      <p>Open Foods below to log a meal.</p>
     </div>
   </div>
 </div>
@@ -93,36 +93,36 @@
 <!-- FOOD LISTS PAGE -->
 <div id="page-lists" class="page">
   <div class="page-header">
-    <div class="page-title">食物列表</div>
-    <button class="btn btn-primary btn-sm" onclick="openAddFoodModal()">+ 添加食物</button>
+    <div class="page-title">Food lists</div>
+    <button class="btn btn-primary btn-sm" onclick="openAddFoodModal()">+ Add food</button>
   </div>
   <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;">
     <div style="flex:1;overflow:hidden;"><div id="list-tabs" class="list-tabs"></div></div>
-    <button class="btn btn-secondary btn-sm" onclick="openManageListsModal()">管理</button>
+    <button class="btn btn-secondary btn-sm" onclick="openManageListsModal()">Manage</button>
   </div>
   <div id="food-grid"></div>
 </div>
 
 <!-- AI PAGE -->
 <div id="page-ai" class="page">
-  <div class="page-header"><div class="page-title">AI 識別</div></div>
+  <div class="page-header"><div class="page-title">AI Scan</div></div>
   <div class="card">
-    <div class="card-title">拍照識別食物營養</div>
+    <div class="card-title">Identify food from a photo</div>
     <div class="scan-area" onclick="document.getElementById('file-input').click()">
       <div style="font-size:48px;margin-bottom:8px;">📷</div>
-      <div style="font-size:14px;font-weight:600;margin-bottom:4px;">點擊上傳食物照片</div>
-      <div style="font-size:13px;color:var(--text2);">AI 將分析食物名稱與營養成分</div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:4px;">Tap to upload a food photo</div>
+      <div style="font-size:13px;color:var(--text2);">AI will estimate the food and its nutrients.</div>
     </div>
     <input type="file" id="file-input" accept="image/*" capture="environment" onchange="handlePhotoUpload(event)">
     <div id="ai-preview"></div>
     <div id="ai-result-box" style="display:none;" class="ai-result">
-      <div style="font-size:12px;color:var(--text2);margin-bottom:8px;">識別結果</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:8px;">Results</div>
       <div id="ai-stream" class="ai-stream"></div>
     </div>
     <div id="ai-action" style="display:none;margin-top:14px;"></div>
   </div>
   <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px;font-size:12px;color:var(--text2);margin-top:8px;">
-    💡 AI 識別結果僅供參考，建議核對實際營養標籤後再使用
+    💡 AI estimates are for reference. Check the nutrition label before using them.
   </div>
 </div>
 
@@ -130,23 +130,23 @@
 <div id="modal-goal" class="modal-overlay">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-title">每日目標設定</div>
+    <div class="modal-title">Daily goals</div>
     <div class="field-row">
-      <div class="field"><label>卡路里 (kcal)</label><input type="number" id="g-cal" placeholder="2000"></div>
-      <div class="field"><label>蛋白質 (g)</label><input type="number" id="g-protein" placeholder="150"></div>
+      <div class="field"><label>Calories (kcal)</label><input type="number" id="g-cal" placeholder="2000"></div>
+      <div class="field"><label>Protein (g)</label><input type="number" id="g-protein" placeholder="150"></div>
     </div>
     <div class="field-row">
-      <div class="field"><label>碳水化合物 (g)</label><input type="number" id="g-carbs" placeholder="250"></div>
-      <div class="field"><label>脂肪 (g)</label><input type="number" id="g-fat" placeholder="65"></div>
+      <div class="field"><label>Carbohydrates (g)</label><input type="number" id="g-carbs" placeholder="250"></div>
+      <div class="field"><label>Fat (g)</label><input type="number" id="g-fat" placeholder="65"></div>
     </div>
-    <div class="field"><label>飲水目標 (ml)</label><input type="number" id="g-water-ml" placeholder="2000"></div>
+    <div class="field"><label>Water goal (ml)</label><input type="number" id="g-water-ml" placeholder="2000"></div>
     <div class="field">
-      <label>補充劑（用逗號分隔，例：魚油, 維他命D）</label>
-      <input type="text" id="g-supps" placeholder="魚油, 維他命D, 鈣片">
+      <label>Supplements (separate with commas)</label>
+      <input type="text" id="g-supps" placeholder="Fish oil, Vitamin D, Calcium">
     </div>
     <div class="btn-row">
-      <button class="btn btn-secondary btn-full" onclick="closeModal('modal-goal')">取消</button>
-      <button class="btn btn-primary btn-full" onclick="saveGoals()">儲存</button>
+      <button class="btn btn-secondary btn-full" onclick="closeModal('modal-goal')">Cancel</button>
+      <button class="btn btn-primary btn-full" onclick="saveGoals()">Save</button>
     </div>
   </div>
 </div>
@@ -154,21 +154,21 @@
 <div id="modal-add-food" class="modal-overlay">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-title" id="add-food-title">添加食物</div>
-    <div class="field"><label for="f-name">食物名稱</label><input type="text" id="f-name" placeholder="例：雞胸肉"></div>
-    <div class="field"><label for="f-ingredients">食材（選填）</label><input type="text" id="f-ingredients" placeholder="例：雞肉、白飯、醬汁"></div>
-    <div class="field"><label for="f-list">所屬列表</label><select id="f-list"></select></div>
+    <div class="modal-title" id="add-food-title">Add food</div>
+    <div class="field"><label for="f-name">Food name</label><input type="text" id="f-name" placeholder="e.g. Chicken breast"></div>
+    <div class="field"><label for="f-ingredients">Ingredients (optional)</label><input type="text" id="f-ingredients" placeholder="e.g. Chicken, rice, sauce"></div>
+    <div class="field"><label for="f-list">Food list</label><select id="f-list"></select></div>
     <div class="field-row">
-      <div class="field"><label for="f-cal">卡路里 (kcal)</label><input type="number" id="f-cal" min="0" step="any" placeholder="0"></div>
-      <div class="field"><label for="f-protein">蛋白質 (g)</label><input type="number" id="f-protein" min="0" step="any" placeholder="未提供"></div>
+      <div class="field"><label for="f-cal">Calories (kcal)</label><input type="number" id="f-cal" min="0" step="any" placeholder="0"></div>
+      <div class="field"><label for="f-protein">Protein (g)</label><input type="number" id="f-protein" min="0" step="any" placeholder="Unknown"></div>
     </div>
     <div class="field-row">
-      <div class="field"><label for="f-carbs">碳水 (g)</label><input type="number" id="f-carbs" min="0" step="any" placeholder="未提供"></div>
-      <div class="field"><label for="f-fat">脂肪 (g)</label><input type="number" id="f-fat" min="0" step="any" placeholder="未提供"></div>
+      <div class="field"><label for="f-carbs">Carbs (g)</label><input type="number" id="f-carbs" min="0" step="any" placeholder="Unknown"></div>
+      <div class="field"><label for="f-fat">Fat (g)</label><input type="number" id="f-fat" min="0" step="any" placeholder="Unknown"></div>
     </div>
     <div class="btn-row">
-      <button class="btn btn-secondary btn-full" onclick="closeModal('modal-add-food')">取消</button>
-      <button id="save-food-btn" class="btn btn-primary btn-full" onclick="saveFood()">儲存</button>
+      <button class="btn btn-secondary btn-full" onclick="closeModal('modal-add-food')">Cancel</button>
+      <button id="save-food-btn" class="btn btn-primary btn-full" onclick="saveFood()">Save</button>
     </div>
   </div>
 </div>
@@ -176,49 +176,49 @@
 <div id="modal-manage-lists" class="modal-overlay">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-title">管理食物列表</div>
+    <div class="modal-title">Manage food lists</div>
     <div class="field">
-      <label>新增列表名稱</label>
+      <label>New list name</label>
       <div style="display:flex;gap:8px;">
-        <input type="text" id="new-list-name" placeholder="例：早餐、蛋白質類">
-        <button class="btn btn-primary btn-sm" onclick="addFoodList()">新增</button>
+        <input type="text" id="new-list-name" placeholder="e.g. Breakfast, Protein foods">
+        <button class="btn btn-primary btn-sm" onclick="addFoodList()">Add</button>
       </div>
     </div>
     <div id="manage-lists-items"></div>
-    <button class="btn btn-secondary btn-full" style="margin-top:16px;" onclick="closeModal('modal-manage-lists')">完成</button>
+    <button class="btn btn-secondary btn-full" style="margin-top:16px;" onclick="closeModal('modal-manage-lists')">Done</button>
   </div>
 </div>
 
 <div id="modal-serve" class="modal-overlay">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-title" id="serve-food-name">選擇份量</div>
+    <div class="modal-title" id="serve-food-name">Choose servings</div>
     <div id="serve-food-info" style="font-size:13px;color:var(--text2);margin-bottom:20px;"></div>
     <div class="field">
-      <label>份量（×1 為食物名稱所示的一份）</label>
+      <label>Servings (1 = the portion stated in the food name)</label>
       <input type="number" id="serve-qty" value="1" min="0.1" step="0.1">
     </div>
     <div id="serve-preview" style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px;margin-bottom:16px;"></div>
     <div class="btn-row">
-      <button class="btn btn-secondary btn-full" onclick="closeModal('modal-serve')">取消</button>
-      <button class="btn btn-primary btn-full" onclick="confirmServe()">確認添加</button>
+      <button class="btn btn-secondary btn-full" onclick="closeModal('modal-serve')">Cancel</button>
+      <button class="btn btn-primary btn-full" onclick="confirmServe()">Add to diary</button>
     </div>
   </div>
 </div>
 
 <nav class="nav">
   <button class="nav-btn active" data-page="home" onclick="switchPage('home',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>今日
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>Today
   </button>
   <button class="nav-btn" data-page="lists" onclick="switchPage('lists',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="15" y2="16"/></svg>食物
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="15" y2="16"/></svg>Foods
   </button>
   <button class="nav-btn" data-page="ai" onclick="switchPage('ai',this)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>AI 識別
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>AI Scan
   </button>
 </nav>
 
 <!-- Firebase SDK -->
-<script type="module" src="./js/app.js?v=1.0.12"></script>
+<script type="module" src="./js/app.js?v=1.0.13"></script>
 </body>
 </html>

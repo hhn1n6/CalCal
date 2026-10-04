@@ -13,7 +13,7 @@ const firebaseConfig = {
   appId: "1:1079426276749:web:e71e57288a1900d178b1c4"
 };
 const app = initializeApp(firebaseConfig);
-// 本地 IndexedDB 快取：首次載入後資料存在裝置，之後秒開
+// Local IndexedDB cache keeps data on the device after the first load.
 export const db = initializeFirestore(app, {
   localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
 });
