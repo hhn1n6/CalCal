@@ -96,7 +96,7 @@ function renderHome(){
   const _now=new Date();
   const _dd=String(_now.getDate()).padStart(2,'0');
   const _mm=String(_now.getMonth()+1).padStart(2,'0');
-  document.getElementById('home-ddmmyyyy').textContent=`${_dd}/${_mm}/${_yyyy}`;
+  document.getElementById('home-ddmm').textContent=`${_dd}/${_mm}/${_yy}`;
 
   // Ring
   document.getElementById('ring-consumed-big').textContent = Math.round(t.cal);
