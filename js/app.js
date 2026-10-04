@@ -12,7 +12,11 @@ let state = {
   activeListId: null,
   _editFoodId: null,
   _serveFood: null,
+  _savingFoods: false,
+  _savingLists: false,
 };
+
+const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 
 const TODAY = () => new Date().toISOString().slice(0,10);
 const syncDot = document.getElementById('sync-dot');
@@ -156,7 +160,7 @@ function renderHome(){
   logList.innerHTML=logs.map((l,i)=>`
     <div class="log-item">
       <div>
-        <div class="log-name">${l.name} <span style="font-size:11px;color:var(--text3)">×${l.qty}</span></div>
+        <div class="log-name">${escapeHtml(l.name)} <span style="font-size:11px;color:var(--text3)">×${l.qty}</span></div>
         <div class="log-meta">蛋白 ${formatNutrient(l.protein)}g · 碳水 ${formatNutrient(l.carbs)}g · 脂肪 ${formatNutrient(l.fat)}g</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
@@ -172,29 +176,59 @@ window._deleteLog=(date,idx)=>{ state.logs[date].splice(idx,1); saveDayDoc(date)
 // ── RENDER FOOD LISTS ─────────────────────────────────────
 function renderFoodLists(){
   document.getElementById('list-tabs').innerHTML=state.foodLists.map(l=>
-    `<div class="list-tab${state.activeListId===l.id?' active':''}" onclick="window._setList('${l.id}')">${l.name}</div>`
+    `<div class="list-tab${state.activeListId===l.id?' active':''}" onclick="window._setList('${l.id}')">${escapeHtml(l.name)}</div>`
   ).join('');
   const grid=document.getElementById('food-grid');
   const foods=state.foods.filter(f=>f.listId===state.activeListId);
   if(!foods.length){ grid.innerHTML='<div class="empty"><div class="empty-icon">🥗</div><p>此列表沒有食物，點擊「添加食物」</p></div>'; return; }
-  grid.innerHTML=foods.map(f=>`
+  grid.innerHTML=foods.map((f,index)=>`
     <div class="food-item-wrap">
       <div class="food-item" onclick="window._openServe('${f.id}')">
-        <div>
-          <div class="food-name">${f.name}</div>
+        <div class="food-details">
+          <div class="food-name">${escapeHtml(f.name)}</div>
           <div class="food-macros">蛋白 ${formatNutrient(f.protein)}g · 碳水 ${formatNutrient(f.carbs)}g · 脂肪 ${formatNutrient(f.fat)}g</div>
+          ${f.ingredients?`<div class="food-ingredients">食材：${escapeHtml(f.ingredients)}</div>`:''}
         </div>
         <div style="display:flex;align-items:center;gap:10px;">
           <div class="food-cal-badge">${f.cal} kcal</div>
-          <button class="btn-icon" onclick="event.stopPropagation();window._deleteFood('${f.id}')">
+          <button class="btn-icon" aria-label="刪除 ${escapeHtml(f.name)}" ${state._savingFoods?'disabled':''} onclick="event.stopPropagation();window._deleteFood('${f.id}')">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
           </button>
         </div>
       </div>
+      <div class="food-actions">
+        <button class="btn btn-secondary btn-sm" ${state._savingFoods?'disabled':''} onclick="window._editFood('${f.id}')">編輯</button>
+        <button class="btn btn-secondary btn-sm" ${index===0||state._savingFoods?'disabled':''} onclick="window._moveFood('${f.id}',-1)">↑ 上移</button>
+        <button class="btn btn-secondary btn-sm" ${index===foods.length-1||state._savingFoods?'disabled':''} onclick="window._moveFood('${f.id}',1)">↓ 下移</button>
+      </div>
     </div>`).join('');
 }
 window._setList=id=>{ state.activeListId=id; renderFoodLists(); };
-window._deleteFood=id=>{ if(!confirm('刪除這個食物？'))return; state.foods=state.foods.filter(f=>f.id!==id); saveFoodsDoc(); renderFoodLists(); };
+async function persistFoods(nextFoods){
+  if(state._savingFoods)return false;
+  const previous=state.foods;
+  state._savingFoods=true; state.foods=nextFoods;
+  document.getElementById('save-food-btn').disabled=true;
+  renderFoodLists();
+  try{ await saveFoodsDoc(); return true; }
+  catch(err){ state.foods=previous; alert('儲存失敗，請重試。'); return false; }
+  finally{ state._savingFoods=false; document.getElementById('save-food-btn').disabled=false; renderFoodLists(); }
+}
+window._deleteFood=async id=>{
+  if(state._savingFoods||!confirm('刪除這個食物？'))return;
+  await persistFoods(state.foods.filter(f=>f.id!==id));
+};
+window._moveFood=async(id,direction)=>{
+  if(state._savingFoods||![1,-1].includes(direction))return;
+  const food=state.foods.find(f=>f.id===id); if(!food)return;
+  const categoryFoods=state.foods.filter(f=>f.listId===food.listId);
+  const index=categoryFoods.findIndex(f=>f.id===id);
+  const neighbour=categoryFoods[index+direction]; if(!neighbour)return;
+  const next=state.foods.slice();
+  const from=next.findIndex(f=>f.id===id), to=next.findIndex(f=>f.id===neighbour.id);
+  [next[from],next[to]]=[next[to],next[from]];
+  await persistFoods(next);
+};
 
 // ── GOALS ─────────────────────────────────────────────────
 window.openGoalModal=()=>{
@@ -224,44 +258,80 @@ window.openAddFoodModal=(prefill)=>{
   state._editFoodId=null;
   document.getElementById('add-food-title').textContent='添加食物';
   document.getElementById('f-name').value=prefill?.name||'';
-  document.getElementById('f-cal').value=prefill?.cal||'';
-  document.getElementById('f-protein').value=prefill?.protein||'';
-  document.getElementById('f-carbs').value=prefill?.carbs||'';
-  document.getElementById('f-fat').value=prefill?.fat||'';
+  document.getElementById('f-ingredients').value=prefill?.ingredients||'';
+  document.getElementById('f-cal').value=prefill?.cal??'';
+  document.getElementById('f-protein').value=prefill?.protein??'';
+  document.getElementById('f-carbs').value=prefill?.carbs??'';
+  document.getElementById('f-fat').value=prefill?.fat??'';
   const sel=document.getElementById('f-list');
-  sel.innerHTML=state.foodLists.map(l=>`<option value="${l.id}"${l.id===state.activeListId?' selected':''}>${l.name}</option>`).join('');
+  sel.innerHTML=state.foodLists.map(l=>`<option value="${l.id}"${l.id===(prefill?.listId||state.activeListId)?' selected':''}>${escapeHtml(l.name)}</option>`).join('');
   openModal('modal-add-food');
 };
+window._editFood=id=>{
+  if(state._savingFoods)return;
+  const food=state.foods.find(f=>f.id===id); if(!food)return;
+  window.openAddFoodModal(food);
+  state._editFoodId=id;
+  document.getElementById('add-food-title').textContent='編輯食物';
+};
 window.saveFood=async()=>{
+  if(state._savingFoods)return;
   const name=document.getElementById('f-name').value.trim();
   if(!name){alert('請輸入食物名稱');return;}
+  const listId=document.getElementById('f-list').value;
+  if(!state.foodLists.some(l=>l.id===listId)){alert('請先新增食物列表。');return;}
+  const nutrients={};
+  for(const key of ['cal','protein','carbs','fat']){
+    const input=document.getElementById('f-'+key), text=input.value.trim();
+    const value=text===''?(key==='cal'?0:null):Number(text);
+    if(input.validity?.badInput||(value!==null&&(!Number.isFinite(value)||value<0))){alert('營養數值必須是零或正數。');return;}
+    nutrients[key]=value;
+  }
+  const original=state._editFoodId?state.foods.find(f=>f.id===state._editFoodId):null;
+  if(state._editFoodId&&!original){alert('食物已不存在，請重新開啟。');return;}
   const food={
-    id:'f'+Date.now(), listId:document.getElementById('f-list').value, name,
-    cal:+document.getElementById('f-cal').value||0,
-    protein:+document.getElementById('f-protein').value||0,
-    carbs:+document.getElementById('f-carbs').value||0,
-    fat:+document.getElementById('f-fat').value||0,
+    ...original, id:original?.id||('f'+Date.now()), listId, name,
+    ingredients:document.getElementById('f-ingredients').value.trim(),
+    ...nutrients,
   };
-  state.foods.push(food); state.activeListId=food.listId;
-  await saveFoodsDoc(); closeModal('modal-add-food'); renderFoodLists();
+  const next=original?state.foods.map(f=>f.id===food.id?food:f):[...state.foods,food];
+  if(await persistFoods(next)){
+    state.activeListId=food.listId; state._editFoodId=null;
+    closeModal('modal-add-food'); renderFoodLists();
+  }
 };
 
 // ── MANAGE LISTS ──────────────────────────────────────────
 window.openManageListsModal=()=>{ renderManageLists(); openModal('modal-manage-lists'); };
 function renderManageLists(){
   document.getElementById('manage-lists-items').innerHTML=state.foodLists.map(l=>`
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
-      <span style="font-size:14px;">${l.name}</span>
+    <div class="field list-edit-row">
+      <input id="list-name-${l.id}" type="text" aria-label="列表名稱 ${escapeHtml(l.name)}" value="${escapeHtml(l.name)}">
+      <button class="btn btn-secondary btn-sm" ${state._savingLists?'disabled':''} onclick="window._renameList('${l.id}')">儲存</button>
       <button class="btn btn-danger btn-sm" onclick="window._deleteList('${l.id}')">刪除</button>
     </div>`).join('');
 }
+window._renameList=async id=>{
+  if(state._savingLists)return;
+  const name=document.getElementById('list-name-'+id).value.trim();
+  if(!name){alert('請輸入列表名稱。');return;}
+  const previous=state.foodLists;
+  state._savingLists=true;
+  state.foodLists=state.foodLists.map(l=>l.id===id?{...l,name}:l);
+  renderManageLists();
+  try{ await saveFoodListsDoc(); renderFoodLists(); }
+  catch(err){ state.foodLists=previous; alert('儲存失敗，請重試。'); }
+  finally{ state._savingLists=false; renderManageLists(); }
+};
 window.addFoodList=async()=>{
+  if(state._savingLists)return;
   const name=document.getElementById('new-list-name').value.trim(); if(!name)return;
   const id='l'+Date.now(); state.foodLists.push({id,name});
   document.getElementById('new-list-name').value='';
   await saveFoodListsDoc(); renderManageLists(); renderFoodLists();
 };
 window._deleteList=async id=>{
+  if(state._savingLists||state._savingFoods)return;
   if(!confirm('刪除此列表及其所有食物？'))return;
   state.foodLists=state.foodLists.filter(l=>l.id!==id);
   state.foods=state.foods.filter(f=>f.listId!==id);
