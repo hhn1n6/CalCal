@@ -83,7 +83,7 @@
   .page.active { display: block; }
   .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
   #page-lists { padding-top: 0; }
-  #page-lists > .page-header { position: sticky; top: 0; z-index: 10; margin: 0 -16px 20px; padding: 16px; background: var(--bg); }
+  #page-lists > .page-header { position: sticky; top: 0; z-index: 10; margin: 0 -16px 20px; padding: 8px 16px; background: var(--bg); }
   #page-lists > .page-header::after { content: ''; position: absolute; top: 100%; left: 0; right: 0; height: 16px; background: linear-gradient(to bottom, var(--bg), transparent); pointer-events: none; }
   .page-title { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
 
@@ -140,7 +140,7 @@
   .btn-icon { background: none; border: none; color: var(--text3); cursor: pointer; padding: 4px; display: flex; align-items: center; -webkit-tap-highlight-color: transparent; }
 
   /* FOOD LISTS */
-  .category-selector { display: flex; align-items: center; gap: 8px; min-width: 0; border: none; background: none; color: var(--text); cursor: pointer; padding: 0; text-align: left; }
+  .category-selector { display: flex; align-items: center; gap: 8px; min-width: 0; border: none; background: none; color: var(--text); cursor: pointer; padding: 0; text-align: left; font-size: 32px; }
   .category-selector span { overflow-wrap: anywhere; }
   .category-selector svg { flex-shrink: 0; }
   .category-row { display: flex; align-items: center; gap: 16px; padding: 8px 0; }
