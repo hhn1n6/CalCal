@@ -7,8 +7,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CalCal">
 <title>CalCal Food Tracker</title>
-<link rel="stylesheet" href="./css/colors.css?v=1.0.43">
-<link rel="stylesheet" href="./css/styles.css?v=1.0.43">
+<link rel="stylesheet" href="./css/colors.css?v=1.0.44">
+<link rel="stylesheet" href="./css/styles.css?v=1.0.44">
 </head>
 <body>
 
@@ -22,12 +22,12 @@
   <div class="page-header">
     <div>
       <div class="page-title"><span id="home-ddmm"></span> <span id="sync-dot"></span></div>
-      <div style="font-size:11px;color:var(--text3);margin-top:3px;">v1.0.43</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:3px;">v1.0.44</div>
     </div>
     <button class="btn btn-primary btn-sm" onclick="openGoalModal()">Goals</button>
   </div>
 
-  <div class="card" style="text-align:center;padding:20px 16px;">
+  <div class="card nutrition-card" style="text-align:center;">
     <div class="nutrition-card-header">
       <div class="card-title">Daily nutrition</div>
       <button class="btn-icon nutrition-history" onclick="openDiaryModal()" aria-label="Open food diary" title="Food diary"><img src="./assets/history.png" width="22" height="22" alt=""></button>
@@ -62,7 +62,7 @@
     <div class="card-title">Water</div>
     <div class="water-bar-wrap">
       <div class="water-nums">
-        <div><span id="water-consumed-big" class="water-consumed-big">0</span><span style="font-size:14px;color:var(--text2);margin-left:4px;">ml</span></div>
+        <div class="water-intake"><div><span id="water-consumed-big" class="water-consumed-big">0</span><span style="font-size:14px;color:var(--text2);margin-left:4px;">ml</span></div><button class="btn-icon water-reset" onclick="resetWater()" aria-label="Reset water intake" title="Reset water intake"><img src="./assets/reset.png" width="15" height="15" alt=""></button></div>
         <div id="water-goal-lbl" class="water-goal-txt"></div>
       </div>
       <div class="water-bar-track"><div id="water-bar-fill" class="water-bar-fill" style="width:0%"></div></div>
@@ -71,7 +71,6 @@
       <div class="water-quick" onclick="addWaterQuick(500)">+500</div>
       <div class="water-quick" onclick="addWaterQuick(1500)">+1500</div>
       <input type="number" id="water-input" placeholder="Custom ml" min="1">
-      <button class="btn btn-danger btn-sm water-reset" onclick="resetWater()" aria-label="Reset water intake" title="Reset water intake"><img src="./assets/reset.png" width="22" height="22" alt=""></button>
     </div>
   </div>
 
@@ -256,6 +255,6 @@
 </nav>
 
 <!-- Firebase SDK -->
-<script type="module" src="./js/app.js?v=1.0.43"></script>
+<script type="module" src="./js/app.js?v=1.0.44"></script>
 </body>
 </html>

@@ -92,11 +92,12 @@
   .card-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--text2); margin-bottom: 12px; }
   .nutrition-card-header, .diary-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; text-align: left; }
   .nutrition-card-header .card-title, .diary-header .modal-title { margin-bottom: 0; }
-  .nutrition-history { width: 34px; height: 34px; justify-content: center; }
+  .nutrition-card-header, .weight-card-header { position: relative; display: block; }
+  .nutrition-history { width: 30px; height: 30px; justify-content: center; position: absolute; right: 0; top: -8px; }
   .nutrition-history img { display: block; width: 22px; height: 22px; object-fit: contain; }
-  .weight-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .weight-card-header { margin-bottom: 12px; }
   .weight-card-header .card-title { margin-bottom: 0; }
-  .weight-add { width: 34px; height: 34px; justify-content: center; font-size: 28px; color: var(--text); }
+  .weight-add { width: 30px; height: 30px; justify-content: center; font-size: 28px; color: var(--text); position: absolute; right: 0; top: -8px; }
   .weight-summary { font-size: 20px; font-weight: 700; text-align: right; }
   .weight-chart-svg { display: block; width: 100%; height: auto; margin-top: 8px; }
   .weight-chart-svg text { fill: var(--text2); font-family: inherit; font-size: 12px; }
@@ -135,8 +136,9 @@
   .water-input-row > * { height: 34px; }
   .water-input-row input { flex: 1; min-width: 0; padding: 0 10px; background: var(--surface2); border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-size: 16px; outline: none; -webkit-appearance: none; }
   .water-input-row input:focus { border-color: var(--accent2); }
-  .water-input-row .water-reset { width: 40px; padding: 0; flex: 0 0 40px; }
-  .water-input-row .water-reset, .water-input-row .water-quick { display: flex; align-items: center; justify-content: center; }
+  .water-intake { display: flex; align-items: center; gap: 8px; }
+  .water-reset { width: 30px; height: 30px; padding: 0; justify-content: center; background: none; border: none; }
+  .water-input-row .water-quick { display: flex; align-items: center; justify-content: center; }
   .water-reset img { display: block; width: 15px; height: 15px; object-fit: contain; }
   .water-quick { flex-shrink: 0; padding: 8px 12px; border-radius: var(--radius-sm); border: 1.5px solid var(--border); background: var(--surface2); color: var(--text2); font-size: 13px; font-weight: 600; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: all .2s; white-space: nowrap; }
   .water-quick:active { border-color: var(--accent2); color: var(--accent2); background: var(--water-soft); }
