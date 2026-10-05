@@ -136,7 +136,7 @@
   .water-input-row > * { height: 34px; }
   .water-input-row input { flex: 1; min-width: 0; padding: 0 10px; background: var(--surface2); border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-size: 16px; outline: none; -webkit-appearance: none; }
   .water-input-row input:focus { border-color: var(--accent2); }
-  .water-intake { display: flex; align-items: center; gap: 8px; }
+  .water-intake { display: flex; align-items: center; gap: 2px; }
   .water-reset { width: 30px; height: 30px; padding: 0; justify-content: center; background: none; border: none; }
   .water-input-row .water-quick { display: flex; align-items: center; justify-content: center; }
   .water-reset img { display: block; width: 15px; height: 15px; object-fit: contain; }
