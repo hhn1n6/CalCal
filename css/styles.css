@@ -94,6 +94,7 @@
   .ring-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .ring-cal { font-size: 24px; font-weight: 700; }
   .ring-sub { font-size: 11px; color: var(--text2); }
+  .macro-label .nutrition-over { color: var(--nutrition-over); }
   .ring-bg { fill: none; stroke: var(--border); stroke-width: 8; }
   .ring-fg { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset .6s ease; }
 

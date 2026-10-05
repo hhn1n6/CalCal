@@ -115,8 +115,10 @@ function renderHome(){
     const p=goal>0?Math.max(0,Math.min(100,left/goal*100)):0;
     document.getElementById('bar-'+id).style.width=p+'%';
     document.getElementById('bar-'+id).style.background=val>goal?'var(--red)':color;
-    document.getElementById('lbl-'+id).textContent=`${t.missing[id]?'Estimated ':''}${Math.round(Math.abs(left))}g ${left<0?'over':'left'}`;
-    document.getElementById('lbl-'+id).title=t.missing[id]?'Some foods are missing this nutrient. Remaining amounts use only known intake.':'';
+    const label=document.getElementById('lbl-'+id);
+    label.innerHTML=`${t.missing[id]?'Estimated ':''}<strong>${Math.round(Math.abs(left))}</strong>g ${left<0?'over':'left'}`;
+    label.classList.toggle('nutrition-over',left<0);
+    label.title=t.missing[id]?'Some foods are missing this nutrient. Remaining amounts use only known intake.':'';
   };
   setBar('protein',t.protein,g.protein,'var(--green)');
   setBar('carbs',t.carbs,g.carbs,'var(--yellow)');
