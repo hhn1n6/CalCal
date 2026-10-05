@@ -7,8 +7,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CalCal">
 <title>CalCal Food Tracker</title>
-<link rel="stylesheet" href="./css/colors.css?v=1.0.35">
-<link rel="stylesheet" href="./css/styles.css?v=1.0.35">
+<link rel="stylesheet" href="./css/colors.css?v=1.0.36">
+<link rel="stylesheet" href="./css/styles.css?v=1.0.36">
 </head>
 <body>
 
@@ -22,7 +22,7 @@
   <div class="page-header">
     <div>
       <div class="page-title"><span id="home-ddmm"></span> <span id="sync-dot"></span></div>
-      <div style="font-size:11px;color:var(--text3);margin-top:3px;">v1.0.35</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:3px;">v1.0.36</div>
     </div>
     <button class="btn btn-primary btn-sm" onclick="openGoalModal()">Goals</button>
   </div>
@@ -92,12 +92,8 @@
 <!-- FOOD LISTS PAGE -->
 <div id="page-lists" class="page">
   <div class="page-header">
-    <div class="page-title">Food lists</div>
+    <button class="page-title category-selector" onclick="openManageListsModal()" aria-label="Choose food category" aria-haspopup="dialog"><span id="current-category-name">Categories</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
     <button class="btn btn-primary btn-sm" onclick="openAddFoodModal()">+ Add food</button>
-  </div>
-  <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;">
-    <div style="flex:1;overflow:hidden;"><div id="list-tabs" class="list-tabs"></div></div>
-    <button class="btn btn-secondary btn-sm" onclick="openManageListsModal()">Manage</button>
   </div>
   <div id="food-grid"></div>
 </div>
@@ -175,16 +171,28 @@
 <div id="modal-manage-lists" class="modal-overlay">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-title">Manage food lists</div>
+    <div class="modal-title">Food categories</div>
     <div class="field">
-      <label>New list name</label>
+      <label>New category name</label>
       <div style="display:flex;gap:8px;">
         <input type="text" id="new-list-name" placeholder="e.g. Breakfast, Protein foods">
-        <button class="btn btn-primary btn-sm" onclick="addFoodList()">Add</button>
+        <button class="btn btn-primary btn-sm" id="add-category-btn" onclick="addFoodList()">Add</button>
       </div>
     </div>
     <div id="manage-lists-items"></div>
     <button class="btn btn-secondary btn-full" style="margin-top:16px;" onclick="closeModal('modal-manage-lists')">Done</button>
+  </div>
+</div>
+
+<div id="modal-edit-category" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Edit category</div>
+    <div id="edit-category-field" class="field"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary btn-full" onclick="closeModal('modal-edit-category')">Cancel</button>
+      <button class="btn btn-primary btn-full" onclick="saveCategoryName()">Save</button>
+    </div>
   </div>
 </div>
 
@@ -218,6 +226,6 @@
 </nav>
 
 <!-- Firebase SDK -->
-<script type="module" src="./js/app.js?v=1.0.35"></script>
+<script type="module" src="./js/app.js?v=1.0.36"></script>
 </body>
 </html>

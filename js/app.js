@@ -1,4 +1,4 @@
-import { db, doc, getDoc, setDoc, onSnapshot } from './firebase.js';
+import { db, doc, getDoc, setDoc, onSnapshot, writeBatch } from './firebase.js?v=1.0.36';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js';
 
 // ── STATE ────────────────────────────────────────────────
@@ -182,9 +182,7 @@ window._deleteLog=(date,idx)=>{ state.logs[date].splice(idx,1); saveDayDoc(date)
 
 // ── RENDER FOOD LISTS ─────────────────────────────────────
 function renderFoodLists(){
-  document.getElementById('list-tabs').innerHTML=state.foodLists.map(l=>
-    `<div class="list-tab${state.activeListId===l.id?' active':''}" onclick="window._setList('${l.id}')">${escapeHtml(l.name)}</div>`
-  ).join('');
+  document.getElementById('current-category-name').textContent=state.foodLists.find(l=>l.id===state.activeListId)?.name||'Categories';
   const grid=document.getElementById('food-grid');
   const foods=state.foods.filter(f=>f.listId===state.activeListId);
   if(!foods.length){ grid.innerHTML='<div class="empty"><div class="empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle"><circle cx="12" cy="12" r="6"/><path d="M2 3v6m3-6v6M2 6h3M3.5 9v12M21 3v18M21 3c-4 3-4 8 0 8"/></svg></div><p>No foods in this list. Tap Add food to get started.</p></div>'; return; }
@@ -243,11 +241,13 @@ window._reorderFood=async(id,to)=>{
   let index=0;
   await persistFoods(state.foods.map(f=>f.listId===food.listId?categoryFoods[index++]:f));
 };
-window._startFoodDrag=(event,id)=>{
-  if(state._savingFoods||event.button!==0||event.isPrimary===false)return;
+window._startFoodDrag=(event,id)=>startRowDrag(event,id,false);
+window._startCategoryDrag=(event,id)=>startRowDrag(event,id,true);
+function startRowDrag(event,id,isCategory){
+  if((isCategory?state._savingLists:state._savingFoods)||event.button!==0||event.isPrimary===false)return;
   event.stopPropagation();
   const handle=event.currentTarget, row=handle.closest('.food-item-wrap');
-  const grid=row.parentElement, page=grid.closest('.page');
+  const grid=row.parentElement, page=grid.closest(isCategory?'.modal':'.page');
   const rows=Array.from(grid.querySelectorAll('.food-item-wrap'));
   const others=rows.filter(item=>item!==row), listId=state.activeListId;
   let y=event.clientY, active=false, target=rows.indexOf(row), frame;
@@ -284,7 +284,10 @@ window._startFoodDrag=(event,id)=>{
     document.removeEventListener('keydown',finish);
     rows.forEach(item=>item.classList.remove('food-dragging','drop-before','drop-after'));
     if(handle.hasPointerCapture(pointerId))handle.releasePointerCapture(pointerId);
-    if(active&&e.type==='pointerup'&&state.activeListId===listId)window._reorderFood(id,target);
+    if(active&&e.type==='pointerup'){
+      if(isCategory)window._reorderCategory(id,target);
+      else if(state.activeListId===listId)window._reorderFood(id,target);
+    }
   }
   handle.addEventListener('pointermove',move);
   for(const type of ['pointerup','pointercancel','lostpointercapture'])handle.addEventListener(type,finish);
@@ -367,38 +370,76 @@ window.saveFood=async()=>{
 window.openManageListsModal=()=>{ renderManageLists(); openModal('modal-manage-lists'); };
 function renderManageLists(){
   document.getElementById('manage-lists-items').innerHTML=state.foodLists.map(l=>`
-    <div class="field list-edit-row">
-      <input id="list-name-${l.id}" type="text" aria-label="List name ${escapeHtml(l.name)}" value="${escapeHtml(l.name)}">
-      <button class="btn btn-secondary btn-sm" ${state._savingLists?'disabled':''} onclick="window._renameList('${l.id}')">Save</button>
-      <button class="btn btn-danger btn-sm" onclick="window._deleteList('${l.id}')">Delete</button>
-    </div>`).join('');
+    <div class="food-item-wrap category-row">
+      <button class="category-name${state.activeListId===l.id?' selected':''}" ${state._savingLists?'disabled':''} onclick="window._chooseCategory('${l.id}')">${escapeHtml(l.name)}</button>
+      <div class="food-row-controls">
+        <button class="btn-icon" aria-label="Edit category ${escapeHtml(l.name)}" ${state._savingLists?'disabled':''} onclick="window._editCategory('${l.id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 3l5 5L8 21H3v-5zM13 6l5 5"/></svg></button>
+        <button class="btn-icon" aria-label="Delete category ${escapeHtml(l.name)}" ${state._savingLists||state._savingFoods?'disabled':''} onclick="window._deleteList('${l.id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6M9 6V4h6v2M10 11v6M14 11v6"/></svg></button>
+        <button class="btn-icon food-drag-handle" aria-label="Reorder category ${escapeHtml(l.name)}" title="Drag to reorder (keyboard: Up / Down)" ${state._savingLists?'disabled':''} onpointerdown="window._startCategoryDrag(event,'${l.id}')" onkeydown="if(event.key==='ArrowUp'||event.key==='ArrowDown'){event.preventDefault();window._moveCategory('${l.id}',event.key==='ArrowUp'?-1:1)}">☰</button>
+      </div>
+    </div>`).join('')||'<div class="empty">No categories yet. Add one above.</div>';
+  document.getElementById('add-category-btn').disabled=state._savingLists;
 }
+window._chooseCategory=id=>{
+  if(state._savingLists)return;
+  window._setList(id);closeModal('modal-manage-lists');
+};
+let editingCategoryId=null;
+window._editCategory=id=>{
+  if(state._savingLists)return;
+  const list=state.foodLists.find(l=>l.id===id);if(!list)return;
+  editingCategoryId=id;
+  document.getElementById('edit-category-field').innerHTML=`<label for="list-name-${id}">Category name</label><input id="list-name-${id}" value="${escapeHtml(list.name)}">`;
+  openModal('modal-edit-category');
+};
+window.saveCategoryName=()=>window._renameList(editingCategoryId);
+async function persistCategories(next){
+  if(state._savingLists)return false;
+  const previous=state.foodLists;
+  state._savingLists=true;state.foodLists=next;
+  renderManageLists();
+  try{await saveFoodListsDoc();renderFoodLists();return true;}
+  catch(err){state.foodLists=previous;alert('Could not save. Please try again.');return false;}
+  finally{state._savingLists=false;renderManageLists();}
+}
+window._moveCategory=(id,direction)=>window._reorderCategory(id,state.foodLists.findIndex(l=>l.id===id)+direction);
+window._reorderCategory=async(id,to)=>{
+  const from=state.foodLists.findIndex(l=>l.id===id);
+  if(from<0||!Number.isInteger(to)||to<0||to>=state.foodLists.length||from===to)return;
+  const next=state.foodLists.slice();next.splice(to,0,next.splice(from,1)[0]);
+  await persistCategories(next);
+};
 window._renameList=async id=>{
   if(state._savingLists)return;
   const name=document.getElementById('list-name-'+id).value.trim();
   if(!name){alert('Please enter a list name.');return;}
-  const previous=state.foodLists;
-  state._savingLists=true;
-  state.foodLists=state.foodLists.map(l=>l.id===id?{...l,name}:l);
-  renderManageLists();
-  try{ await saveFoodListsDoc(); renderFoodLists(); }
-  catch(err){ state.foodLists=previous; alert('Could not save. Please try again.'); }
-  finally{ state._savingLists=false; renderManageLists(); }
+  if(!state.foodLists.some(l=>l.id===id))return;
+  if(await persistCategories(state.foodLists.map(l=>l.id===id?{...l,name}:l)))closeModal('modal-edit-category');
 };
 window.addFoodList=async()=>{
   if(state._savingLists)return;
-  const name=document.getElementById('new-list-name').value.trim(); if(!name)return;
-  const id='l'+Date.now(); state.foodLists.push({id,name});
-  document.getElementById('new-list-name').value='';
-  await saveFoodListsDoc(); renderManageLists(); renderFoodLists();
+  const name=document.getElementById('new-list-name').value.trim();if(!name)return;
+  const id='l'+Date.now();
+  if(await persistCategories([...state.foodLists,{id,name}])){
+    document.getElementById('new-list-name').value='';
+    if(!state.activeListId){state.activeListId=id;renderFoodLists();}
+  }
 };
 window._deleteList=async id=>{
   if(state._savingLists||state._savingFoods)return;
-  if(!confirm('Delete this list and all its foods?'))return;
-  state.foodLists=state.foodLists.filter(l=>l.id!==id);
-  state.foods=state.foods.filter(f=>f.listId!==id);
-  if(state.activeListId===id) state.activeListId=state.foodLists[0]?.id||null;
-  await saveFoodListsDoc(); await saveFoodsDoc(); renderManageLists(); renderFoodLists();
+  if(!confirm('Delete this category and all its foods?'))return;
+  const lists=state.foodLists.filter(l=>l.id!==id),foods=state.foods.filter(f=>f.listId!==id);
+  state._savingLists=true;state._savingFoods=true;setSyncStatus('loading');
+  renderManageLists();renderFoodLists();
+  try{
+    const batch=writeBatch(db);
+    batch.set(REF.foodLists(),{lists});batch.set(REF.foods(),{foods});
+    await batch.commit();
+    state.foodLists=lists;state.foods=foods;
+    if(state.activeListId===id)state.activeListId=lists[0]?.id||null;
+    setSyncStatus('ok');
+  }catch(err){setSyncStatus('err');alert('Could not delete. Please try again.');}
+  finally{state._savingLists=false;state._savingFoods=false;renderManageLists();renderFoodLists();}
 };
 
 // ── SERVE MODAL ───────────────────────────────────────────

@@ -18,4 +18,4 @@ export const db = initializeFirestore(app, {
   localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
 });
 
-export { doc, getDoc, setDoc, onSnapshot };
+export { doc, getDoc, setDoc, onSnapshot, writeBatch };
