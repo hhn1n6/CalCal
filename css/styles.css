@@ -145,7 +145,7 @@
   .food-item-wrap:first-child { border-top: 1px solid var(--border); }
   .food-item { display: flex; align-items: center; gap: 16px; padding: 14px 0; background: transparent; cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .food-item:active { background: var(--surface2); }
-  .food-name { font-size: 500px; font-weight: 500; }
+  .food-name { font-size: 50px; font-weight: 500; }
   .food-nutrition { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 8px; }
   .food-nutrient { min-width: 0; text-align: center; padding: 0 4px; }
   .food-nutrient + .food-nutrient { border-left: 1px solid var(--border); }
