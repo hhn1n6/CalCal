@@ -7,8 +7,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CalCal">
 <title>CalCal Food Tracker</title>
-<link rel="stylesheet" href="./css/colors.css?v=1.0.40">
-<link rel="stylesheet" href="./css/styles.css?v=1.0.40">
+<link rel="stylesheet" href="./css/colors.css?v=1.0.41">
+<link rel="stylesheet" href="./css/styles.css?v=1.0.41">
 </head>
 <body>
 
@@ -22,7 +22,7 @@
   <div class="page-header">
     <div>
       <div class="page-title"><span id="home-ddmm"></span> <span id="sync-dot"></span></div>
-      <div style="font-size:11px;color:var(--text3);margin-top:3px;">v1.0.40</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:3px;">v1.0.41</div>
     </div>
     <button class="btn btn-primary btn-sm" onclick="openGoalModal()">Goals</button>
   </div>
@@ -75,6 +75,15 @@
     <div class="card-title">Supplements</div>
     <div id="supp-row" class="supp-row"></div>
     <div id="supp-empty" class="empty" style="padding:10px 0;display:none;"><p>No supplements yet. Add them in Goals.</p></div>
+  </div>
+
+  <div class="card weight-card">
+    <div class="weight-card-header">
+      <div class="card-title">Weight <span class="weight-unit">(kg)</span></div>
+      <button class="btn-icon weight-add" onclick="openWeightModal()" aria-label="Add weight" title="Add weight">+</button>
+    </div>
+    <div id="weight-summary" class="weight-summary"></div>
+    <div id="weight-chart"></div>
   </div>
 
   <div class="card">
@@ -196,6 +205,21 @@
   </div>
 </div>
 
+<div id="modal-weight" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Record weight</div>
+    <div class="field"><label for="weight-date">Date</label><input id="weight-date" type="date"></div>
+    <div class="field"><label for="weight-value">Weight (kg)</label><input id="weight-value" type="number" min="0.1" step="0.1" inputmode="decimal" placeholder="e.g. 70.5"></div>
+    <p class="weight-hint">One entry per date. Saving again updates that date’s weight.</p>
+    <p id="weight-error" class="weight-error" role="alert"></p>
+    <div class="btn-row">
+      <button class="btn btn-secondary btn-full" onclick="closeModal('modal-weight')">Cancel</button>
+      <button id="save-weight-btn" class="btn btn-primary btn-full" onclick="saveWeight()">Save</button>
+    </div>
+  </div>
+</div>
+
 <div id="modal-serve" class="modal-overlay">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -226,6 +250,6 @@
 </nav>
 
 <!-- Firebase SDK -->
-<script type="module" src="./js/app.js?v=1.0.40"></script>
+<script type="module" src="./js/app.js?v=1.0.41"></script>
 </body>
 </html>

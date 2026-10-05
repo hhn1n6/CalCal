@@ -9,6 +9,8 @@ let state = {
   logs:  {},   // date -> [{name,qty,cal,protein,carbs,fat,time}]
   water: {},   // date -> ml
   supps: {},   // date -> Set<string>
+  weights: {}, // local date -> weight in kg
+  _savingWeight: false,
   activeListId: null,
   _editFoodId: null,
   _serveFood: null,
@@ -30,6 +32,7 @@ const REF = {
   goals:     () => doc(db,'CalCal','goals'),
   foodLists: () => doc(db,'CalCal','foodLists'),
   foods:     () => doc(db,'CalCal','foods'),
+  weights:   () => doc(db,'CalCal','weights'),
   day:       (d) => doc(db,'days', d),
 };
 
@@ -49,6 +52,7 @@ async function loadFromFirebase() {
   // foods
   const fo = await fbGet(REF.foods());
   if(fo && fo.foods) state.foods = fo.foods;
+  state.weights = await fbGet(REF.weights()) || {};
 
   // today's day doc
   const today = TODAY();
@@ -95,6 +99,7 @@ function todayTotals(date){
 
 // ── RENDER HOME ──────────────────────────────────────────
 function renderHome(){
+  renderWeightChart();
   const date=TODAY(), t=todayTotals(date), g=state.goals;
   const _now=new Date();
   const _dd=String(_now.getDate()).padStart(2,'0');
@@ -476,6 +481,58 @@ window.confirmServe=async()=>{
   });
   await saveDayDoc(date); closeModal('modal-serve');
   switchPage('home',document.querySelector('[data-page="home"]')); renderHome();
+};
+
+// ── WEIGHT ────────────────────────────────────────────────
+function validWeightDate(date){
+  return /^\d{4}-\d{2}-\d{2}$/.test(date)&&Number.isFinite(Date.parse(date+'T00:00:00Z'))&&new Date(date+'T00:00:00Z').toISOString().slice(0,10)===date;
+}
+const weightDateLabel=date=>date.split('-').reverse().join('/');
+function renderWeightChart(){
+  const entries=Object.entries(state.weights).filter(([date,kg])=>validWeightDate(date)&&typeof kg==='number'&&Number.isFinite(kg)&&kg>0).sort(([a],[b])=>a.localeCompare(b));
+  const chart=document.getElementById('weight-chart'),summary=document.getElementById('weight-summary');
+  if(!entries.length){summary.textContent='';chart.innerHTML='<div class="empty" style="padding:28px 0;">Tap + to record your first weight.</div>';return;}
+  const [lastDate,lastWeight]=entries.at(-1);
+  summary.innerHTML=`${lastWeight.toFixed(1)} kg <span>${weightDateLabel(lastDate)}</span>`;
+  const values=entries.map(([,kg])=>kg),min=Math.min(...values),max=Math.max(...values);
+  const padding=Math.max(0.5,(max-min)*0.15),low=Math.max(0,min-padding),high=max+padding;
+  const start=Date.parse(entries[0][0]+'T00:00:00Z'),end=Date.parse(lastDate+'T00:00:00Z');
+  const x=date=>end===start?277:52+(Date.parse(date+'T00:00:00Z')-start)/(end-start)*450;
+  const y=kg=>186-(kg-low)/(high-low)*164;
+  const points=entries.map(([date,kg])=>`${x(date).toFixed(2)},${y(kg).toFixed(2)}`).join(' ');
+  const ticks=[low,(low+high)/2,high];
+  const dateTicks=Array.from(new Set([0,Math.floor((entries.length-1)/2),entries.length-1]));
+  chart.innerHTML=`<svg class="weight-chart-svg" viewBox="0 0 520 230" role="img" aria-label="Weight history in kilograms by date">
+    <title>Weight history: ${entries.map(([date,kg])=>`${weightDateLabel(date)}: ${kg.toFixed(1)} kg`).join('; ')}</title>
+    ${ticks.map(kg=>`<line class="weight-chart-grid" x1="52" x2="502" y1="${y(kg)}" y2="${y(kg)}"/><text x="44" y="${y(kg)+4}" text-anchor="end">${kg.toFixed(1)}</text>`).join('')}
+    <polyline class="weight-chart-line" points="${points}"/>
+    ${entries.map(([date,kg])=>`<circle class="weight-chart-point" cx="${x(date)}" cy="${y(kg)}" r="4" tabindex="0" aria-label="${weightDateLabel(date)}: ${kg.toFixed(1)} kg"><title>${weightDateLabel(date)}: ${kg.toFixed(1)} kg</title></circle>`).join('')}
+    ${dateTicks.map(index=>{const date=entries[index][0];return `<text x="${x(date)}" y="213" text-anchor="${entries.length===1?'middle':index===0?'start':index===entries.length-1?'end':'middle'}">${weightDateLabel(date)}</text>`;}).join('')}
+  </svg>`;
+}
+window.openWeightModal=()=>{
+  const date=TODAY();
+  document.getElementById('weight-date').value=date;
+  document.getElementById('weight-date').max=date;
+  document.getElementById('weight-value').value=state.weights[date]??'';
+  document.getElementById('weight-error').textContent='';
+  openModal('modal-weight');
+};
+window.saveWeight=async()=>{
+  if(state._savingWeight)return;
+  const date=document.getElementById('weight-date').value;
+  const input=document.getElementById('weight-value'),kg=Number(input.value);
+  const error=document.getElementById('weight-error');
+  if(!validWeightDate(date)||date>TODAY()){error.textContent='Choose today or an earlier date.';return;}
+  if(input.validity?.badInput||!Number.isFinite(kg)||kg<=0){error.textContent='Enter a weight greater than zero.';return;}
+  state._savingWeight=true;document.getElementById('save-weight-btn').disabled=true;error.textContent='';
+  setSyncStatus('loading');
+  try{
+    await setDoc(REF.weights(),{[date]:kg},{merge:true});
+    state.weights={...state.weights,[date]:kg};setSyncStatus('ok');
+    renderWeightChart();closeModal('modal-weight');
+  }catch(err){setSyncStatus('err');error.textContent='Could not save your weight. Please try again.';}
+  finally{state._savingWeight=false;document.getElementById('save-weight-btn').disabled=false;}
 };
 
 // ── WATER ─────────────────────────────────────────────────
