@@ -493,7 +493,7 @@ function renderWeightChart(){
   const chart=document.getElementById('weight-chart'),summary=document.getElementById('weight-summary');
   if(!entries.length){summary.textContent='';chart.innerHTML='<div class="empty" style="padding:28px 0;">Tap + to record your first weight.</div>';return;}
   const [lastDate,lastWeight]=entries.at(-1);
-  summary.innerHTML=`${lastWeight.toFixed(1)} kg <span>${weightDateLabel(lastDate)}</span>`;
+  summary.textContent=`${lastWeight.toFixed(1)} kg`;
   const values=entries.map(([,kg])=>kg),min=Math.min(...values),max=Math.max(...values);
   const padding=Math.max(0.5,(max-min)*0.15),low=Math.max(0,min-padding),high=max+padding;
   const start=Date.parse(entries[0][0]+'T00:00:00Z'),end=Date.parse(lastDate+'T00:00:00Z');

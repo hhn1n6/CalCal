@@ -93,8 +93,7 @@
   .weight-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
   .weight-card-header .card-title { margin-bottom: 0; }
   .weight-add { width: 34px; height: 34px; justify-content: center; font-size: 28px; color: var(--text); }
-  .weight-summary { font-size: 20px; font-weight: 700; }
-  .weight-summary span { font-size: 12px; font-weight: 400; color: var(--text2); margin-left: 8px; }
+  .weight-summary { font-size: 20px; font-weight: 700; text-align: right; }
   .weight-chart-svg { display: block; width: 100%; height: auto; margin-top: 8px; }
   .weight-chart-svg text { fill: var(--text2); font-family: inherit; font-size: 12px; }
   .weight-chart-grid { stroke: var(--border); stroke-width: 1; }
