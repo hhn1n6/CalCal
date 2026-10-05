@@ -193,11 +193,14 @@ function renderFoodLists(){
       <div class="food-item" onclick="window._openServe('${f.id}')">
         <div class="food-details">
           <div class="food-name">${escapeHtml(f.name)}</div>
-          <div class="food-macros">Protein ${formatNutrient(f.protein)}g · Carbs ${formatNutrient(f.carbs)}g · Fat ${formatNutrient(f.fat)}g</div>
+          <div class="food-nutrition">
+            ${[['cal','kcal','Calories'],['protein','g','Protein'],['carbs','g','Carbs'],['fat','g','Fat']].map(([key,unit,label])=>`
+              <div class="food-nutrient"><div class="food-nutrient-value">${formatNutrient(f[key],key==='cal'?0:1)}<span class="food-nutrient-unit"> ${unit}</span></div><div class="food-nutrient-label">${label}</div></div>
+            `).join('')}
+          </div>
           ${f.ingredients?`<div class="food-ingredients">Ingredients: ${escapeHtml(f.ingredients)}</div>`:''}
         </div>
         <div class="food-row-controls">
-          <div class="food-cal-badge">${f.cal} kcal</div>
           <button class="btn-icon" aria-label="Edit ${escapeHtml(f.name)}" ${state._savingFoods?'disabled':''} onclick="event.stopPropagation();window._editFood('${f.id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 3l5 5L8 21H3v-5zM13 6l5 5"/></svg></button>
           <button class="btn-icon" aria-label="Delete ${escapeHtml(f.name)}" ${state._savingFoods?'disabled':''} onclick="event.stopPropagation();window._deleteFood('${f.id}')">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>

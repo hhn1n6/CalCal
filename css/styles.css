@@ -141,18 +141,28 @@
   .list-tabs::-webkit-scrollbar { display: none; }
   .list-tab { flex-shrink: 0; padding: 6px 14px; border-radius: 99px; border: 1.5px solid var(--border); font-size: 13px; cursor: pointer; background: var(--surface2); color: var(--text2); transition: all .2s; -webkit-tap-highlight-color: transparent; white-space: nowrap; }
   .list-tab.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
-  .food-item-wrap { position: relative; overflow: hidden; border-radius: var(--radius-sm); margin-bottom: 8px; }
-  .food-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; background: var(--surface2); border-radius: var(--radius-sm); border: 1px solid var(--border); cursor: pointer; -webkit-tap-highlight-color: transparent; }
-  .food-item:active { background: var(--surface); }
+  .food-item-wrap { position: relative; border-bottom: 1px solid var(--border); }
+  .food-item-wrap:first-child { border-top: 1px solid var(--border); }
+  .food-item { display: flex; align-items: center; gap: 16px; padding: 14px 0; background: transparent; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .food-item:active { background: var(--surface2); }
   .food-name { font-size: 14px; font-weight: 500; }
-  .food-macros { font-size: 11px; color: var(--text2); margin-top: 2px; }
-  .food-cal-badge { font-size: 13px; font-weight: 600; color: var(--accent); }
+  .food-nutrition { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 8px; }
+  .food-nutrient { min-width: 0; text-align: center; padding: 0 4px; }
+  .food-nutrient + .food-nutrient { border-left: 1px solid var(--border); }
+  .food-nutrient-value { font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .food-nutrient-unit { font-weight: 400; }
+  .food-nutrient-label { font-size: 11px; color: var(--text2); margin-top: 3px; }
   .food-details { min-width: 0; flex: 1; }
   .food-name, .food-ingredients { overflow-wrap: anywhere; }
   .food-ingredients { font-size: 12px; color: var(--text2); margin-top: 5px; }
-  .food-row-controls { display:flex; align-items:center; flex-wrap:wrap; justify-content:flex-end; gap:2px; flex-shrink:0; width:108px; margin-left:8px; }
-  .food-row-controls .food-cal-badge { width:100%; text-align:right; margin-bottom:2px; }
+  .food-row-controls { display:flex; align-items:center; justify-content:flex-end; gap:2px; flex-shrink:0; }
   .food-row-controls .btn-icon { width:34px; height:40px; justify-content:center; }
+  @media (max-width: 400px) {
+    .food-item { gap: 8px; }
+    .food-row-controls .btn-icon { width: 28px; }
+    .food-nutrient { padding: 0 2px; }
+    .food-nutrient-value { font-size: 11px; }
+  }
   .food-drag-handle { touch-action:none; cursor:grab; font-size:20px; user-select:none; }
   .food-drag-handle:active { cursor:grabbing; }
   .food-dragging { opacity:.45; }
