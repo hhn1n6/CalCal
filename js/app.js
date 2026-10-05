@@ -184,6 +184,7 @@ function renderHome(){
     </div>`).join('');
 }
 window._deleteLog=(date,idx)=>{ state.logs[date].splice(idx,1); saveDayDoc(date); renderHome(); };
+window.openDiaryModal=()=>{renderHome();openModal('modal-diary');};
 
 // ── RENDER FOOD LISTS ─────────────────────────────────────
 function renderFoodLists(){
