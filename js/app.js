@@ -1,5 +1,5 @@
 import { db, doc, getDoc, setDoc, onSnapshot, writeBatch } from './firebase.js?v=1.0.36';
-import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js';
+import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
 
 // ── STATE ────────────────────────────────────────────────
 let state = {
@@ -199,7 +199,7 @@ function renderFoodLists(){
           <div class="food-name">${escapeHtml(f.name)}</div>
           <div class="food-nutrition">
             ${[['cal','kcal','Calories'],['protein','g','Protein'],['carbs','g','Carbs'],['fat','g','Fat']].map(([key,unit,label])=>`
-              <div class="food-nutrient"><div class="food-nutrient-value">${formatNutrient(f[key],key==='cal'?0:1)}<span class="food-nutrient-unit"> ${unit}</span></div><div class="food-nutrient-label">${label}</div></div>
+              <div class="food-nutrient"><div class="food-nutrient-value">${formatNutrient(f[key]??0)}<span class="food-nutrient-unit"> ${unit}</span></div><div class="food-nutrient-label">${label}</div></div>
             `).join('')}
           </div>
           ${f.ingredients?`<div class="food-ingredients">Ingredients: ${escapeHtml(f.ingredients)}</div>`:''}
@@ -453,7 +453,7 @@ window._openServe=id=>{
   const f=state.foods.find(x=>x.id===id); if(!f)return;
   state._serveFood=f;
   document.getElementById('serve-food-name').textContent=f.name;
-  document.getElementById('serve-food-info').textContent=`Per serving (1x): ${f.cal} kcal · Protein ${formatNutrient(f.protein)}g · Carbs ${formatNutrient(f.carbs)}g · Fat ${formatNutrient(f.fat)}g (— means unavailable)`;
+  document.getElementById('serve-food-info').textContent=`Per serving (1x): ${formatNutrient(f.cal)} kcal · Protein ${formatNutrient(f.protein)}g · Carbs ${formatNutrient(f.carbs)}g · Fat ${formatNutrient(f.fat)}g (— means unavailable)`;
   document.getElementById('serve-qty').value=1;
   updateServePreview();
   openModal('modal-serve');
@@ -595,10 +595,10 @@ window.handlePhotoUpload=evt=>{
         <div style="margin-bottom:8px;font-weight:600;font-size:15px;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle"><circle cx="12" cy="12" r="6"/><path d="M2 3v6m3-6v6M2 6h3M3.5 9v12M21 3v18M21 3c-4 3-4 8 0 8"/></svg> ${_parsedFood.name}</div>
         <div style="color:var(--text2);font-size:12px;margin-bottom:12px;">${_parsedFood.description||''}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <div style="background:var(--accent-soft);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--accent)">${_parsedFood.cal}</div><div style="font-size:11px;color:var(--text2)">Calories/100g</div></div>
-          <div style="background:var(--green-soft);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--green)">${_parsedFood.protein}g</div><div style="font-size:11px;color:var(--text2)">Protein/100g</div></div>
-          <div style="background:var(--yellow-soft);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--yellow)">${_parsedFood.carbs}g</div><div style="font-size:11px;color:var(--text2)">Carbs/100g</div></div>
-          <div style="background:var(--orange-soft);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--orange)">${_parsedFood.fat}g</div><div style="font-size:11px;color:var(--text2)">Fat/100g</div></div>
+          <div style="background:var(--accent-soft);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--accent)">${formatNutrient(_parsedFood.cal)}</div><div style="font-size:11px;color:var(--text2)">Calories/100g</div></div>
+          <div style="background:var(--green-soft);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--green)">${formatNutrient(_parsedFood.protein)}g</div><div style="font-size:11px;color:var(--text2)">Protein/100g</div></div>
+          <div style="background:var(--yellow-soft);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--yellow)">${formatNutrient(_parsedFood.carbs)}g</div><div style="font-size:11px;color:var(--text2)">Carbs/100g</div></div>
+          <div style="background:var(--orange-soft);border-radius:8px;padding:8px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--orange)">${formatNutrient(_parsedFood.fat)}g</div><div style="font-size:11px;color:var(--text2)">Fat/100g</div></div>
         </div>
         <div style="margin-top:10px;font-size:11px;color:var(--text3);">Confidence: ${_parsedFood.confidence==='high'?'High':_parsedFood.confidence==='medium'?'Medium':'Low'}</div>`;
       action.style.display='';

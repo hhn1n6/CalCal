@@ -3,7 +3,7 @@ export function scaleNutrient(value, quantity) {
   return typeof value === 'number' && Number.isFinite(value) ? value * quantity : null;
 }
 
-export function formatNutrient(value, digits = 1) {
+export function formatNutrient(value, digits = 0) {
   return typeof value === 'number' && Number.isFinite(value) ? value.toFixed(digits) : '—';
 }
 
