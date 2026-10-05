@@ -83,7 +83,8 @@
   .page.active { display: block; }
   .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
   #page-lists { padding-top: 0; }
-  #page-lists > .page-header { position: sticky; top: 0; z-index: 10; margin: 0 -16px 20px; padding: 16px; background: var(--bg); border-bottom: 1px solid var(--border); }
+  #page-lists > .page-header { position: sticky; top: 0; z-index: 10; margin: 0 -16px 20px; padding: 16px; background: var(--bg); }
+  #page-lists > .page-header::after { content: ''; position: absolute; top: 100%; left: 0; right: 0; height: 16px; background: linear-gradient(to bottom, var(--bg), transparent); pointer-events: none; }
   .page-title { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
 
   /* CARDS */
