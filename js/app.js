@@ -114,7 +114,7 @@ function renderHome(){
   document.getElementById('ring-goal-lbl').textContent = `kcal ${caloriesLeft<0?'over':'left'}`;
   const pct=g.cal>0?Math.max(0,Math.min(1,caloriesLeft/g.cal)):0, circ=2*Math.PI*57;
   document.getElementById('ring-cal').style.strokeDashoffset = circ - circ*pct;
-  document.getElementById('ring-cal').style.stroke = caloriesLeft<0?'var(--red)':'var(--calorie-ring)';
+  document.getElementById('ring-cal').style.stroke = caloriesLeft<0?'var(--red)':'url(#calorie-gradient)';
 
   // Macros
   const setBar=(id,val,goal,color)=>{

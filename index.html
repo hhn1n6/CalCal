@@ -7,18 +7,18 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CalCal">
 <meta name="theme-color" content="#ffffff">
-<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.0.62">
-<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.0.62">
-<link rel="manifest" href="./manifest.webmanifest?v=1.0.62">
+<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.0.63">
+<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.0.63">
+<link rel="manifest" href="./manifest.webmanifest?v=1.0.63">
 <title>CalCal Food Tracker</title>
-<link rel="stylesheet" href="./css/colors.css?v=1.0.62">
-<link rel="stylesheet" href="./css/styles.css?v=1.0.62">
+<link rel="stylesheet" href="./css/colors.css?v=1.0.63">
+<link rel="stylesheet" href="./css/styles.css?v=1.0.63">
 </head>
 <body>
 
 <!-- Loading -->
 <div id="loading-screen">
-  <img class="loading-logo" src="./assets/calcal-logo.png?v=1.0.62" width="280" height="280" alt="CalCal">
+  <img class="loading-logo" src="./assets/calcal-logo.png?v=1.0.63" width="280" height="280" alt="CalCal">
   <p role="status"></p>
 </div>
 
@@ -27,9 +27,9 @@
   <div class="page-header home-header">
     <div>
       <div class="page-title"><span id="home-ddmm"></span></div>
-      <div style="font-size:11px;color:var(--text3);margin-top:3px;">v1.0.62</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:3px;">v1.0.63</div>
     </div>
-    <img class="home-header-logo" src="./assets/home-logo.png?v=1.0.62" width="120" height="60" alt="CalCal">
+    <img class="home-header-logo" src="./assets/home-logo.png?v=1.0.63" width="120" height="60" alt="CalCal">
     <button class="btn btn-primary btn-sm" onclick="openGoalModal()">Goals</button>
   </div>
 
@@ -40,8 +40,14 @@
     </div>
     <div class="ring-wrap">
       <svg width="140" height="140" viewBox="0 0 140 140">
+        <defs>
+          <linearGradient id="calorie-gradient" gradientUnits="userSpaceOnUse" x1="70" y1="127" x2="70" y2="13">
+            <stop offset="0%" stop-color="var(--water-start)"/>
+            <stop offset="100%" stop-color="var(--accent2)"/>
+          </linearGradient>
+        </defs>
         <circle class="ring-bg" cx="70" cy="70" r="57"/>
-        <circle id="ring-cal" class="ring-fg" cx="70" cy="70" r="57" stroke="var(--calorie-ring)" stroke-dasharray="358.14" stroke-dashoffset="358.14"/>
+        <circle id="ring-cal" class="ring-fg" cx="70" cy="70" r="57" stroke="url(#calorie-gradient)" stroke-dasharray="358.14" stroke-dashoffset="358.14"/>
       </svg>
       <div class="ring-label">
         <div id="ring-consumed-big" class="ring-cal">—</div>
@@ -261,6 +267,6 @@
 </nav>
 
 <!-- Firebase SDK -->
-<script type="module" src="./js/app.js?v=1.0.62"></script>
+<script type="module" src="./js/app.js?v=1.0.63"></script>
 </body>
 </html>
