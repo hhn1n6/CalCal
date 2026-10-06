@@ -131,19 +131,8 @@
 
   /* WATER */
   .water-bar-wrap { margin-bottom: 12px; }
-  .water-bar-track { height: 20px; background: var(--surface2); border-radius: 99px; overflow: hidden; margin-top: 6px; }
-  .water-bar-fill {
-    height: 100%; background: linear-gradient(90deg, var(--water-start), var(--accent2)); border-radius: 99px; transition: width .4s ease;
-    --water-wave-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='20' viewBox='0 0 80 20'%3E%3Cpath d='M0 7 C20 -2 20 -2 40 7 S60 16 80 7 V20 H0 Z' fill='white'/%3E%3C/svg%3E");
-    -webkit-mask-image: var(--water-wave-mask); mask-image: var(--water-wave-mask);
-    -webkit-mask-size: 80px 100%; mask-size: 80px 100%;
-    -webkit-mask-repeat: repeat-x; mask-repeat: repeat-x;
-    animation: water-surface 2.5s linear infinite;
-  }
-  @keyframes water-surface {
-    from { -webkit-mask-position: 0 0; mask-position: 0 0; }
-    to { -webkit-mask-position: -80px 0; mask-position: -80px 0; }
-  }
+  .water-bar-track { height: 10px; background: var(--surface2); border-radius: 99px; overflow: hidden; margin-top: 6px; }
+  .water-bar-fill { height: 100%; background: linear-gradient(90deg, var(--water-start), var(--accent2)); border-radius: 99px; transition: width .4s ease; }
   .water-nums { display: flex; justify-content: space-between; align-items: baseline; }
   .water-consumed-big { font-size: 28px; font-weight: 700; color: var(--accent2); }
   .water-goal-txt { font-size: 12px; color: var(--text2); }
