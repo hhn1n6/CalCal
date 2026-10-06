@@ -107,23 +107,25 @@ function renderHome(){
   document.getElementById('home-ddmm').textContent=`${_dd}/${_mm}/${_now.getFullYear()}`;
 
   // Ring
-  const caloriesLeft=g.cal-t.cal;
+  // Subtract the same whole-number total shown in the diary, so the
+  // displayed intake and remaining amount always add up to the goal.
+  const caloriesLeft=Math.round(g.cal)-Math.round(t.cal);
   document.getElementById('ring-consumed-big').textContent = Math.round(Math.abs(caloriesLeft));
-  document.getElementById('ring-goal-lbl').textContent = `${t.missing.cal?'Estimated ':''}kcal ${caloriesLeft<0?'over':'left'}`;
+  document.getElementById('ring-goal-lbl').textContent = `kcal ${caloriesLeft<0?'over':'left'}`;
   const pct=g.cal>0?Math.max(0,Math.min(1,caloriesLeft/g.cal)):0, circ=2*Math.PI*57;
   document.getElementById('ring-cal').style.strokeDashoffset = circ - circ*pct;
-  document.getElementById('ring-cal').style.stroke = t.cal>g.cal?'var(--red)':'var(--accent)';
+  document.getElementById('ring-cal').style.stroke = caloriesLeft<0?'var(--red)':'var(--accent)';
 
   // Macros
   const setBar=(id,val,goal,color)=>{
-    const left=goal-val;
+    const left=Math.round(goal)-Math.round(val);
     const p=goal>0?Math.max(0,Math.min(100,left/goal*100)):0;
     document.getElementById('bar-'+id).style.width=p+'%';
-    document.getElementById('bar-'+id).style.background=val>goal?'var(--red)':color;
+    document.getElementById('bar-'+id).style.background=left<0?'var(--red)':color;
     const label=document.getElementById('lbl-'+id);
-    label.innerHTML=`${t.missing[id]?'Estimated ':''}<strong>${Math.round(Math.abs(left))}</strong>g ${left<0?'over':'left'}`;
+    label.innerHTML=`<strong>${Math.abs(left)}</strong>g ${left<0?'over':'left'}`;
     label.classList.toggle('nutrition-over',left<0);
-    label.title=t.missing[id]?'Some foods are missing this nutrient. Remaining amounts use only known intake.':'';
+    label.title='';
   };
   setBar('protein',t.protein,g.protein,'var(--green)');
   setBar('carbs',t.carbs,g.carbs,'var(--yellow)');
