@@ -127,9 +127,9 @@ function renderHome(){
     label.classList.toggle('nutrition-over',left<0);
     label.title='';
   };
-  setBar('protein',t.protein,g.protein,'var(--green)');
-  setBar('carbs',t.carbs,g.carbs,'var(--yellow)');
-  setBar('fat',t.fat,g.fat,'var(--orange)');
+  setBar('protein',t.protein,g.protein,'var(--protein-bar)');
+  setBar('carbs',t.carbs,g.carbs,'var(--carbs-bar)');
+  setBar('fat',t.fat,g.fat,'var(--fat-bar)');
 
   // Water
   const wGoal=g.waterMl||2000, wCon=state.water[date]||0;
