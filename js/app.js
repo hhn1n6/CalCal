@@ -98,6 +98,15 @@ function todayTotals(date){
 }
 
 // ── RENDER HOME ──────────────────────────────────────────
+function syncHomeBackgroundBlur(){
+  const home=document.getElementById('page-home');
+  const image=document.querySelector('.home-footer-art img');
+  if(!home || !image) return;
+  const scrollRange=home.scrollHeight-home.clientHeight;
+  const progress=scrollRange>0?Math.max(0,Math.min(1,home.scrollTop/scrollRange)):0;
+  image.style.filter=`blur(${(8*(1-progress)).toFixed(2)}px)`;
+}
+
 function syncHomeBackgroundSpace(){
   const home=document.getElementById('page-home');
   const image=document.querySelector('.home-footer-art img');
@@ -114,7 +123,9 @@ function syncHomeBackgroundSpace(){
   const cardMargin=parseFloat(getComputedStyle(lastCard).marginBottom)||0;
   // At the scroll limit, leave exactly one picture-height below the last card.
   spacer.style.height=Math.max(0,pictureHeight+pageBounds.bottom-navTop-bottomPadding-cardMargin)+'px';
+  syncHomeBackgroundBlur();
 }
+document.getElementById('page-home')?.addEventListener('scroll',syncHomeBackgroundBlur,{passive:true});
 window.addEventListener('resize',syncHomeBackgroundSpace);
 window.visualViewport?.addEventListener('resize',syncHomeBackgroundSpace);
 document.querySelector('.home-footer-art img')?.addEventListener('load',syncHomeBackgroundSpace);
