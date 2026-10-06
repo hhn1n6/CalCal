@@ -6,8 +6,6 @@
     --nav-base-height: 64px;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  /* Let the homepage extend into the iPhone's top inset. Other pages keep it. */
-  :root:has(#page-home.active) { padding-top: 0; }
 
   html,
   body {
