@@ -121,7 +121,7 @@ function renderHome(){
     const left=Math.round(goal)-Math.round(val);
     const p=goal>0?Math.max(0,Math.min(100,left/goal*100)):0;
     document.getElementById('bar-'+id).style.width=p+'%';
-    document.getElementById('bar-'+id).style.background=left<0?'var(--red)':color;
+    document.getElementById('bar-'+id).style.background=color;
     const label=document.getElementById('lbl-'+id);
     label.innerHTML=`<strong>${Math.abs(left)}</strong>g ${left<0?'over':'left'}`;
     label.classList.toggle('nutrition-over',left<0);
