@@ -645,9 +645,9 @@ document.getElementById('water-input').addEventListener('keydown',e=>{ if(e.key=
 
 setSyncStatus('loading');
 loadFromFirebase().then(()=>{
-  document.getElementById('loading-screen').style.display='none';
   renderHome();
   renderFoodLists();
+  document.getElementById('loading-screen').classList.add('loaded');
 }).catch(err=>{
   setSyncStatus('err');
   document.getElementById('loading-screen').querySelector('p').textContent='Connection failed. Please check your network.';
