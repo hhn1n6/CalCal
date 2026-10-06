@@ -98,8 +98,30 @@ function todayTotals(date){
 }
 
 // ── RENDER HOME ──────────────────────────────────────────
+function syncHomeBackgroundSpace(){
+  const home=document.getElementById('page-home');
+  const image=document.querySelector('.home-footer-art img');
+  const nav=document.querySelector('.nav');
+  const spacer=document.getElementById('home-background-spacer');
+  const cards=Array.from(document.querySelectorAll('#page-home > .card'));
+  const lastCard=cards.at(-1);
+  if(!home?.getBoundingClientRect || !image || !nav || !spacer || !lastCard) return;
+  const pageBounds=home.getBoundingClientRect();
+  if(!pageBounds.height) return;
+  const pictureHeight=image.getBoundingClientRect().height;
+  const navTop=nav.getBoundingClientRect().top;
+  const bottomPadding=parseFloat(getComputedStyle(home).paddingBottom)||0;
+  const cardMargin=parseFloat(getComputedStyle(lastCard).marginBottom)||0;
+  // At the scroll limit, leave exactly one picture-height below the last card.
+  spacer.style.height=Math.max(0,pictureHeight+pageBounds.bottom-navTop-bottomPadding-cardMargin)+'px';
+}
+window.addEventListener('resize',syncHomeBackgroundSpace);
+window.visualViewport?.addEventListener('resize',syncHomeBackgroundSpace);
+document.querySelector('.home-footer-art img')?.addEventListener('load',syncHomeBackgroundSpace);
+
 function renderHome(){
   renderWeightChart();
+  syncHomeBackgroundSpace();
   const date=TODAY(), t=todayTotals(date), g=state.goals;
   const _now=new Date();
   const _dd=String(_now.getDate()).padStart(2,'0');
