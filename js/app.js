@@ -25,7 +25,7 @@ const TODAY = () => {
   return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
 };
 const syncDot = document.getElementById('sync-dot');
-function setSyncStatus(s){ syncDot.className = s; }
+function setSyncStatus(s){ if(syncDot) syncDot.className = s; }
 
 // ── FIREBASE HELPERS ─────────────────────────────────────
 const REF = {

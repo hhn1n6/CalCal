@@ -83,12 +83,9 @@
   .page.active { display: block; }
   .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
   .home-header { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; }
-  .home-header-logo { display: block; width: clamp(64px, 20vw, 120px); height: auto; justify-self: center; }
+  .home-header-logo { display: block; width: clamp(64px, 20vw, 120px); height: auto; aspect-ratio: 2 / 1; object-fit: cover; justify-self: center; }
   .home-header > .btn { justify-self: end; }
-  .home-header .page-title { white-space: nowrap; }
-  @media (max-width: 400px) {
-    .home-header .page-title { font-size: 20px; }
-  }
+  .home-header .page-title { white-space: nowrap; font-size: 18px; }
   #page-lists { padding-top: 0; }
   #page-lists > .page-header { position: sticky; top: 0; z-index: 10; margin: 0 -16px 20px; padding: 8px 16px; background: var(--bg); }
   #page-lists > .page-header::after { content: ''; position: absolute; top: 100%; left: 0; right: 0; height: 16px; background: linear-gradient(to bottom, var(--bg), transparent); pointer-events: none; }
@@ -253,10 +250,6 @@
   .badge-over { background: var(--danger-soft); color: var(--red); }
 
   /* SYNC STATUS */
-  #sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text3); display: inline-block; margin-left: 6px; vertical-align: middle; transition: background .3s; }
-  #sync-dot.ok { background: var(--green); }
-  #sync-dot.err { background: var(--red); }
-  #sync-dot.loading { background: var(--yellow); animation: pulse 1s infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 
   /* LOADING SCREEN */
