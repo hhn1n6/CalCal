@@ -82,6 +82,13 @@
   }
   .page.active { display: block; }
   .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .home-header { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; }
+  .home-header-logo { display: block; width: clamp(64px, 20vw, 120px); height: auto; justify-self: center; }
+  .home-header > .btn { justify-self: end; }
+  .home-header .page-title { white-space: nowrap; }
+  @media (max-width: 400px) {
+    .home-header .page-title { font-size: 20px; }
+  }
   #page-lists { padding-top: 0; }
   #page-lists > .page-header { position: sticky; top: 0; z-index: 10; margin: 0 -16px 20px; padding: 8px 16px; background: var(--bg); }
   #page-lists > .page-header::after { content: ''; position: absolute; top: 100%; left: 0; right: 0; height: 16px; background: linear-gradient(to bottom, var(--bg), transparent); pointer-events: none; }
