@@ -26,9 +26,9 @@
   --yellow-soft: #E6E6E6;
   --red: #000000;
   --nutrition-over: #620607;
-  --protein-bar: #b59d82;
-  --carbs-bar: #66667a;
-  --fat-bar: #5b6e5d;
+  --protein-bar: #000000;
+  --carbs-bar: #000000;
+  --fat-bar: #000000;
   --danger-soft: #E6E6E6;
   --on-accent: #FFFFFF;
   --overlay: rgba(0, 0, 0, .4);
