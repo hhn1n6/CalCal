@@ -80,7 +80,7 @@
   .nav-btn { position: relative; display: flex; align-items: center; justify-content: center; width: 64px; height: 46px; border-radius: 20px; border: none; background: none; color: var(--text2); cursor: pointer; transition: color .2s; -webkit-tap-highlight-color: transparent; }
   .nav-btn.active { color: var(--accent); }
   .nav-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .nav-btn img { display: block; width: 30px; height: 30px; object-fit: contain; }
+  .nav-btn img { display: block; width: 24px; height: 24px; object-fit: contain; }
 
   /* PAGES */
   .page {
