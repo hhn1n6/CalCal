@@ -108,6 +108,10 @@
   #earth-background { display: none; position: absolute; left: -32px; top: -32px; width: calc(100% + 64px); height: calc(100% + 64px); filter: blur(8px); opacity: 0.2; }
   .home-footer-art.earth-ready #earth-background { display: block; }
   .home-footer-art.earth-ready img { display: none; }
+  /* Extend the artwork beneath the home-indicator area in installed PWAs. */
+  @media (display-mode: standalone) {
+    .home-footer-art { bottom: calc(-1 * env(safe-area-inset-bottom, 0px)); }
+  }
   .earth-location-status { color: var(--text2); font-size: 14px; line-height: 1.5; margin-bottom: 16px; }
   .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
   .home-header { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; }
