@@ -108,11 +108,13 @@
   #earth-background { display: none; position: absolute; left: -32px; top: -32px; width: calc(100% + 64px); height: calc(100% + 64px); filter: blur(8px); opacity: 0.2; }
   .home-footer-art.earth-ready #earth-background { display: block; }
   .home-footer-art.earth-ready img { display: none; }
-  /* Installed apps fill the viewport directly, without a vh-based root height. */
+  /* Avoid fixed-root and dvh sizing issues in iOS standalone mode. */
   @media (display-mode: standalone) {
-    html { height: 100%; }
-    body { position: fixed; inset: 0; height: auto; }
+    html, body { height: 100vh; min-height: 100vh; }
   }
+  .display-check { margin-top: 12px; font-size: 14px; }
+  .display-check summary { cursor: pointer; }
+  .display-check pre { margin-top: 12px; font-size: 12px; line-height: 1.6; white-space: pre-wrap; }
   .earth-location-status { color: var(--text2); font-size: 14px; line-height: 1.5; margin-bottom: 16px; }
   .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
   .home-header { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; }
