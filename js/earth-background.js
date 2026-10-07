@@ -35,6 +35,7 @@ varying vec2 uv;
 uniform vec2 resolution;
 uniform vec2 viewport;
 uniform float overscan;
+uniform float dotSpacing;
 uniform vec3 center, east, north, sun;
 uniform sampler2D dayMap, nightMap;
 void main(){
@@ -59,7 +60,12 @@ void main(){
   vec3 night=texture2D(dayMap,mapUV).rgb*.045+texture2D(nightMap,mapUV).rgb*.85;
   vec3 color=mix(night,day,daylight);
   float grey=dot(color,vec3(.2126,.7152,.0722));
-  gl_FragColor=vec4(vec3(grey),1.-smoothstep(.998,1.,closestSquared));
+  // Diagonal halftone printing dots grow with the darkness of the surface.
+  vec2 grid=vec2(gl_FragCoord.x+gl_FragCoord.y,gl_FragCoord.y-gl_FragCoord.x)*.70710678/dotSpacing;
+  float dotDistance=length(fract(grid)-.5);
+  float dotRadius=sqrt(1.-clamp(grey*1.35+.08,0.,1.))*.70;
+  float ink=1.-smoothstep(dotRadius-.7/dotSpacing,dotRadius+.7/dotSpacing,dotDistance);
+  gl_FragColor=vec4(vec3(1.-ink),1.-smoothstep(.998,1.,closestSquared));
 }`;
 
 function shader(type,source){
@@ -82,6 +88,7 @@ function render(){
   const view=artwork.getBoundingClientRect();
   gl.uniform2f(gl.getUniformLocation(program,'viewport'),view.width*scale,view.height*scale);
   gl.uniform1f(gl.getUniformLocation(program,'overscan'),32*scale);
+  gl.uniform1f(gl.getUniformLocation(program,'dotSpacing'),6*scale);
   const lat=radians(location.latitude),lon=radians(location.longitude);
   setVector('center',[Math.cos(lat)*Math.cos(lon),Math.sin(lat),Math.cos(lat)*Math.sin(lon)]);
   setVector('east',[-Math.sin(lon),0,Math.cos(lon)]);
