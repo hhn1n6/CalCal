@@ -515,7 +515,7 @@ window.confirmServe=async()=>{
     time:new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),
   });
   await saveDayDoc(date); closeModal('modal-serve');
-  switchPage('home',document.querySelector('[data-page="home"]')); renderHome();
+  renderHome();
 };
 
 // ── WEIGHT ────────────────────────────────────────────────
