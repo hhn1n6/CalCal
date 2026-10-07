@@ -36,12 +36,12 @@ uniform vec2 resolution;
 uniform vec3 center, east, north, sun;
 uniform sampler2D dayMap, nightMap;
 void main(){
-  vec2 p=(uv-vec2(.5,.38))*resolution/(resolution.x*.70);
+  vec2 p=(uv-vec2(.5,.38))*resolution/(resolution.x*.95);
   float distanceToCenter=length(p);
   if(distanceToCenter>1.04){ gl_FragColor=vec4(0.); return; }
   if(distanceToCenter>1.){
     float glow=1.-smoothstep(1.,1.04,distanceToCenter);
-    gl_FragColor=vec4(.3,.6,.85,glow*.28); return;
+    gl_FragColor=vec4(vec3(.72),glow*.28); return;
   }
   vec3 normal=normalize(p.x*east+p.y*north+sqrt(max(0.,1.-dot(p,p)))*center);
   vec2 mapUV=vec2(atan(normal.z,normal.x)/6.2831853+.5,acos(clamp(normal.y,-1.,1.))/3.14159265);
@@ -52,7 +52,8 @@ void main(){
   vec3 color=mix(night,day,daylight);
   float rim=pow(distanceToCenter,12.);
   color+=vec3(.10,.30,.48)*rim*(.18+.55*daylight);
-  gl_FragColor=vec4(color,1.-smoothstep(.995,1.,distanceToCenter));
+  float grey=dot(color,vec3(.2126,.7152,.0722));
+  gl_FragColor=vec4(vec3(grey),1.-smoothstep(.995,1.,distanceToCenter));
 }`;
 
 function shader(type,source){
