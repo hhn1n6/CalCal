@@ -81,6 +81,8 @@
   .nav-btn.active { color: var(--accent); }
   .nav-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .nav-btn img { display: block; width: 24px; height: 24px; object-fit: contain; }
+  .nav-btn .nav-icon-bold, .nav-btn.active .nav-icon-regular { display: none; }
+  .nav-btn.active .nav-icon-bold { display: block; }
 
   /* PAGES */
   .page {
