@@ -39,8 +39,8 @@
   /* NAV */
   .nav {
     position: fixed;
-    left: 16px;
-    right: 16px;
+    left: 0;
+    right: 0;
     bottom: var(--nav-bottom-gap);
     z-index: 50;
 
@@ -48,8 +48,8 @@
     justify-content: space-around;
     align-items: center;
 
-    width: calc(100% - 32px);
-    max-width: 480px;
+    width: calc(100% - 64px);
+    max-width: 320px;
     height: var(--nav-base-height);
     margin: 0 auto;
 
@@ -80,7 +80,7 @@
   .nav-btn { position: relative; display: flex; align-items: center; justify-content: center; width: 64px; height: 46px; border-radius: 23px; border: none; background: none; color: var(--text2); cursor: pointer; transition: color .2s; -webkit-tap-highlight-color: transparent; }
   .nav-btn.active { color: var(--accent); }
   .nav-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .nav-btn svg { width: 24px; height: 24px; }
+  .nav-btn svg { width: 30px; height: 30px; }
 
   /* PAGES */
   .page {
