@@ -67,8 +67,8 @@
     transform: translateY(0);
     transition: transform .18s ease;
   }
-  .nav::before { content: ''; position: absolute; top: 6px; left: calc(6px + (100% - 12px) / 6 - 32px); width: 64px; height: 46px; border-radius: 23px; background: linear-gradient(145deg, rgba(255, 255, 255, 0.85), rgba(238, 238, 238, 0.65)); border: 1px solid rgba(255, 255, 255, 0.65); pointer-events: none; transition: left 420ms cubic-bezier(.22, 1.12, .36, 1); }
-  .nav.liquid-moving::before { animation: nav-liquid-settle 520ms ease-out; }
+  .nav::before { content: ''; position: absolute; top: 6px; left: calc(6px + (100% - 12px) / 6 - 32px); width: 64px; height: 46px; border-radius: 23px; background: #EEEEEE; pointer-events: none; transition: left 240ms cubic-bezier(.22, 1.12, .36, 1); }
+  .nav.liquid-moving::before { animation: nav-liquid-settle 300ms ease-out; }
   @keyframes nav-liquid-settle {
     0%, 100% { transform: scale(1, 1); }
     28% { transform: scale(1.22, .87); }
