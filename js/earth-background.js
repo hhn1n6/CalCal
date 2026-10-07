@@ -131,6 +131,8 @@ document.getElementById('earth-reset-location').addEventListener('click',()=>{
 canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();ready=false;artwork.classList.remove('earth-ready');window.dispatchEvent(new Event('earth-background-change'));});
 canvas.addEventListener('webglcontextrestored',initialize);
 window.addEventListener('resize',render);
+window.visualViewport?.addEventListener('resize',render);
+window.addEventListener('pageshow',render);
 document.addEventListener('visibilitychange',render);
 new MutationObserver(render).observe(home,{attributes:true,attributeFilter:['class']});
 setInterval(render,5*60*1000);

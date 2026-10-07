@@ -26,12 +26,14 @@
 
   button, input, select, textarea { font-family: inherit; }
 
+  html { height: 100vh; height: 100dvh; }
+
   body {
     display: flex;
     flex-direction: column;
 
-    min-height: 95dvh;
-    height: 95dvh;
+    min-height: 0;
+    height: 100%;
   }
 
   body { display: flex; flex-direction: column; }
