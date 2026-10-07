@@ -67,7 +67,7 @@
     transform: translateY(0);
     transition: transform .18s ease;
   }
-  .nav::before { content: ''; position: absolute; top: 6px; left: calc(6px + (100% - 12px) / 6 - 32px); width: 64px; height: 46px; border-radius: 23px; background: rgba(255, 255, 255, 0.75); box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.18), inset 0 0 2px rgba(0, 0, 0, 0.12); pointer-events: none; transition: left 320ms cubic-bezier(.22, 1, .36, 1); }
+  .nav::before { content: ''; position: absolute; top: 6px; left: calc(6px + (100% - 12px) / 6 - 32px); width: 64px; height: 46px; border-radius: 23px; background: #EEEEEE; pointer-events: none; transition: left 320ms cubic-bezier(.22, 1, .36, 1); }
   .nav:has([data-page="lists"].active)::before { left: calc(50% - 32px); }
   .nav:has([data-page="ai"].active)::before { left: calc(100% - 6px - (100% - 12px) / 6 - 32px); }
   .nav-btn { position: relative; display: flex; align-items: center; justify-content: center; width: 64px; height: 46px; border-radius: 23px; border: none; background: none; color: var(--text2); cursor: pointer; transition: color .2s; -webkit-tap-highlight-color: transparent; }
