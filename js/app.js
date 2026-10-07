@@ -657,6 +657,14 @@ window._logAiDirect=async()=>{
 
 // ── NAV ───────────────────────────────────────────────────
 window.switchPage=(name,btn)=>{
+  const previousPage=document.querySelector('.page.active')?.id;
+  const nav=document.querySelector('.nav');
+  if(previousPage!==`page-${name}` && typeof nav?.offsetWidth==='number'){
+    nav.classList.remove('liquid-moving');
+    // Restart the stretch when switching again before the last motion finishes.
+    void nav.offsetWidth;
+    nav.classList.add('liquid-moving');
+  }
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
