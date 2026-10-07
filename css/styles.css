@@ -99,8 +99,9 @@
     -webkit-overflow-scrolling: touch;
   }
   .page.active { display: block; }
-  #page-home { background: var(--bg); }
-  .home-footer-art { position: fixed; left: 0; right: 0; bottom: 0; margin: 0; z-index: -1; pointer-events: none; aspect-ratio: 3 / 4; filter: blur(8px); opacity: 0.2; }
+  #page-home { position: relative; z-index: 0; background: var(--bg); }
+  #page-home > .page-header, #page-home > .card { position: relative; z-index: 1; }
+  .home-footer-art { position: fixed; left: 0; right: 0; bottom: 0; margin: 0; z-index: 0; pointer-events: none; aspect-ratio: 3 / 4; }
   .home-footer-art img { display: block; width: 100%; height: 100%; object-fit: cover; }
   #earth-background { display: none; width: 100%; height: 100%; }
   .home-footer-art.earth-ready #earth-background { display: block; }

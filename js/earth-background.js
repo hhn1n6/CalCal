@@ -45,8 +45,7 @@ void main(){
   float along=dot(camera,ray);
   float closestSquared=dot(camera,camera)-along*along;
   if(closestSquared>1.){
-    float glow=1.-smoothstep(1.,1.06,closestSquared);
-    gl_FragColor=vec4(vec3(.72),glow*.28); return;
+    gl_FragColor=vec4(0.); return;
   }
   vec3 surface=normalize(camera+ray*(-along-sqrt(max(0.,1.-closestSquared))));
   vec3 normal=normalize(surface.x*east+surface.y*north+surface.z*center);
@@ -56,9 +55,6 @@ void main(){
   vec3 day=texture2D(dayMap,mapUV).rgb*(.20+.80*max(0.,sunlight));
   vec3 night=texture2D(dayMap,mapUV).rgb*.045+texture2D(nightMap,mapUV).rgb*.85;
   vec3 color=mix(night,day,daylight);
-  float facing=max(0.,dot(surface,-ray));
-  float rim=pow(1.-facing,3.);
-  color+=vec3(.10,.30,.48)*rim*(.18+.55*daylight);
   float grey=dot(color,vec3(.2126,.7152,.0722));
   gl_FragColor=vec4(vec3(grey),1.-smoothstep(.998,1.,closestSquared));
 }`;
@@ -114,7 +110,7 @@ async function initialize(){
   }catch(error){
     ready=false;artwork.classList.remove('earth-ready');
     window.dispatchEvent(new Event('earth-background-change'));
-    status.textContent='Earth is unavailable on this device. The picture background is shown instead.';
+    status.textContent='Earth is unavailable on this device. The background stays white.';
     console.warn('Earth background:',error);
   }
 }

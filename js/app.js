@@ -98,16 +98,6 @@ function todayTotals(date){
 }
 
 // ── RENDER HOME ──────────────────────────────────────────
-function syncHomeBackgroundBlur(){
-  const home=document.getElementById('page-home');
-  const image=document.querySelector('.home-footer-art');
-  if(!home || !image) return;
-  const scrollRange=home.scrollHeight-home.clientHeight;
-  const progress=scrollRange>0?Math.max(0,Math.min(1,home.scrollTop/scrollRange)):0;
-  image.style.filter=`blur(${(8*(1-progress)).toFixed(2)}px)`;
-  image.style.opacity=(0.2+0.8*progress).toFixed(3);
-}
-
 function syncHomeBackgroundSpace(){
   const home=document.getElementById('page-home');
   const image=document.querySelector('.home-footer-art');
@@ -122,11 +112,9 @@ function syncHomeBackgroundSpace(){
   const cardMargin=parseFloat(getComputedStyle(lastCard).marginBottom)||0;
   // The Earth's horizon occupies about .85 widths above the screen bottom.
   // Reveal that visible region, without scrolling through the canvas's empty sky.
-  const revealHeight=image.classList.contains('earth-ready')?Math.min(pictureBounds.height,pictureBounds.width*.85):pictureBounds.height;
+  const revealHeight=image.classList.contains('earth-ready')?Math.min(pictureBounds.height,pictureBounds.width*.85):0;
   spacer.style.height=Math.max(0,revealHeight+pageBounds.bottom-pictureBounds.bottom-bottomPadding-cardMargin)+'px';
-  syncHomeBackgroundBlur();
 }
-document.getElementById('page-home')?.addEventListener('scroll',syncHomeBackgroundBlur,{passive:true});
 window.addEventListener('resize',syncHomeBackgroundSpace);
 window.addEventListener('earth-background-change',syncHomeBackgroundSpace);
 window.visualViewport?.addEventListener('resize',syncHomeBackgroundSpace);
