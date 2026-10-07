@@ -33,10 +33,13 @@ void main(){ uv=position*.5+.5; gl_Position=vec4(position,0.,1.); }`;
 const fragment=`precision mediump float;
 varying vec2 uv;
 uniform vec2 resolution;
+uniform vec2 viewport;
+uniform float overscan;
 uniform vec3 center, east, north, sun;
 uniform sampler2D dayMap, nightMap;
 void main(){
-  vec2 p=(uv-vec2(.5,.38))*resolution/(resolution.x*.95);
+  // Render extra pixels outside the viewport for CSS blur, without zooming the globe.
+  vec2 p=(uv*resolution-vec2(overscan)-viewport*vec2(.5,.38))/(viewport.x*.95);
   // Aim an oblique camera at the selected surface point, rather than the globe's center.
   vec3 camera=vec3(0.,-1.1,2.4);
   vec3 forward=normalize(vec3(0.,0.,1.)-camera);
@@ -76,6 +79,9 @@ function render(){
   if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}
   gl.viewport(0,0,width,height); gl.useProgram(program);
   gl.uniform2f(gl.getUniformLocation(program,'resolution'),width,height);
+  const view=artwork.getBoundingClientRect();
+  gl.uniform2f(gl.getUniformLocation(program,'viewport'),view.width*scale,view.height*scale);
+  gl.uniform1f(gl.getUniformLocation(program,'overscan'),32*scale);
   const lat=radians(location.latitude),lon=radians(location.longitude);
   setVector('center',[Math.cos(lat)*Math.cos(lon),Math.sin(lat),Math.cos(lat)*Math.sin(lon)]);
   setVector('east',[-Math.sin(lon),0,Math.cos(lon)]);
