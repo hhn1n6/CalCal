@@ -74,8 +74,8 @@ function render(){
   if(!ready||document.hidden||!home.classList.contains('active')) return;
   const bounds=canvas.getBoundingClientRect();
   if(!bounds.width||!bounds.height) return;
-  // Cap the backing buffer, even on high-density iPhone screens.
-  const scale=Math.min(window.devicePixelRatio||1,1.5,1200/bounds.width);
+  // Match Retina displays, with a 4K cap rather than allocating 4K on every phone.
+  const scale=Math.min(window.devicePixelRatio||1,2,4096/bounds.width);
   const width=Math.round(bounds.width*scale),height=Math.round(bounds.height*scale);
   if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}
   gl.viewport(0,0,width,height); gl.useProgram(program);
@@ -98,7 +98,11 @@ async function initialize(){
     const buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
     gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
     const attribute=gl.getAttribLocation(program,'position');gl.enableVertexAttribArray(attribute);gl.vertexAttribPointer(attribute,2,gl.FLOAT,false,0,0);
-    const images=await Promise.all([loadImage('./assets/earth/day.jpg'),loadImage('./assets/earth/night.png')]);
+    const supports4K=gl.getParameter(gl.MAX_TEXTURE_SIZE)>=4096;
+    const loadStandard=()=>Promise.all([loadImage('./assets/earth/day.jpg'),loadImage('./assets/earth/night.png')]);
+    const images=await (supports4K
+      ? Promise.all([loadImage('./assets/earth/day-4k.jpg?v=1.0.100'),loadImage('./assets/earth/night-4k.jpg?v=1.0.100')]).catch(loadStandard)
+      : loadStandard());
     images.forEach((image,index)=>{
       gl.activeTexture(gl.TEXTURE0+index);gl.bindTexture(gl.TEXTURE_2D,gl.createTexture());
       gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
