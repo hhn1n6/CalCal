@@ -68,7 +68,7 @@
     transition: transform .18s ease;
   }
   .nav-btn { display: flex; align-items: center; justify-content: center; width: 64px; height: 46px; border-radius: 23px; border: none; background: none; color: var(--text2); cursor: pointer; transition: color .2s, background .2s; -webkit-tap-highlight-color: transparent; }
-  .nav-btn.active { color: var(--accent); background: rgba(255, 255, 255, 0.75); }
+  .nav-btn.active { color: var(--accent); background: rgba(255, 255, 255, 0.75); box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.18), inset 0 0 2px rgba(0, 0, 0, 0.12); }
   .nav-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .nav-btn svg { width: 24px; height: 24px; }
 
