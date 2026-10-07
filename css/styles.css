@@ -67,7 +67,7 @@
     transform: translateY(0);
     transition: transform .18s ease;
   }
-  .nav::before { content: ''; position: absolute; top: 6px; left: calc(6px + (100% - 12px) / 6 - 32px); width: 64px; height: 46px; border-radius: 20px; background: #EEEEEE; pointer-events: none; transition: left 240ms cubic-bezier(.22, 1.12, .36, 1); }
+  .nav::before { content: ''; position: absolute; top: 9px; left: calc(6px + (100% - 12px) / 6 - 32px); width: 64px; height: 40px; border-radius: 20px; background: #EEEEEE; pointer-events: none; transition: left 240ms cubic-bezier(.22, 1.12, .36, 1); }
   .nav.liquid-moving::before { animation: nav-liquid-settle 300ms ease-out; }
   @keyframes nav-liquid-settle {
     0%, 100% { transform: scale(1, 1); }
