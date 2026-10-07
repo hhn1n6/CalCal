@@ -105,6 +105,7 @@ function syncHomeBackgroundBlur(){
   const range=home.scrollHeight-home.clientHeight;
   const progress=range>0?Math.max(0,Math.min(1,home.scrollTop/range)):0;
   canvas.style.filter=`blur(${(8*(1-progress)).toFixed(2)}px)`;
+  canvas.style.opacity=(0.2+0.8*progress).toFixed(3);
 }
 
 function syncHomeBackgroundSpace(){
