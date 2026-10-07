@@ -1,7 +1,6 @@
   :root {
     --radius: 16px;
     --radius-sm: 10px;
-    padding-top: env(safe-area-inset-top, 0px);
     box-sizing: border-box;
     --nav-base-height: 60px;
     --nav-bottom-gap: calc(6px + env(safe-area-inset-bottom, 0px));
@@ -34,6 +33,7 @@
 
     min-height: 0;
     height: 100%;
+    padding-top: env(safe-area-inset-top, 0px);
   }
 
   body { display: flex; flex-direction: column; }
@@ -108,9 +108,10 @@
   #earth-background { display: none; position: absolute; left: -32px; top: -32px; width: calc(100% + 64px); height: calc(100% + 64px); filter: blur(8px); opacity: 0.2; }
   .home-footer-art.earth-ready #earth-background { display: block; }
   .home-footer-art.earth-ready img { display: none; }
-  /* Extend the artwork beneath the home-indicator area in installed PWAs. */
+  /* Installed apps fill the viewport directly, without a vh-based root height. */
   @media (display-mode: standalone) {
-    .home-footer-art { bottom: calc(-1 * env(safe-area-inset-bottom, 0px)); }
+    html { height: 100%; }
+    body { position: fixed; inset: 0; height: auto; }
   }
   .earth-location-status { color: var(--text2); font-size: 14px; line-height: 1.5; margin-bottom: 16px; }
   .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
