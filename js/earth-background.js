@@ -37,23 +37,30 @@ uniform vec3 center, east, north, sun;
 uniform sampler2D dayMap, nightMap;
 void main(){
   vec2 p=(uv-vec2(.5,.38))*resolution/(resolution.x*.95);
-  float distanceToCenter=length(p);
-  if(distanceToCenter>1.04){ gl_FragColor=vec4(0.); return; }
-  if(distanceToCenter>1.){
-    float glow=1.-smoothstep(1.,1.04,distanceToCenter);
+  // Aim an oblique camera at the selected surface point, rather than the globe's center.
+  vec3 camera=vec3(0.,-1.1,2.4);
+  vec3 forward=normalize(vec3(0.,0.,1.)-camera);
+  vec3 up=vec3(0.,-forward.z,forward.y);
+  vec3 ray=normalize(forward+.45*(p.x*vec3(1.,0.,0.)+p.y*up));
+  float along=dot(camera,ray);
+  float closestSquared=dot(camera,camera)-along*along;
+  if(closestSquared>1.){
+    float glow=1.-smoothstep(1.,1.06,closestSquared);
     gl_FragColor=vec4(vec3(.72),glow*.28); return;
   }
-  vec3 normal=normalize(p.x*east+p.y*north+sqrt(max(0.,1.-dot(p,p)))*center);
+  vec3 surface=normalize(camera+ray*(-along-sqrt(max(0.,1.-closestSquared))));
+  vec3 normal=normalize(surface.x*east+surface.y*north+surface.z*center);
   vec2 mapUV=vec2(atan(normal.z,normal.x)/6.2831853+.5,acos(clamp(normal.y,-1.,1.))/3.14159265);
   float sunlight=dot(normal,sun);
   float daylight=smoothstep(-.08,.12,sunlight);
   vec3 day=texture2D(dayMap,mapUV).rgb*(.20+.80*max(0.,sunlight));
   vec3 night=texture2D(dayMap,mapUV).rgb*.045+texture2D(nightMap,mapUV).rgb*.85;
   vec3 color=mix(night,day,daylight);
-  float rim=pow(distanceToCenter,12.);
+  float facing=max(0.,dot(surface,-ray));
+  float rim=pow(1.-facing,3.);
   color+=vec3(.10,.30,.48)*rim*(.18+.55*daylight);
   float grey=dot(color,vec3(.2126,.7152,.0722));
-  gl_FragColor=vec4(vec3(grey),1.-smoothstep(.995,1.,distanceToCenter));
+  gl_FragColor=vec4(vec3(grey),1.-smoothstep(.998,1.,closestSquared));
 }`;
 
 function shader(type,source){
