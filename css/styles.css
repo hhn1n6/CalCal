@@ -76,11 +76,11 @@
     80% { transform: scale(1.03, .98); }
   }
   .nav:has([data-page="lists"].active)::before { left: calc(50% - 32px); }
-  .nav:has([data-page="ai"].active)::before { left: calc(100% - 6px - (100% - 12px) / 6 - 32px); }
+  .nav:has([data-page="person"].active)::before { left: calc(100% - 6px - (100% - 12px) / 6 - 32px); }
   .nav-btn { position: relative; display: flex; align-items: center; justify-content: center; width: 64px; height: 46px; border-radius: 20px; border: none; background: none; color: var(--text2); cursor: pointer; transition: color .2s; -webkit-tap-highlight-color: transparent; }
   .nav-btn.active { color: var(--accent); }
   .nav-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .nav-btn svg { width: 30px; height: 30px; }
+  .nav-btn img { display: block; width: 30px; height: 30px; object-fit: contain; }
 
   /* PAGES */
   .page {
@@ -250,16 +250,6 @@
   .field input:focus, .field select:focus { border-color: var(--accent); }
   .field-row { display: flex; gap: 10px; }
   .field-row .field { flex: 1; }
-
-  /* AI */
-  .scan-area { border: 2px dashed var(--border); border-radius: var(--radius); padding: 24px; text-align: center; cursor: pointer; transition: border-color .2s; -webkit-tap-highlight-color: transparent; }
-  .scan-area:active { border-color: var(--accent); }
-  #file-input { display: none; }
-  .ai-result { background: var(--surface2); border-radius: var(--radius-sm); padding: 14px; margin-top: 14px; border: 1px solid var(--border); }
-  .ai-stream { font-size: 13px; line-height: 1.6; white-space: pre-wrap; min-height: 40px; }
-  .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; margin-right: 6px; vertical-align: middle; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .preview-img { width: 100%; max-height: 200px; object-fit: cover; border-radius: var(--radius-sm); margin-bottom: 12px; }
 
   /* MISC */
   .empty { text-align: center; padding: 40px 20px; color: var(--text2); }
