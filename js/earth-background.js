@@ -33,6 +33,7 @@ void main(){ uv=position*.5+.5; gl_Position=vec4(position,0.,1.); }`;
 const fragment=`precision mediump float;
 varying vec2 uv;
 uniform vec2 resolution;
+uniform float dotSpacing;
 uniform vec3 center, east, north, sun;
 uniform sampler2D dayMap, nightMap;
 void main(){
@@ -60,7 +61,12 @@ void main(){
   float rim=pow(1.-facing,3.);
   color+=vec3(.10,.30,.48)*rim*(.18+.55*daylight);
   float grey=dot(color,vec3(.2126,.7152,.0722));
-  gl_FragColor=vec4(vec3(grey),1.-smoothstep(.998,1.,closestSquared));
+  // A diagonal printing grid: darker regions produce larger black dots.
+  vec2 grid=vec2(gl_FragCoord.x+gl_FragCoord.y,gl_FragCoord.y-gl_FragCoord.x)*.70710678/dotSpacing;
+  float dotDistance=length(fract(grid)-.5);
+  float dotRadius=sqrt(1.-clamp(grey*1.35+.08,0.,1.))*.70;
+  float ink=1.-smoothstep(dotRadius-.7/dotSpacing,dotRadius+.7/dotSpacing,dotDistance);
+  gl_FragColor=vec4(vec3(1.-ink),1.-smoothstep(.998,1.,closestSquared));
 }`;
 
 function shader(type,source){
@@ -80,6 +86,7 @@ function render(){
   if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}
   gl.viewport(0,0,width,height); gl.useProgram(program);
   gl.uniform2f(gl.getUniformLocation(program,'resolution'),width,height);
+  gl.uniform1f(gl.getUniformLocation(program,'dotSpacing'),6*scale);
   const lat=radians(location.latitude),lon=radians(location.longitude);
   setVector('center',[Math.cos(lat)*Math.cos(lon),Math.sin(lat),Math.cos(lat)*Math.sin(lon)]);
   setVector('east',[-Math.sin(lon),0,Math.cos(lon)]);
@@ -106,9 +113,10 @@ async function initialize(){
       gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,image);
       gl.uniform1i(gl.getUniformLocation(program,index?'nightMap':'dayMap'),index);
     });
-    ready=true;artwork.classList.add('earth-ready');render();
+    ready=true;artwork.classList.add('earth-ready');window.dispatchEvent(new Event('earth-background-change'));render();
   }catch(error){
     ready=false;artwork.classList.remove('earth-ready');
+    window.dispatchEvent(new Event('earth-background-change'));
     status.textContent='Earth is unavailable on this device. The picture background is shown instead.';
     console.warn('Earth background:',error);
   }
@@ -127,7 +135,7 @@ document.getElementById('earth-reset-location').addEventListener('click',()=>{
   try{localStorage.removeItem('calcal-earth-location');}catch{}
   status.textContent='Hong Kong preview. Sunlight follows the current time.';render();
 });
-canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();ready=false;artwork.classList.remove('earth-ready');});
+canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();ready=false;artwork.classList.remove('earth-ready');window.dispatchEvent(new Event('earth-background-change'));});
 canvas.addEventListener('webglcontextrestored',initialize);
 window.addEventListener('resize',render);
 document.addEventListener('visibilitychange',render);

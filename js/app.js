@@ -120,12 +120,15 @@ function syncHomeBackgroundSpace(){
   const pictureBounds=image.getBoundingClientRect();
   const bottomPadding=parseFloat(getComputedStyle(home).paddingBottom)||0;
   const cardMargin=parseFloat(getComputedStyle(lastCard).marginBottom)||0;
-  // Reveal the full picture below the last card, behind the floating navigation.
-  spacer.style.height=Math.max(0,pictureBounds.height+pageBounds.bottom-pictureBounds.bottom-bottomPadding-cardMargin)+'px';
+  // The Earth's horizon occupies about .85 widths above the screen bottom.
+  // Reveal that visible region, without scrolling through the canvas's empty sky.
+  const revealHeight=image.classList.contains('earth-ready')?Math.min(pictureBounds.height,pictureBounds.width*.85):pictureBounds.height;
+  spacer.style.height=Math.max(0,revealHeight+pageBounds.bottom-pictureBounds.bottom-bottomPadding-cardMargin)+'px';
   syncHomeBackgroundBlur();
 }
 document.getElementById('page-home')?.addEventListener('scroll',syncHomeBackgroundBlur,{passive:true});
 window.addEventListener('resize',syncHomeBackgroundSpace);
+window.addEventListener('earth-background-change',syncHomeBackgroundSpace);
 window.visualViewport?.addEventListener('resize',syncHomeBackgroundSpace);
 document.querySelector('.home-footer-art img')?.addEventListener('load',syncHomeBackgroundSpace);
 
