@@ -100,7 +100,7 @@ function todayTotals(date){
 // ── RENDER HOME ──────────────────────────────────────────
 function syncHomeBackgroundBlur(){
   const home=document.getElementById('page-home');
-  const image=document.querySelector('.home-footer-art img');
+  const image=document.querySelector('.home-footer-art');
   if(!home || !image) return;
   const scrollRange=home.scrollHeight-home.clientHeight;
   const progress=scrollRange>0?Math.max(0,Math.min(1,home.scrollTop/scrollRange)):0;
@@ -110,7 +110,7 @@ function syncHomeBackgroundBlur(){
 
 function syncHomeBackgroundSpace(){
   const home=document.getElementById('page-home');
-  const image=document.querySelector('.home-footer-art img');
+  const image=document.querySelector('.home-footer-art');
   const spacer=document.getElementById('home-background-spacer');
   const cards=Array.from(document.querySelectorAll('#page-home > .card'));
   const lastCard=cards.at(-1);
