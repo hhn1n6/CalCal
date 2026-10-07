@@ -111,19 +111,17 @@ function syncHomeBackgroundBlur(){
 function syncHomeBackgroundSpace(){
   const home=document.getElementById('page-home');
   const image=document.querySelector('.home-footer-art img');
-  const nav=document.querySelector('.nav');
   const spacer=document.getElementById('home-background-spacer');
   const cards=Array.from(document.querySelectorAll('#page-home > .card'));
   const lastCard=cards.at(-1);
-  if(!home?.getBoundingClientRect || !image || !nav || !spacer || !lastCard) return;
+  if(!home?.getBoundingClientRect || !image || !spacer || !lastCard) return;
   const pageBounds=home.getBoundingClientRect();
   if(!pageBounds.height) return;
-  const pictureHeight=image.getBoundingClientRect().height;
-  const navTop=nav.getBoundingClientRect().top;
+  const pictureBounds=image.getBoundingClientRect();
   const bottomPadding=parseFloat(getComputedStyle(home).paddingBottom)||0;
   const cardMargin=parseFloat(getComputedStyle(lastCard).marginBottom)||0;
-  // At the scroll limit, leave exactly one picture-height below the last card.
-  spacer.style.height=Math.max(0,pictureHeight+pageBounds.bottom-navTop-bottomPadding-cardMargin)+'px';
+  // Reveal the full picture below the last card, behind the floating navigation.
+  spacer.style.height=Math.max(0,pictureBounds.height+pageBounds.bottom-pictureBounds.bottom-bottomPadding-cardMargin)+'px';
   syncHomeBackgroundBlur();
 }
 document.getElementById('page-home')?.addEventListener('scroll',syncHomeBackgroundBlur,{passive:true});
