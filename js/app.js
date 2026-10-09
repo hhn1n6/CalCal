@@ -708,7 +708,7 @@ window.signOutAccount=async()=>{
   catch(e){document.getElementById('account-error').textContent='Could not sign out. Please try again.';}
   finally{button.disabled=false;}
 };
-const loginIntroReady=new Promise(resolve=>setTimeout(resolve,1750));
+const loginIntroReady=new Promise(resolve=>setTimeout(resolve,1950));
 function setAccountOpening(opening){
   document.querySelector('.login-actions').classList.toggle('account-opening',opening);
   document.getElementById('google-sign-in').disabled=opening;
