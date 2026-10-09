@@ -120,9 +120,9 @@ function syncHomeBackgroundSpace(){
   const pictureBounds=image.getBoundingClientRect();
   const bottomPadding=parseFloat(getComputedStyle(home).paddingBottom)||0;
   const cardMargin=parseFloat(getComputedStyle(lastCard).marginBottom)||0;
-  // The Earth's horizon occupies about .85 widths above the screen bottom.
+  // The close, low-angle Earth's horizon occupies about .42 screen widths.
   // Reveal that visible region, without scrolling through the canvas's empty sky.
-  const revealHeight=image.classList.contains('earth-ready')?Math.min(pictureBounds.height,pictureBounds.width*.85):0;
+  const revealHeight=image.classList.contains('earth-ready')?Math.min(pictureBounds.height,pictureBounds.width*.42):0;
   spacer.style.height=Math.max(0,revealHeight+pageBounds.bottom-pictureBounds.bottom-bottomPadding-cardMargin)+'px';
   syncHomeBackgroundBlur();
 }
