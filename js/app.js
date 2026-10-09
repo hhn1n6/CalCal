@@ -1,4 +1,4 @@
-import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from './firebase.js?v=1.1.0';
+import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.1.14';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
 
 // ── STATE ────────────────────────────────────────────────
@@ -684,23 +684,46 @@ function authMessage(error){
     'auth/cancelled-popup-request':'A sign-in window is already open.',
     'auth/popup-blocked':'Allow popups for CalCal, then try again. On iPhone, try signing in through Safari.',
     'auth/unauthorized-domain':'Google sign-in needs this website to be enabled in Firebase. Please contact the app owner.',
-    'auth/operation-not-allowed':'Google sign-in has not been enabled yet. Please contact the app owner.',
-    'auth/configuration-not-found':'Google sign-in has not been set up yet. Please contact the app owner.',
+    'auth/operation-not-allowed':'This sign-in method has not been enabled in Firebase yet. Please contact the app owner.',
+    'auth/configuration-not-found':'Sign-in has not been set up yet. Please contact the app owner.',
+    'auth/invalid-email':'Enter a valid email address.',
+    'auth/invalid-credential':'Email or password is incorrect. If you use Google, continue with Google.',
+    'auth/user-not-found':'Email or password is incorrect. If you use Google, continue with Google.',
+    'auth/wrong-password':'Email or password is incorrect. If you use Google, continue with Google.',
+    'auth/user-disabled':'This account has been disabled. Please contact the app owner.',
+    'auth/too-many-requests':'Too many attempts. Please wait a little and try again.',
     'auth/network-request-failed':'Could not connect. Check your internet connection and try again.',
     'permission-denied':'Your account data could not be opened. Please contact the app owner.',
     'calcal/setup-required':'Google sign-in is ready. Account storage is waiting for the app owner to publish its protection rules. Please try again shortly.',
   };
   return messages[error.code]||'Could not open your account. Please try again.';
 }
+let signInPending=false;
+function setSignInDisabled(disabled){
+  for(const id of ['google-sign-in','email-sign-in','login-email','login-password'])document.getElementById(id).disabled=disabled;
+}
+window.signInEmail=async(event)=>{
+  event.preventDefault();
+  if(signInPending||!document.getElementById('email-login-form').reportValidity())return;
+  const email=document.getElementById('login-email').value.trim();
+  const password=document.getElementById('login-password').value;
+  document.getElementById('login-error').textContent='';
+  signInPending=true;setSignInDisabled(true);
+  try{
+    await signInWithEmailAndPassword(auth,email,password);
+    document.getElementById('login-password').value='';
+  }catch(error){document.getElementById('login-error').textContent=authMessage(error);}
+  finally{signInPending=false;setSignInDisabled(document.querySelector('.login-actions').classList.contains('account-opening'));}
+};
 window.signInGoogle=async()=>{
-  const button=document.getElementById('google-sign-in');
+  if(signInPending)return;
   const error=document.getElementById('login-error');
-  error.textContent='';button.disabled=true;
+  error.textContent='';signInPending=true;setSignInDisabled(true);
   try{
     const provider=new GoogleAuthProvider();provider.setCustomParameters({prompt:'select_account'});
     await signInWithPopup(auth,provider);
   }catch(e){error.textContent=authMessage(e);}
-  finally{button.disabled=false;}
+  finally{signInPending=false;setSignInDisabled(document.querySelector('.login-actions').classList.contains('account-opening'));}
 };
 window.signOutAccount=async()=>{
   const button=document.getElementById('account-sign-out');button.disabled=true;
@@ -711,7 +734,7 @@ window.signOutAccount=async()=>{
 const loginIntroReady=new Promise(resolve=>setTimeout(resolve,1950));
 function setAccountOpening(opening){
   document.querySelector('.login-actions').classList.toggle('account-opening',opening);
-  document.getElementById('google-sign-in').disabled=opening;
+  setSignInDisabled(opening||signInPending);
 }
 async function openAccount(user){
   const generation=++accountGeneration;
@@ -735,7 +758,7 @@ async function openAccount(user){
     try{admin=await fbGet(doc(db,'access','admin'));}catch(error){if(error.code!=='permission-denied')throw error;}
     if(generation!==accountGeneration)return;
     state.isAdmin=!!(user.emailVerified&&admin?.email===user.email);
-    document.getElementById('account-name').textContent=user.displayName||'Google account';
+    document.getElementById('account-name').textContent=user.displayName||'Personal account';
     document.getElementById('account-email').textContent=user.email||'';
     document.getElementById('account-role').textContent=state.isAdmin?'Admin':'Personal account';
     document.getElementById('account-initial').textContent=(user.displayName||user.email||'C').slice(0,1).toUpperCase();

@@ -3,6 +3,7 @@
 Project: `fitness-352e8`. Website: `https://hhn1n6.github.io/CalCal/`.
 
 1. In Firebase Authentication, enable the Google sign-in provider and select the project support email.
+   For v1.1.14, also enable **Email/Password** in Authentication → Sign-in method (email-link sign-in is not needed). The Login form signs in existing password accounts; it does not silently create accounts. Create password accounts in Firebase Authentication → Users → Add user. Existing Google-only accounts have no CalCal password: keep using Google until password linking is added. Do not create a separate account for the owner or move their records to another UID.
 2. In Authentication → Settings → Authorized domains, add `hhn1n6.github.io` (domain only).
 3. Run the preparation tool with the original owner's Google email. It saves dated local backups, creates an email-bound snapshot of the existing personal database and history, and records the requested admin identity. It creates neither a default nor a public food database. The source records remain unchanged. This is a one-time preparation; existing migration documents cause an abort rather than an overwrite.
    `node tools/prepare_accounts.mjs owner@example.com --apply`
