@@ -716,7 +716,9 @@ async function openAccount(user){
   const generation=++accountGeneration;
   accountReady=false;resetAccountState();state.user=user;
   document.body.classList.add('signed-out');
-  document.getElementById('login-screen').hidden=false;
+  const loginScreen=document.getElementById('login-screen');
+  loginScreen.classList.remove('account-loaded');
+  loginScreen.hidden=false;
   document.getElementById('login-retry').hidden=true;
   document.getElementById('login-error').textContent='';
   setAccountOpening(!!user);
@@ -739,8 +741,14 @@ async function openAccount(user){
     document.getElementById('account-initial').textContent=(user.displayName||user.email||'C').slice(0,1).toUpperCase();
     document.getElementById('account-error').textContent='';
     accountReady=true;renderHome();renderFoodLists();
-    document.getElementById('login-screen').hidden=true;document.body.classList.remove('signed-out');
+    document.body.classList.remove('signed-out');
     window.switchPage('home',document.querySelector('[data-page="home"]'));
+    // Keep the login overlay above the ready homepage until its fade finishes.
+    loginScreen.getBoundingClientRect?.();
+    loginScreen.classList.add('account-loaded');
+    await new Promise(resolve=>setTimeout(resolve,600));
+    if(generation!==accountGeneration)return;
+    loginScreen.hidden=true;
   }catch(error){
     if(generation!==accountGeneration)return;
     resetAccountState();setAccountOpening(false);
