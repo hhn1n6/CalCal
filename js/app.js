@@ -182,6 +182,7 @@ function renderHome(){
   const _dd=String(_now.getDate()).padStart(2,'0');
   const _mm=String(_now.getMonth()+1).padStart(2,'0');
   document.getElementById('home-ddmm').textContent=`${_dd}/${_mm}/${_now.getFullYear()}`;
+  document.getElementById('home-weekday').textContent=_now.toLocaleDateString('en-US',{weekday:'long'});
 
   // Ring
   // Subtract the same whole-number total shown in the diary, so the
