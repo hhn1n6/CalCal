@@ -4,6 +4,7 @@ import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.
 // ── STATE ────────────────────────────────────────────────
 let state = {
   user: null,
+  isAdmin: false,
   goals:     { cal:2000, protein:150, carbs:250, fat:65, waterMl:2000, supps:[] },
   foodLists: [],
   foods: [],
@@ -50,12 +51,13 @@ async function initializeAccount(user){
   let legacy=null;
   try{legacy=await fbGet(doc(db,'migration','legacy'));}
   catch(error){if(error.code!=='permission-denied')throw error;}
+  const importLegacy=!!(legacy?.available&&user.emailVerified&&legacy.ownerEmail===user.email);
   const batch=writeBatch(db);
-  if(legacy?.available){
+  if(importLegacy){
     const [goals,lists,foods,weights,days]=await Promise.all([
-      fbGet(doc(db,'CalCal','goals')),fbGet(doc(db,'CalCal','foodLists')),
-      fbGet(doc(db,'CalCal','foods')),fbGet(doc(db,'CalCal','weights')),
-      getDocs(collection(db,'days')),
+      fbGet(doc(db,'migration','legacy','settings','goals')),fbGet(doc(db,'migration','legacy','settings','foodLists')),
+      fbGet(doc(db,'migration','legacy','settings','foods')),fbGet(doc(db,'migration','legacy','settings','weights')),
+      getDocs(collection(db,'migration','legacy','days')),
     ]);
     if(days.size>450)throw new Error('Your existing history needs an assisted import. Please contact the app owner.');
     for(const [name,data] of [['goals',goals],['foodLists',lists],['foods',foods],['weights',weights]]){
@@ -63,11 +65,11 @@ async function initializeAccount(user){
     }
     days.forEach(day=>batch.set(doc(db,'users',user.uid,'days',day.id),day.data()));
   }else{
-    const [lists,foods]=await Promise.all([fbGet(doc(db,'catalog','foodLists')),fbGet(doc(db,'catalog','foods'))]);
+    const [lists,foods]=await Promise.all([fbGet(doc(db,'defaults','foodLists')),fbGet(doc(db,'defaults','foods'))]);
     batch.set(doc(db,'users',user.uid,'settings','foodLists'),lists||{lists:[]});
     batch.set(doc(db,'users',user.uid,'settings','foods'),foods||{foods:[]});
   }
-  batch.set(profile,{createdAt:Date.now(),legacyImported:!!legacy?.available});
+  batch.set(profile,{createdAt:Date.now(),legacyImported:importLegacy});
   await batch.commit();
 }
 
@@ -661,6 +663,7 @@ function resetAccountState(){
   state.goals={cal:2000,protein:150,carbs:250,fat:65,waterMl:2000,supps:[]};
   state.foodLists=[];state.foods=[];state.logs={};state.water={};state.supps={};state.weights={};
   state.activeListId=null;state._editFoodId=null;state._serveFood=null;
+  state.isAdmin=false;
   state._savingFoods=false;state._savingLists=false;state._savingWeight=false;
   document.querySelectorAll('.modal-overlay').forEach(modal=>modal.classList.remove('open'));
 }
@@ -709,8 +712,13 @@ async function openAccount(user){
     if(generation!==accountGeneration)return;
     await loadFromFirebase();
     if(generation!==accountGeneration)return;
+    let admin=null;
+    try{admin=await fbGet(doc(db,'access','admin'));}catch(error){if(error.code!=='permission-denied')throw error;}
+    if(generation!==accountGeneration)return;
+    state.isAdmin=!!(user.emailVerified&&admin?.email===user.email);
     document.getElementById('account-name').textContent=user.displayName||'Google account';
     document.getElementById('account-email').textContent=user.email||'';
+    document.getElementById('account-role').textContent=state.isAdmin?'Admin':'Personal account';
     document.getElementById('account-initial').textContent=(user.displayName||user.email||'C').slice(0,1).toUpperCase();
     document.getElementById('account-error').textContent='';
     accountReady=true;renderHome();renderFoodLists();
