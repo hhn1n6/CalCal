@@ -73,6 +73,16 @@ async function initializeAccount(user){
   await batch.commit();
 }
 
+async function ensureAccountProtection(){
+  // This deliberately anonymous read must be denied before any private account
+  // records are opened or created. Old permissive rules return 404 for the probe.
+  const response=await fetch('https://firestore.googleapis.com/v1/projects/fitness-352e8/databases/(default)/documents/users/calcal-account-protection-probe/settings/goals');
+  const result=await response.json();
+  if(response.status!==403||result.error?.status!=='PERMISSION_DENIED'){
+    const error=new Error('Account protection is not configured.');error.code='calcal/setup-required';throw error;
+  }
+}
+
 async function fbGet(ref){ const s=await getDoc(ref); return s.exists()?s.data():null; }
 async function fbSet(ref,data){ setSyncStatus('loading'); try{ await setDoc(ref,data); setSyncStatus('ok'); }catch(e){ setSyncStatus('err'); throw e; } }
 
@@ -677,6 +687,7 @@ function authMessage(error){
     'auth/configuration-not-found':'Google sign-in has not been set up yet. Please contact the app owner.',
     'auth/network-request-failed':'Could not connect. Check your internet connection and try again.',
     'permission-denied':'Your account data could not be opened. Please contact the app owner.',
+    'calcal/setup-required':'Google sign-in is ready. Account storage is waiting for the app owner to publish its protection rules. Please try again shortly.',
   };
   return messages[error.code]||'Could not open your account. Please try again.';
 }
@@ -708,6 +719,8 @@ async function openAccount(user){
   document.getElementById('loading-screen').classList.add('loaded');
   if(!user)return;
   try{
+    await ensureAccountProtection();
+    if(generation!==accountGeneration)return;
     await initializeAccount(user);
     if(generation!==accountGeneration)return;
     await loadFromFirebase();

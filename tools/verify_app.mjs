@@ -24,6 +24,7 @@ const testUser={uid:'account-a',email:'owner@example.com',displayName:'Test Owne
 const reads=[];
 let blockedRead=null;
 let releaseBlockedRead;
+let protectionReady=true;
 const data = {
   'users/account-a':{createdAt:1},
   'users/account-a/settings/foodLists': { lists: [{ id: 'excel-main', name: 'Main' }, { id: 'excel-side', name: 'Side' }] },
@@ -33,7 +34,7 @@ const data = {
     { id: 'excel-main-3', listId: 'excel-main', name: 'Test zero', cal: 0, carbs: 0, protein: 0, fat: 0 },
   ] },
 };
-const context = vm.createContext(Object.assign(window, { document, window, console, setTimeout, Date, alert: message => alerts.push(message), confirm: () => true }));
+const context = vm.createContext(Object.assign(window, { document, window, console, setTimeout, Date, fetch:async url=>{assert.match(url,/users\/calcal-account-protection-probe\/settings\/goals$/);return {status:protectionReady?403:404,json:async()=>({error:{status:protectionReady?'PERMISSION_DENIED':'NOT_FOUND'}})};},alert: message => alerts.push(message), confirm: () => true }));
 const firebase = new vm.SyntheticModule(['db','doc','getDoc','setDoc','onSnapshot','writeBatch','collection','getDocs','auth','GoogleAuthProvider','signInWithPopup','onAuthStateChanged','signOut'], function () {
   this.setExport('auth',testAuth);
   this.setExport('GoogleAuthProvider',class {setCustomParameters(parameters){assert.equal(parameters.prompt,'select_account');}});
@@ -395,3 +396,16 @@ assert.equal(state.foods[0].id,'starter');
 assert.equal(Object.keys(state.weights).length,0);
 assert.equal(data['users/retry-user'].legacyImported,false);
 console.log('Account checks passed: no signed-out reads, UID-specific writes, sign-out cleanup, fresh-account defaults, account switching, stale-read isolation, one-time owner import, atomic setup failure and retry. No live data was written.');
+await window.signOutAccount();
+protectionReady=false;
+const protectedUser={uid:'pending-security',email:'pending@example.com'};
+testAuth.currentUser=protectedUser;
+const readsBeforeProtection=reads.length,writesBeforeProtection=saved.length;
+await authObserver(protectedUser);
+assert.equal(reads.length,readsBeforeProtection,'Unprotected Firestore must not load any account data');
+assert.equal(saved.length,writesBeforeProtection,'Unprotected Firestore must not create an account');
+assert.equal('users/pending-security' in data,false);
+assert.match(document.getElementById('login-error').textContent,/protection rules/);
+protectionReady=true;await window.retryAccount();
+assert.equal('users/pending-security' in data,true);
+console.log('Account protection gate passed: no private reads or writes with permissive rules, and retry succeeds once protection is active.');
