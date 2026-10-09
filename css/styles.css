@@ -28,7 +28,7 @@
   .signed-out > .page, .signed-out > .nav, .signed-out > .modal-overlay { display: none !important; }
   .login-screen { flex: 1; min-height: 0; overflow-y: auto; display: flex; align-items: center; justify-content: center; padding: 24px 24px calc(24px + env(safe-area-inset-bottom, 0px)); background: #fff; }
   .login-panel { width: 100%; max-width: 360px; text-align: center; }
-  .login-logo { width: 240px; max-width: 100%; height: 64px; object-fit: cover; object-position: center 43%; display: block; margin: 0 auto; }
+  .login-logo { width: 160px; max-width: 100%; height: 160px; object-fit: contain; display: block; margin: 0 auto; }
   .login-panel p { color: var(--text2); line-height: 1.5; margin-bottom: 20px; }
   .login-panel p:empty { display: none; }
   .login-version { display: block; color: var(--text3); font-size: 11px; line-height: 1.5; margin-top: 4px; }
@@ -137,7 +137,7 @@
   .earth-location-status { color: var(--text2); font-size: 14px; line-height: 1.5; margin-bottom: 16px; }
   .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
   .home-header { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; }
-  .home-header-logo { display: block; width: clamp(64px, 20vw, 120px); height: auto; aspect-ratio: 2 / 1; object-fit: cover; justify-self: center; }
+  .home-header-logo { display: block; width: 48px; height: 48px; object-fit: contain; justify-self: center; }
   .home-header > .btn { justify-self: end; }
   .home-header .page-title { white-space: nowrap; font-size: 18px; }
   #page-lists { padding-top: 0; }
@@ -301,7 +301,7 @@
   /* LOADING SCREEN */
   #loading-screen { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; gap: 16px; opacity: 1; visibility: visible; transition: opacity 600ms ease-out, visibility 0s linear 600ms; }
   #loading-screen.loaded { opacity: 0; visibility: hidden; pointer-events: none; }
-  #loading-screen .loading-logo { width: 280px; max-width: 70vw; height: auto; display: block; }
+  #loading-screen .loading-logo { width: 200px; max-width: 70vw; height: auto; display: block; }
   #loading-screen p { color: var(--text2); font-size: 14px; }
   #loading-screen p:empty { display: none; }
 
