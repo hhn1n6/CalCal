@@ -7,18 +7,18 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CalCal">
 <meta name="theme-color" content="#ffffff">
-<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.1.19">
-<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.1.19">
-<link rel="manifest" href="./manifest.webmanifest?v=1.1.19">
+<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.1.20">
+<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.1.20">
+<link rel="manifest" href="./manifest.webmanifest?v=1.1.20">
 <title>CalCal Food Tracker</title>
-<link rel="stylesheet" href="./css/colors.css?v=1.1.19">
-<link rel="stylesheet" href="./css/styles.css?v=1.1.19">
+<link rel="stylesheet" href="./css/colors.css?v=1.1.20">
+<link rel="stylesheet" href="./css/styles.css?v=1.1.20">
 </head>
 <body class="signed-out">
 <main id="login-screen" class="login-screen">
   <div class="login-panel">
-    <img class="login-logo" src="./assets/logo_transparent.png?v=1.1.19" width="160" height="160" alt="CalCal">
-    <small class="login-version">v1.1.19</small>
+    <img class="login-logo" src="./assets/logo_transparent.png?v=1.1.20" width="160" height="160" alt="CalCal">
+    <small class="login-version">v1.1.20</small>
     <div class="login-actions">
     <div class="login-methods">
     <form id="email-login-form" class="email-login-form" onsubmit="signInEmail(event)">
@@ -26,7 +26,11 @@
       <div class="login-field"><label for="login-password">Password</label><input id="login-password" name="password" type="password" autocomplete="current-password" required></div>
       <button id="email-sign-in" type="submit" class="btn btn-primary email-sign-in">Login</button>
     </form>
-    <button id="google-sign-in" class="btn btn-primary google-sign-in" onclick="signInGoogle()" aria-label="Continue with Google" title="Continue with Google"><img class="google-mark" src="./assets/google-logo.png" width="28" height="28" alt="" aria-hidden="true"></button>
+    <div class="platform-login-buttons">
+      <button id="google-sign-in" class="btn platform-sign-in google-sign-in" onclick="signInGoogle()" aria-label="Continue with Google" title="Continue with Google"><img class="platform-mark" src="./assets/google-logo.png" width="20" height="20" alt="" aria-hidden="true"></button>
+      <button id="facebook-sign-in" type="button" class="btn platform-sign-in" disabled aria-label="Facebook sign-in — coming soon" title="Facebook sign-in — coming soon"><img class="platform-mark" src="./assets/icons/facebook.svg" width="20" height="20" alt="" aria-hidden="true"></button>
+      <button id="apple-sign-in" type="button" class="btn platform-sign-in" disabled aria-label="Apple sign-in — coming soon" title="Apple sign-in — coming soon"><img class="platform-mark" src="./assets/icons/apple.svg" width="20" height="20" alt="" aria-hidden="true"></button>
+    </div>
     </div>
     <div id="login-status" class="login-spinner" role="status" aria-label="Opening your account"></div>
     <p id="login-error" class="account-error" role="alert"></p>
@@ -45,7 +49,7 @@
       <div class="page-title"><span id="home-ddmm"></span></div>
       <div id="home-weekday" style="font-size:14px;color:var(--text3);margin-top:3px;"></div>
     </div>
-    <img class="home-header-logo" src="./assets/logo_transparent.png?v=1.1.19" width="48" height="48" alt="CalCal">
+    <img class="home-header-logo" src="./assets/logo_transparent.png?v=1.1.20" width="48" height="48" alt="CalCal">
     <button class="btn btn-primary btn-sm" onclick="openGoalModal()">Goals</button>
   </div>
 
@@ -266,21 +270,21 @@
 
 <nav class="nav">
   <button class="nav-btn active" aria-label="Today" data-page="home" onclick="switchPage('home',this)">
-    <img class="nav-icon-regular" src="./assets/icons/home.svg?v=1.1.19" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/home-bold.svg?v=1.1.19" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/home.svg?v=1.1.20" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/home-bold.svg?v=1.1.20" width="24" height="24" alt="" aria-hidden="true">
   </button>
   <button class="nav-btn" aria-label="Foods" data-page="lists" onclick="switchPage('lists',this)">
-    <img class="nav-icon-regular" src="./assets/icons/menu.svg?v=1.1.19" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/menu-bold.svg?v=1.1.19" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/menu.svg?v=1.1.20" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/menu-bold.svg?v=1.1.20" width="24" height="24" alt="" aria-hidden="true">
   </button>
   <button class="nav-btn" aria-label="Personal" data-page="person" onclick="switchPage('person',this)">
-    <img class="nav-icon-regular" src="./assets/icons/person.svg?v=1.1.19" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/person-bold.svg?v=1.1.19" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/person.svg?v=1.1.20" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/person-bold.svg?v=1.1.20" width="24" height="24" alt="" aria-hidden="true">
   </button>
 </nav>
 
 <!-- Firebase SDK -->
-<script type="module" src="./js/app.js?v=1.1.19"></script>
-<script type="module" src="./js/earth-background.js?v=1.1.19"></script>
+<script type="module" src="./js/app.js?v=1.1.20"></script>
+<script type="module" src="./js/earth-background.js?v=1.1.20"></script>
 </body>
 </html>
