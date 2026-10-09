@@ -700,7 +700,7 @@ window.signInGoogle=async()=>{
     const provider=new GoogleAuthProvider();provider.setCustomParameters({prompt:'select_account'});
     await signInWithPopup(auth,provider);
   }catch(e){error.textContent=authMessage(e);}
-  finally{button.disabled=!!state.user;}
+  finally{button.disabled=false;}
 };
 window.signOutAccount=async()=>{
   const button=document.getElementById('account-sign-out');button.disabled=true;
