@@ -39,9 +39,9 @@ uniform vec3 center, east, north, sun;
 uniform sampler2D dayMap, nightMap;
 void main(){
   // Render extra pixels outside the viewport for CSS blur, without zooming the globe.
-  vec2 p=(uv*resolution-vec2(overscan)-viewport*vec2(.5,.20))/(viewport.x*.95);
+  vec2 p=(uv*resolution-vec2(overscan)-viewport*vec2(.5,.38))/(viewport.x*.95);
   // Aim an oblique camera at the selected surface point, rather than the globe's center.
-  vec3 camera=vec3(0.,-.35,1.10);
+  vec3 camera=vec3(0.,-1.1,2.4);
   vec3 forward=normalize(vec3(0.,0.,1.)-camera);
   vec3 up=vec3(0.,-forward.z,forward.y);
   vec3 ray=normalize(forward+.45*(p.x*vec3(1.,0.,0.)+p.y*up));
