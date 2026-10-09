@@ -34,6 +34,15 @@
   .login-version { display: block; color: var(--text3); font-size: 11px; line-height: 1.5; margin-top: 4px; }
   .login-actions { position: relative; top: 48px; }
   .google-sign-in { width: 300px; max-width: 100%; min-height: 52px; display: flex; align-items: center; justify-content: center; gap: 12px; margin: 28px auto 20px; font-size: 18px; }
+  .google-sign-in { transition: opacity 300ms ease, visibility 0s linear; }
+  .login-spinner { position: absolute; top: 38px; left: calc(50% - 16px); width: 32px; height: 32px; border: 3px solid #e5e5e5; border-top-color: #000; border-radius: 50%; opacity: 0; visibility: hidden; pointer-events: none; animation: login-spin 800ms linear infinite; transition: opacity 300ms ease, visibility 0s linear 300ms; }
+  .login-actions.account-opening .google-sign-in { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 300ms ease, visibility 0s linear 300ms; }
+  .login-actions.account-opening .login-spinner { opacity: 1; visibility: visible; transition: opacity 300ms ease 150ms, visibility 0s linear; }
+  @keyframes login-spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) {
+    .google-sign-in, .login-spinner, .login-actions.account-opening .google-sign-in, .login-actions.account-opening .login-spinner { transition: none; }
+    .login-spinner { animation-duration: 1600ms; }
+  }
   .google-mark { font-family: Arial, sans-serif; font-weight: bold; font-size: 23px; }
   .account-profile { display: flex; align-items: center; gap: 14px; margin: 16px 0; min-width: 0; }
   .account-profile > div:last-child { min-width: 0; }

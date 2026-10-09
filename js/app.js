@@ -700,7 +700,7 @@ window.signInGoogle=async()=>{
     const provider=new GoogleAuthProvider();provider.setCustomParameters({prompt:'select_account'});
     await signInWithPopup(auth,provider);
   }catch(e){error.textContent=authMessage(e);}
-  finally{button.disabled=false;}
+  finally{button.disabled=!!state.user;}
 };
 window.signOutAccount=async()=>{
   const button=document.getElementById('account-sign-out');button.disabled=true;
@@ -708,6 +708,10 @@ window.signOutAccount=async()=>{
   catch(e){document.getElementById('account-error').textContent='Could not sign out. Please try again.';}
   finally{button.disabled=false;}
 };
+function setAccountOpening(opening){
+  document.querySelector('.login-actions').classList.toggle('account-opening',opening);
+  document.getElementById('google-sign-in').disabled=opening;
+}
 async function openAccount(user){
   const generation=++accountGeneration;
   accountReady=false;resetAccountState();state.user=user;
@@ -715,8 +719,7 @@ async function openAccount(user){
   document.getElementById('login-screen').hidden=false;
   document.getElementById('login-retry').hidden=true;
   document.getElementById('login-error').textContent='';
-  document.getElementById('login-status').textContent=user?'Opening your account…':'';
-  document.getElementById('google-sign-in').hidden=!!user;
+  setAccountOpening(!!user);
   document.getElementById('loading-screen').classList.add('loaded');
   if(!user)return;
   try{
@@ -740,7 +743,7 @@ async function openAccount(user){
     window.switchPage('home',document.querySelector('[data-page="home"]'));
   }catch(error){
     if(generation!==accountGeneration)return;
-    resetAccountState();document.getElementById('login-status').textContent='';
+    resetAccountState();setAccountOpening(false);
     document.getElementById('login-error').textContent=authMessage(error);
     document.getElementById('login-retry').hidden=false;
   }
