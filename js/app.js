@@ -233,7 +233,7 @@ function renderFoodLists(){
     <div class="food-item-wrap" data-food-id="${escapeHtml(f.id)}">
       <div class="food-item" onclick="window._openServe('${f.id}')">
         <div class="food-details">
-          <div class="food-name">${escapeHtml(f.name)}</div>
+          <div class="food-name">${escapeHtml(f.name)}${f.portion?`<span class="food-portion">${escapeHtml(f.portion)}</span>`:''}</div>
           <div class="food-nutrition">
             ${[['cal','kcal','Calories'],['protein','g','Protein'],['carbs','g','Carbs'],['fat','g','Fat']].map(([key,unit,label])=>`
               <div class="food-nutrient"><div class="food-nutrient-value">${formatNutrient(f[key]??0)}<span class="food-nutrient-unit"> ${unit}</span></div><div class="food-nutrient-label">${label}</div></div>
@@ -366,6 +366,7 @@ window.openAddFoodModal=(prefill)=>{
   state._editFoodId=null;
   document.getElementById('add-food-title').textContent='Add food';
   document.getElementById('f-name').value=prefill?.name||'';
+  document.getElementById('f-portion').value=prefill?.portion||'';
   document.getElementById('f-ingredients').value=prefill?.ingredients||'';
   document.getElementById('f-cal').value=prefill?.cal??'';
   document.getElementById('f-protein').value=prefill?.protein??'';
@@ -399,6 +400,7 @@ window.saveFood=async()=>{
   if(state._editFoodId&&!original){alert('This food no longer exists. Please reopen the list.');return;}
   const food={
     ...original, id:original?.id||('f'+Date.now()), listId, name,
+    portion:document.getElementById('f-portion').value.trim(),
     ingredients:document.getElementById('f-ingredients').value.trim(),
     ...nutrients,
   };
