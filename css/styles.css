@@ -28,20 +28,23 @@
   .signed-out > .page, .signed-out > .nav, .signed-out > .modal-overlay { display: none !important; }
   .login-screen { position: fixed; inset: 0; z-index: 900; opacity: 1; transition: opacity 600ms ease-out; flex: 1; min-height: 0; overflow-y: auto; display: flex; align-items: center; justify-content: center; padding: 24px 24px calc(24px + env(safe-area-inset-bottom, 0px)); background: #fff; }
   .login-screen.account-loaded { opacity: 0; pointer-events: none; }
-  .login-panel { width: 100%; max-width: 360px; text-align: center; }
-  .login-logo { width: 160px; max-width: 100%; height: 160px; object-fit: contain; display: block; margin: 0 auto; }
+  .login-panel { position: absolute; inset: 0; width: 100%; text-align: center; }
+  .login-logo { position: absolute; top: calc(50% - 180px); left: calc(50% - 80px); width: 160px; height: 160px; object-fit: contain; display: block; animation: login-logo-rise 700ms cubic-bezier(.22,.61,.36,1) 350ms both; }
   .login-panel p { color: var(--text2); line-height: 1.5; margin-bottom: 20px; }
   .login-panel p:empty { display: none; }
-  .login-version { display: block; color: var(--text3); font-size: 11px; line-height: 1.5; margin-top: 4px; }
-  .login-actions { position: relative; top: 48px; }
+  .login-version { position: absolute; top: calc(50% - 16px); width: 100%; display: block; color: var(--text3); font-size: 11px; line-height: 1.5; animation: login-reveal 400ms ease 850ms both; }
+  .login-actions { position: absolute; top: calc(50% + 32px); left: 50%; transform: translateX(-50%); width: min(360px, calc(100% - 48px)); animation: login-reveal 400ms ease 950ms both; }
   .google-sign-in { width: 300px; max-width: 100%; min-height: 52px; display: flex; align-items: center; justify-content: center; gap: 12px; margin: 28px auto 20px; font-size: 18px; }
   .google-sign-in { transition: opacity 300ms ease, visibility 0s linear; }
   .login-spinner { position: absolute; top: 38px; left: calc(50% - 16px); width: 32px; height: 32px; border: 3px solid #e5e5e5; border-top-color: #000; border-radius: 50%; opacity: 0; visibility: hidden; pointer-events: none; animation: login-spin 800ms linear infinite; transition: opacity 300ms ease, visibility 0s linear 300ms; }
   .login-actions.account-opening .google-sign-in { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 300ms ease, visibility 0s linear 300ms; }
   .login-actions.account-opening .login-spinner { opacity: 1; visibility: visible; transition: opacity 300ms ease 150ms, visibility 0s linear; }
+  @keyframes login-logo-rise { from { transform: translateY(100px); } to { transform: translateY(0); } }
+  @keyframes login-reveal { from { opacity: 0; visibility: hidden; } to { opacity: 1; visibility: visible; } }
   @keyframes login-spin { to { transform: rotate(360deg); } }
   @media (prefers-reduced-motion: reduce) {
     .login-screen, .google-sign-in, .login-spinner, .login-actions.account-opening .google-sign-in, .login-actions.account-opening .login-spinner { transition: none; }
+    .login-logo, .login-version, .login-actions { animation: none; }
     .login-spinner { animation-duration: 1600ms; }
   }
   .google-mark { font-family: Arial, sans-serif; font-weight: bold; font-size: 23px; }
@@ -309,10 +312,5 @@
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 
   /* LOADING SCREEN */
-  #loading-screen { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; gap: 16px; opacity: 1; visibility: visible; transition: opacity 600ms ease-out, visibility 0s linear 600ms; }
-  #loading-screen.loaded { opacity: 0; visibility: hidden; pointer-events: none; }
-  #loading-screen .loading-logo { width: 200px; max-width: 70vw; height: auto; display: block; }
-  #loading-screen p { color: var(--text2); font-size: 14px; }
-  #loading-screen p:empty { display: none; }
 
   html.keyboard-open .nav {transform: translateY(calc(100% + var(--nav-bottom-gap))); pointer-events: none; }

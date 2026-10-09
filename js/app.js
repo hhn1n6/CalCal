@@ -708,6 +708,7 @@ window.signOutAccount=async()=>{
   catch(e){document.getElementById('account-error').textContent='Could not sign out. Please try again.';}
   finally{button.disabled=false;}
 };
+const loginIntroReady=new Promise(resolve=>setTimeout(resolve,1350));
 function setAccountOpening(opening){
   document.querySelector('.login-actions').classList.toggle('account-opening',opening);
   document.getElementById('google-sign-in').disabled=opening;
@@ -722,7 +723,6 @@ async function openAccount(user){
   document.getElementById('login-retry').hidden=true;
   document.getElementById('login-error').textContent='';
   setAccountOpening(!!user);
-  document.getElementById('loading-screen').classList.add('loaded');
   if(!user)return;
   try{
     await ensureAccountProtection();
@@ -740,6 +740,8 @@ async function openAccount(user){
     document.getElementById('account-role').textContent=state.isAdmin?'Admin':'Personal account';
     document.getElementById('account-initial').textContent=(user.displayName||user.email||'C').slice(0,1).toUpperCase();
     document.getElementById('account-error').textContent='';
+    await loginIntroReady;
+    if(generation!==accountGeneration)return;
     accountReady=true;renderHome();renderFoodLists();
     document.body.classList.remove('signed-out');
     window.switchPage('home',document.querySelector('[data-page="home"]'));
@@ -758,7 +760,6 @@ async function openAccount(user){
 }
 window.retryAccount=()=>openAccount(auth.currentUser);
 onAuthStateChanged(auth,openAccount,()=>{
-  document.getElementById('loading-screen').classList.add('loaded');
   document.getElementById('login-error').textContent='Could not check sign-in. Reload CalCal to try again.';
 });
 
