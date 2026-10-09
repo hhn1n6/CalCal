@@ -33,7 +33,7 @@
   .login-panel p:empty { display: none; }
   .login-version { display: block; color: var(--text3); font-size: 11px; line-height: 1.5; margin-top: 4px; }
   .login-actions { position: relative; top: 48px; }
-  .google-sign-in { width: 100%; min-height: 52px; display: flex; align-items: center; justify-content: center; gap: 12px; margin: 28px 0 20px; font-size: 18px; }
+  .google-sign-in { width: 300px; max-width: 100%; min-height: 52px; display: flex; align-items: center; justify-content: center; gap: 12px; margin: 28px auto 20px; font-size: 18px; }
   .google-mark { font-family: Arial, sans-serif; font-weight: bold; font-size: 23px; }
   .account-profile { display: flex; align-items: center; gap: 14px; margin: 16px 0; min-width: 0; }
   .account-profile > div:last-child { min-width: 0; }
