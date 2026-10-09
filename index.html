@@ -7,18 +7,33 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CalCal">
 <meta name="theme-color" content="#ffffff">
-<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.0.118">
-<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.0.118">
-<link rel="manifest" href="./manifest.webmanifest?v=1.0.118">
+<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.1.0">
+<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.1.0">
+<link rel="manifest" href="./manifest.webmanifest?v=1.1.0">
 <title>CalCal Food Tracker</title>
-<link rel="stylesheet" href="./css/colors.css?v=1.0.118">
-<link rel="stylesheet" href="./css/styles.css?v=1.0.118">
+<link rel="stylesheet" href="./css/colors.css?v=1.1.0">
+<link rel="stylesheet" href="./css/styles.css?v=1.1.0">
 </head>
-<body>
+<body class="signed-out">
+<main id="login-screen" class="login-screen">
+  <div class="login-panel">
+    <img class="login-logo" src="./assets/calcal-logo.png?v=1.1.0" width="240" height="240" alt="CalCal">
+    <h1>Welcome to CalCal</h1>
+    <p>Your nutrition, your progress, your account.</p>
+    <button id="google-sign-in" class="btn btn-primary google-sign-in" onclick="signInGoogle()"><span aria-hidden="true" class="google-mark">G</span>Continue with Google</button>
+    <p id="login-status" role="status" aria-live="polite"></p>
+    <p id="login-error" class="account-error" role="alert"></p>
+    <div id="login-retry" hidden>
+      <button class="btn btn-primary" onclick="retryAccount()">Try again</button>
+      <button class="btn btn-secondary" onclick="signOutAccount()">Use another account</button>
+    </div>
+    <small>v1.1 · Sign in to save your records across devices.</small>
+  </div>
+</main>
 
 <!-- Loading -->
 <div id="loading-screen">
-  <img class="loading-logo" src="./assets/calcal-logo.png?v=1.0.118" width="280" height="280" alt="CalCal">
+  <img class="loading-logo" src="./assets/calcal-logo.png?v=1.1.0" width="280" height="280" alt="CalCal">
   <p role="status"></p>
 </div>
 
@@ -27,9 +42,9 @@
   <div class="page-header home-header">
     <div>
       <div class="page-title"><span id="home-ddmm"></span></div>
-      <div style="font-size:11px;color:var(--text3);margin-top:3px;">v1.0.118</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:3px;">v1.1.0</div>
     </div>
-    <img class="home-header-logo" src="./assets/home-logo.png?v=1.0.118" width="120" height="60" alt="CalCal">
+    <img class="home-header-logo" src="./assets/home-logo.png?v=1.1.0" width="120" height="60" alt="CalCal">
     <button class="btn btn-primary btn-sm" onclick="openGoalModal()">Goals</button>
   </div>
 
@@ -113,7 +128,14 @@
 
 <!-- PERSON PAGE -->
 <div id="page-person" class="page">
-  <div class="page-header"><div class="page-title">Person</div></div>
+  <div class="page-header"><div class="page-title">Personal</div></div>
+  <div class="card account-card">
+    <div class="card-title">Your account</div>
+    <div class="account-profile"><div id="account-initial" class="account-avatar" aria-hidden="true"></div><div><h2 id="account-name"></h2><p id="account-email"></p><small>Signed in with Google</small></div></div>
+    <p class="account-note">Your goals, food lists, diary, water, supplements and weights are saved to your account.</p>
+    <button id="account-sign-out" class="btn btn-secondary btn-full" onclick="signOutAccount()">Sign out</button>
+    <p id="account-error" class="account-error" role="alert"></p>
+  </div>
   <div class="card">
     <div class="card-title">Earth background</div>
     <p id="earth-location-status" class="earth-location-status" role="status">Hong Kong preview. Sunlight follows the current time.</p>
@@ -236,7 +258,7 @@
     <div class="modal-title" id="serve-food-name">Choose servings</div>
     <div id="serve-food-info" style="font-size:13px;color:var(--text2);margin-bottom:20px;"></div>
     <div class="field">
-      <label>Servings (1 = the portion stated in the food name)</label>
+      <label>Servings (1 = the food’s stated portion / unit)</label>
       <input type="number" id="serve-qty" value="1" min="0.1" step="0.1">
     </div>
     <div id="serve-preview" style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px;margin-bottom:16px;"></div>
@@ -249,22 +271,22 @@
 
 <nav class="nav">
   <button class="nav-btn active" aria-label="Today" data-page="home" onclick="switchPage('home',this)">
-    <img class="nav-icon-regular" src="./assets/icons/home.svg?v=1.0.118" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/home-bold.svg?v=1.0.118" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/home.svg?v=1.1.0" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/home-bold.svg?v=1.1.0" width="24" height="24" alt="" aria-hidden="true">
   </button>
   <button class="nav-btn" aria-label="Foods" data-page="lists" onclick="switchPage('lists',this)">
-    <img class="nav-icon-regular" src="./assets/icons/menu.svg?v=1.0.118" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/menu-bold.svg?v=1.0.118" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/menu.svg?v=1.1.0" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/menu-bold.svg?v=1.1.0" width="24" height="24" alt="" aria-hidden="true">
   </button>
-  <button class="nav-btn" aria-label="Person" data-page="person" onclick="switchPage('person',this)">
-    <img class="nav-icon-regular" src="./assets/icons/person.svg?v=1.0.118" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/person-bold.svg?v=1.0.118" width="24" height="24" alt="" aria-hidden="true">
+  <button class="nav-btn" aria-label="Personal" data-page="person" onclick="switchPage('person',this)">
+    <img class="nav-icon-regular" src="./assets/icons/person.svg?v=1.1.0" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/person-bold.svg?v=1.1.0" width="24" height="24" alt="" aria-hidden="true">
   </button>
 </nav>
 
 <!-- Firebase SDK -->
-<script type="module" src="./js/app.js?v=1.0.118"></script>
-<script type="module" src="./js/earth-background.js?v=1.0.118"></script>
-<script type="module" src="./js/display-check.js?v=1.0.118"></script>
+<script type="module" src="./js/app.js?v=1.1.0"></script>
+<script type="module" src="./js/earth-background.js?v=1.1.0"></script>
+<script type="module" src="./js/display-check.js?v=1.1.0"></script>
 </body>
 </html>

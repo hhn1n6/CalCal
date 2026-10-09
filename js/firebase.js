@@ -2,6 +2,8 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, getDocs, writeBatch, deleteDoc,
          initializeFirestore, persistentLocalCache, persistentMultipleTabManager }
   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
 // ── FIREBASE CONFIG ──────────────────────────────────────
 const firebaseConfig = {
@@ -13,9 +15,11 @@ const firebaseConfig = {
   appId: "1:1079426276749:web:e71e57288a1900d178b1c4"
 };
 const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+export { GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut };
 // Local IndexedDB cache keeps data on the device after the first load.
 export const db = initializeFirestore(app, {
   localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
 });
 
-export { doc, getDoc, setDoc, onSnapshot, writeBatch };
+export { doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs };

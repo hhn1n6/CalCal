@@ -1,0 +1,23 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function owns(uid) { return signedIn() && request.auth.uid == uid; }
+    function legacyOwner() {
+      return signedIn() && request.auth.token.email_verified == true
+        && request.auth.token.email == get(/databases/$(database)/documents/migration/owner).data.email;
+    }
+    match /users/{uid} {
+      allow read, write: if owns(uid);
+      match /{document=**} { allow read, write: if owns(uid); }
+    }
+    match /catalog/{document} {
+      allow read: if signedIn() && document in ['foods', 'foodLists'];
+      allow write: if false;
+    }
+    match /migration/legacy { allow get: if legacyOwner(); }
+    match /CalCal/{document} { allow read: if legacyOwner(); }
+    match /days/{date} { allow read: if legacyOwner(); }
+    // All other paths, including old shared writes, are denied by default.
+  }
+}

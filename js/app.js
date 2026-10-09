@@ -1,8 +1,9 @@
-import { db, doc, getDoc, setDoc, onSnapshot, writeBatch } from './firebase.js?v=1.0.36';
+import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from './firebase.js?v=1.1.0';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
 
 // ── STATE ────────────────────────────────────────────────
 let state = {
+  user: null,
   goals:     { cal:2000, protein:150, carbs:250, fat:65, waterMl:2000, supps:[] },
   foodLists: [],
   foods: [],
@@ -29,34 +30,61 @@ function setSyncStatus(s){ if(syncDot) syncDot.className = s; }
 
 // ── FIREBASE HELPERS ─────────────────────────────────────
 const REF = {
-  goals:     () => doc(db,'CalCal','goals'),
-  foodLists: () => doc(db,'CalCal','foodLists'),
-  foods:     () => doc(db,'CalCal','foods'),
-  weights:   () => doc(db,'CalCal','weights'),
-  day:       (d) => doc(db,'days', d),
+  goals:     () => accountRef('settings','goals'),
+  foodLists: () => accountRef('settings','foodLists'),
+  foods:     () => accountRef('settings','foods'),
+  weights:   () => accountRef('settings','weights'),
+  day:       (d) => accountRef('days',d),
 };
+function accountRef(...parts){
+  if(!state.user || auth.currentUser?.uid!==state.user.uid) throw new Error('Please sign in again.');
+  return doc(db,'users',state.user.uid,...parts);
+}
+let stopDayListener=null;
+let accountGeneration=0;
+let accountReady=false;
+
+async function initializeAccount(user){
+  const profile=doc(db,'users',user.uid);
+  if((await getDoc(profile)).exists()) return;
+  let legacy=null;
+  try{legacy=await fbGet(doc(db,'migration','legacy'));}
+  catch(error){if(error.code!=='permission-denied')throw error;}
+  const batch=writeBatch(db);
+  if(legacy?.available){
+    const [goals,lists,foods,weights,days]=await Promise.all([
+      fbGet(doc(db,'CalCal','goals')),fbGet(doc(db,'CalCal','foodLists')),
+      fbGet(doc(db,'CalCal','foods')),fbGet(doc(db,'CalCal','weights')),
+      getDocs(collection(db,'days')),
+    ]);
+    if(days.size>450)throw new Error('Your existing history needs an assisted import. Please contact the app owner.');
+    for(const [name,data] of [['goals',goals],['foodLists',lists],['foods',foods],['weights',weights]]){
+      if(data)batch.set(doc(db,'users',user.uid,'settings',name),data);
+    }
+    days.forEach(day=>batch.set(doc(db,'users',user.uid,'days',day.id),day.data()));
+  }else{
+    const [lists,foods]=await Promise.all([fbGet(doc(db,'catalog','foodLists')),fbGet(doc(db,'catalog','foods'))]);
+    batch.set(doc(db,'users',user.uid,'settings','foodLists'),lists||{lists:[]});
+    batch.set(doc(db,'users',user.uid,'settings','foods'),foods||{foods:[]});
+  }
+  batch.set(profile,{createdAt:Date.now(),legacyImported:!!legacy?.available});
+  await batch.commit();
+}
 
 async function fbGet(ref){ const s=await getDoc(ref); return s.exists()?s.data():null; }
 async function fbSet(ref,data){ setSyncStatus('loading'); try{ await setDoc(ref,data); setSyncStatus('ok'); }catch(e){ setSyncStatus('err'); throw e; } }
 
 // ── LOAD FROM FIREBASE ───────────────────────────────────
 async function loadFromFirebase() {
-  // goals
-  const g = await fbGet(REF.goals());
-  if(g) state.goals = g;
-
-  // foodLists
-  const fl = await fbGet(REF.foodLists());
-  if(fl && fl.lists) state.foodLists = fl.lists;
-
-  // foods
-  const fo = await fbGet(REF.foods());
-  if(fo && fo.foods) state.foods = fo.foods;
-  state.weights = await fbGet(REF.weights()) || {};
-
-  // today's day doc
+  const generation=accountGeneration;
   const today = TODAY();
-  const dayDoc = await fbGet(REF.day(today));
+  const dayRef=REF.day(today);
+  const [g,fl,fo,weights,dayDoc]=await Promise.all([
+    fbGet(REF.goals()),fbGet(REF.foodLists()),fbGet(REF.foods()),fbGet(REF.weights()),fbGet(dayRef),
+  ]);
+  if(generation!==accountGeneration)return;
+  if(g)state.goals=g;
+  state.foodLists=fl?.lists||[];state.foods=fo?.foods||[];state.weights=weights||{};
   if(dayDoc){
     if(dayDoc.logs)  state.logs[today]  = dayDoc.logs;
     if(dayDoc.water !== undefined) state.water[today] = dayDoc.water;
@@ -66,14 +94,16 @@ async function loadFromFirebase() {
   if(!state.foodLists.some(l=>l.id===state.activeListId)) state.activeListId = state.foodLists[0]?.id||null;
 
   // real-time listener for today
-  onSnapshot(REF.day(today), snap => {
+  stopDayListener?.();
+  stopDayListener=onSnapshot(dayRef, snap => {
+    if(generation!==accountGeneration)return;
     if(!snap.exists()) return;
     const d = snap.data();
     if(d.logs)  state.logs[today]  = d.logs;
     if(d.water !== undefined) state.water[today] = d.water;
     if(d.supps) state.supps[today] = new Set(d.supps);
     renderHome();
-  });
+  },()=>setSyncStatus('err'));
 
   setSyncStatus('ok');
 }
@@ -255,13 +285,14 @@ function renderFoodLists(){
 window._setList=id=>{ state.activeListId=id; renderFoodLists(); };
 async function persistFoods(nextFoods){
   if(state._savingFoods)return false;
+  const generation=accountGeneration;
   const previous=state.foods;
   state._savingFoods=true; state.foods=nextFoods;
   document.getElementById('save-food-btn').disabled=true;
   renderFoodLists();
-  try{ await saveFoodsDoc(); return true; }
-  catch(err){ state.foods=previous; alert('Could not save. Please try again.'); return false; }
-  finally{ state._savingFoods=false; document.getElementById('save-food-btn').disabled=false; renderFoodLists(); }
+  try{ await saveFoodsDoc(); return generation===accountGeneration; }
+  catch(err){ if(generation===accountGeneration){state.foods=previous; alert('Could not save. Please try again.');} return false; }
+  finally{ if(generation===accountGeneration){state._savingFoods=false; document.getElementById('save-food-btn').disabled=false; renderFoodLists();} }
 }
 window._deleteFood=async id=>{
   if(state._savingFoods||!confirm('Delete this food?'))return;
@@ -440,12 +471,13 @@ window._editCategory=id=>{
 window.saveCategoryName=()=>window._renameList(editingCategoryId);
 async function persistCategories(next){
   if(state._savingLists)return false;
+  const generation=accountGeneration;
   const previous=state.foodLists;
   state._savingLists=true;state.foodLists=next;
   renderManageLists();
-  try{await saveFoodListsDoc();renderFoodLists();return true;}
-  catch(err){state.foodLists=previous;alert('Could not save. Please try again.');return false;}
-  finally{state._savingLists=false;renderManageLists();}
+  try{await saveFoodListsDoc();if(generation!==accountGeneration)return false;renderFoodLists();return true;}
+  catch(err){if(generation===accountGeneration){state.foodLists=previous;alert('Could not save. Please try again.');}return false;}
+  finally{if(generation===accountGeneration){state._savingLists=false;renderManageLists();}}
 }
 window._moveCategory=(id,direction)=>window._reorderCategory(id,state.foodLists.findIndex(l=>l.id===id)+direction);
 window._reorderCategory=async(id,to)=>{
@@ -472,6 +504,7 @@ window.addFoodList=async()=>{
 };
 window._deleteList=async id=>{
   if(state._savingLists||state._savingFoods)return;
+  const generation=accountGeneration;
   if(!confirm('Delete this category and all its foods?'))return;
   const lists=state.foodLists.filter(l=>l.id!==id),foods=state.foods.filter(f=>f.listId!==id);
   state._savingLists=true;state._savingFoods=true;setSyncStatus('loading');
@@ -480,11 +513,12 @@ window._deleteList=async id=>{
     const batch=writeBatch(db);
     batch.set(REF.foodLists(),{lists});batch.set(REF.foods(),{foods});
     await batch.commit();
+    if(generation!==accountGeneration)return;
     state.foodLists=lists;state.foods=foods;
     if(state.activeListId===id)state.activeListId=lists[0]?.id||null;
     setSyncStatus('ok');
-  }catch(err){setSyncStatus('err');alert('Could not delete. Please try again.');}
-  finally{state._savingLists=false;state._savingFoods=false;renderManageLists();renderFoodLists();}
+  }catch(err){if(generation===accountGeneration){setSyncStatus('err');alert('Could not delete. Please try again.');}}
+  finally{if(generation===accountGeneration){state._savingLists=false;state._savingFoods=false;renderManageLists();renderFoodLists();}}
 };
 
 // ── SERVE MODAL ───────────────────────────────────────────
@@ -560,6 +594,7 @@ window.openWeightModal=()=>{
 };
 window.saveWeight=async()=>{
   if(state._savingWeight)return;
+  const generation=accountGeneration;
   const date=document.getElementById('weight-date').value;
   const input=document.getElementById('weight-value'),kg=Number(input.value);
   const error=document.getElementById('weight-error');
@@ -569,10 +604,11 @@ window.saveWeight=async()=>{
   setSyncStatus('loading');
   try{
     await setDoc(REF.weights(),{[date]:kg},{merge:true});
+    if(generation!==accountGeneration)return;
     state.weights={...state.weights,[date]:kg};setSyncStatus('ok');
     renderWeightChart();closeModal('modal-weight');
-  }catch(err){setSyncStatus('err');error.textContent='Could not save your weight. Please try again.';}
-  finally{state._savingWeight=false;document.getElementById('save-weight-btn').disabled=false;}
+  }catch(err){if(generation===accountGeneration){setSyncStatus('err');error.textContent='Could not save your weight. Please try again.';}}
+  finally{if(generation===accountGeneration){state._savingWeight=false;document.getElementById('save-weight-btn').disabled=false;}}
 };
 
 // ── WATER ─────────────────────────────────────────────────
@@ -593,6 +629,7 @@ window.resetWater=async()=>{
 
 // ── NAV ───────────────────────────────────────────────────
 window.switchPage=(name,btn)=>{
+  if(!accountReady)return;
   const previousPage=document.querySelector('.page.active')?.id;
   const nav=document.querySelector('.nav');
   if(previousPage!==`page-${name}` && typeof nav?.offsetWidth==='number'){
@@ -619,15 +656,77 @@ document.querySelectorAll('.modal-overlay').forEach(o=>{
 // ── INIT ──────────────────────────────────────────────────
 document.getElementById('water-input').addEventListener('keydown',e=>{ if(e.key==='Enter') window.addWater(); });
 
-setSyncStatus('loading');
-loadFromFirebase().then(()=>{
-  renderHome();
-  renderFoodLists();
+function resetAccountState(){
+  stopDayListener?.(); stopDayListener=null;
+  state.goals={cal:2000,protein:150,carbs:250,fat:65,waterMl:2000,supps:[]};
+  state.foodLists=[];state.foods=[];state.logs={};state.water={};state.supps={};state.weights={};
+  state.activeListId=null;state._editFoodId=null;state._serveFood=null;
+  state._savingFoods=false;state._savingLists=false;state._savingWeight=false;
+  document.querySelectorAll('.modal-overlay').forEach(modal=>modal.classList.remove('open'));
+}
+function authMessage(error){
+  const messages={
+    'auth/popup-closed-by-user':'Sign-in was cancelled. Try again when you’re ready.',
+    'auth/cancelled-popup-request':'A sign-in window is already open.',
+    'auth/popup-blocked':'Allow popups for CalCal, then try again. On iPhone, try signing in through Safari.',
+    'auth/unauthorized-domain':'Google sign-in needs this website to be enabled in Firebase. Please contact the app owner.',
+    'auth/operation-not-allowed':'Google sign-in has not been enabled yet. Please contact the app owner.',
+    'auth/configuration-not-found':'Google sign-in has not been set up yet. Please contact the app owner.',
+    'auth/network-request-failed':'Could not connect. Check your internet connection and try again.',
+    'permission-denied':'Your account data could not be opened. Please contact the app owner.',
+  };
+  return messages[error.code]||'Could not open your account. Please try again.';
+}
+window.signInGoogle=async()=>{
+  const button=document.getElementById('google-sign-in');
+  const error=document.getElementById('login-error');
+  error.textContent='';button.disabled=true;
+  try{
+    const provider=new GoogleAuthProvider();provider.setCustomParameters({prompt:'select_account'});
+    await signInWithPopup(auth,provider);
+  }catch(e){error.textContent=authMessage(e);}
+  finally{button.disabled=false;}
+};
+window.signOutAccount=async()=>{
+  const button=document.getElementById('account-sign-out');button.disabled=true;
+  try{await signOut(auth);}
+  catch(e){document.getElementById('account-error').textContent='Could not sign out. Please try again.';}
+  finally{button.disabled=false;}
+};
+async function openAccount(user){
+  const generation=++accountGeneration;
+  accountReady=false;resetAccountState();state.user=user;
+  document.body.classList.add('signed-out');
+  document.getElementById('login-screen').hidden=false;
+  document.getElementById('login-retry').hidden=true;
+  document.getElementById('login-error').textContent='';
+  document.getElementById('login-status').textContent=user?'Opening your account…':'';
+  document.getElementById('google-sign-in').hidden=!!user;
   document.getElementById('loading-screen').classList.add('loaded');
-}).catch(err=>{
-  setSyncStatus('err');
-  document.getElementById('loading-screen').querySelector('p').textContent='Connection failed. Please check your network.';
-  console.error(err);
+  if(!user)return;
+  try{
+    await initializeAccount(user);
+    if(generation!==accountGeneration)return;
+    await loadFromFirebase();
+    if(generation!==accountGeneration)return;
+    document.getElementById('account-name').textContent=user.displayName||'Google account';
+    document.getElementById('account-email').textContent=user.email||'';
+    document.getElementById('account-initial').textContent=(user.displayName||user.email||'C').slice(0,1).toUpperCase();
+    document.getElementById('account-error').textContent='';
+    accountReady=true;renderHome();renderFoodLists();
+    document.getElementById('login-screen').hidden=true;document.body.classList.remove('signed-out');
+    window.switchPage('home',document.querySelector('[data-page="home"]'));
+  }catch(error){
+    if(generation!==accountGeneration)return;
+    resetAccountState();document.getElementById('login-status').textContent='';
+    document.getElementById('login-error').textContent=authMessage(error);
+    document.getElementById('login-retry').hidden=false;
+  }
+}
+window.retryAccount=()=>openAccount(auth.currentUser);
+onAuthStateChanged(auth,openAccount,()=>{
+  document.getElementById('loading-screen').classList.add('loaded');
+  document.getElementById('login-error').textContent='Could not check sign-in. Reload CalCal to try again.';
 });
 
 (function setupKeyboardHandling() {
