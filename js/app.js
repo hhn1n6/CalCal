@@ -1,4 +1,4 @@
-import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.25';
+import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.26';
 import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.1.14';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
 import { setupPageSwipes } from './page-swipe.js?v=1.1.23';
@@ -7,6 +7,8 @@ import { setupPageSwipes } from './page-swipe.js?v=1.1.23';
 let state = {
   user: null,
   isAdmin: false,
+  isTester: false,
+  testerNewUser: false,
   goals:     { cal:2000, protein:150, carbs:250, fat:65, waterMl:2000, supps:[] },
   foodLists: [],
   foods: [],
@@ -687,10 +689,14 @@ document.querySelectorAll('.modal-overlay').forEach(o=>{
 // Preferences live under this user's account, independently of their food data.
 let languageSetupPending=false;
 let savingLanguage=false;
+let savingTesterMode=false;
+const TESTER_UID='YbInj1g14YPICxIGszWP3jtt6ZP2';
 function renderAccountLabels(){
   if(!state.user)return;
   document.getElementById('account-name').textContent=state.user.displayName||tr('Personal account');
-  document.getElementById('account-role').textContent=tr(state.isAdmin?'Admin':'Personal account');
+  document.getElementById('account-role').textContent=tr(state.isAdmin?'Admin':state.isTester?'Tester':'Personal account');
+  document.getElementById('tester-card').hidden=!state.isTester;
+  document.getElementById('tester-new-user').checked=state.testerNewUser;
   const google=state.user.providerData?.some(provider=>provider.providerId==='google.com');
   document.getElementById('account-provider').textContent=tr(google?'Signed in with Google':'Signed in with email');
 }
@@ -723,6 +729,18 @@ async function saveLanguagePreference(language,firstChoice=false){
   }finally{if(generation===accountGeneration){savingLanguage=false;button.disabled=false;}}
 }
 window.changeAccountLanguage=language=>saveLanguagePreference(language);
+window.changeTesterMode=async enabled=>{
+  if(!state.isTester||savingTesterMode)return;
+  const generation=accountGeneration, previous=state.testerNewUser;
+  const input=document.getElementById('tester-new-user'),error=document.getElementById('tester-error');
+  savingTesterMode=true;input.disabled=true;error.textContent='';
+  try{
+    await setDoc(accountRef('settings','preferences'),{testerNewUser:!!enabled},{merge:true});
+    if(generation!==accountGeneration)return;
+    state.testerNewUser=!!enabled;
+  }catch(err){if(generation===accountGeneration){input.checked=previous;error.textContent=tr('Could not save tester mode. Please try again.');}}
+  finally{if(generation===accountGeneration){savingTesterMode=false;input.disabled=false;}}
+};
 window.confirmLanguageChoice=()=>saveLanguagePreference(document.querySelector('input[name="first-language"]:checked').value,true);
 document.querySelectorAll('input[name="first-language"]').forEach(input=>input.addEventListener('change',()=>{
   updateLanguageUI(input.value);
@@ -737,6 +755,9 @@ function resetAccountState(){
   state.foodLists=[];state.foods=[];state.logs={};state.water={};state.supps={};state.weights={};
   state.activeListId=null;state._editFoodId=null;state._serveFood=null;
   state.isAdmin=false;
+  state.isTester=false;state.testerNewUser=false;savingTesterMode=false;
+  document.getElementById('tester-card').hidden=true;
+  document.getElementById('tester-new-user').disabled=false;
   state._savingFoods=false;state._savingLists=false;state._savingWeight=false;
   languageSetupPending=false;savingLanguage=false;
   document.querySelectorAll('.page, .nav').forEach(el=>el.inert=false);
@@ -822,7 +843,9 @@ async function openAccount(user){
     if(generation!==accountGeneration)return;
     // Existing accounts retain English until they choose a language. New accounts
     // are prompted until a valid choice has been saved, including after retries.
-    languageSetupPending=!!profile.languageSetupPending&&!validLanguage(preferences?.language);
+    state.isTester=user.uid===TESTER_UID&&profile.accountType==='tester';
+    state.testerNewUser=state.isTester&&preferences?.testerNewUser===true;
+    languageSetupPending=state.testerNewUser||!!profile.languageSetupPending&&!validLanguage(preferences?.language);
     updateLanguageUI(validLanguage(preferences?.language)?preferences.language:'en');
     await loadFromFirebase();
     if(generation!==accountGeneration)return;

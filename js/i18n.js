@@ -1,5 +1,8 @@
 // Interface copy only. Food names and other account content are never translated.
 export const chinese = {
+  'Tester':'測試員', 'Tester settings':'測試設定', 'New-user mode':'新用戶模式',
+  'Show the language choice each time you sign in. Turn off to test an existing user.':'每次登入時顯示語言選擇。關閉後可測試現有用戶流程。',
+  'Could not save tester mode. Please try again.':'無法儲存測試模式，請重試。',
   'CalCal Food Tracker':'CalCal 飲食記錄',
   'Email':'電郵', 'Password':'密碼', 'Login':'登入',
   'Continue with Google':'使用 Google 登入',
