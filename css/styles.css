@@ -39,8 +39,17 @@
   .language-choice .account-error { color: #620607; }
   .language-choice .btn { margin-top: 16px; }
   html:lang(zh) .macro-item { min-width: 0; }
-  html:lang(zh) .macro-label { flex-direction: column; align-items: center; gap: 4px; }
+  html:lang(zh) .macro-row { gap: 4px; }
+  html:lang(zh) .macro-label { flex-direction: row; align-items: center; justify-content: center; gap: 1px; font-size: clamp(9px, 2.6vw, 11px); letter-spacing: -.3px; }
   html:lang(zh) .macro-label span { white-space: nowrap; }
+  #modal-language { align-items: center; justify-content: center; padding: 20px; background: var(--bg); backdrop-filter: none; -webkit-backdrop-filter: none; }
+  #modal-language .onboarding-panel { max-width: 440px; max-height: calc(100dvh - 40px); border-radius: 20px; border: 1px solid var(--border); padding: 24px; animation: none; }
+  .onboarding-progress { font-size: 12px; color: var(--text3); margin-bottom: 16px; text-align: right; }
+  .setup-energy { display: grid; gap: 12px; margin-bottom: 16px; }
+  .setup-energy > div { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; }
+  .setup-energy strong { white-space: nowrap; }
+  .setup-note { font-size: 12px; line-height: 1.6; }
+  .language-choice .setup-keep { margin-top: 12px; font-size: 13px; }
   [hidden] { display: none !important; }
   .signed-out > .page, .signed-out > .nav, .signed-out > .modal-overlay { display: none !important; }
   .login-screen { position: fixed; inset: 0; z-index: 900; opacity: 1; transition: opacity 600ms ease-out; flex: 1; min-height: 0; overflow-y: auto; display: flex; align-items: center; justify-content: center; padding: 24px 24px calc(24px + env(safe-area-inset-bottom, 0px)); background: #fff; }
