@@ -1,0 +1,9 @@
+@import url('../assets/fonts/chiron-sung-hk/css/vf.css');
+
+:root {
+  --font-body: 'Times New Roman', Times, 'Chiron Sung HK WS', serif;
+}
+
+html:lang(zh) {
+  --font-body: 'Chiron Sung HK WS', 'Times New Roman', serif;
+}

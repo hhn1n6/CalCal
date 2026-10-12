@@ -20,7 +20,7 @@
     touch-action: manipulation;
     overflow: hidden;
 
-    font-family: 'Times New Roman', Times, serif;
+    font-family: var(--font-body, 'Times New Roman', Times, serif);
   }
 
   button, input, select, textarea { font-family: inherit; }
