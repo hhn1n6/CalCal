@@ -7,18 +7,18 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CalCal">
 <meta name="theme-color" content="#ffffff">
-<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.1.20">
-<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.1.20">
-<link rel="manifest" href="./manifest.webmanifest?v=1.1.20">
+<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.1.21">
+<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.1.21">
+<link rel="manifest" href="./manifest.webmanifest?v=1.1.21">
 <title>CalCal Food Tracker</title>
-<link rel="stylesheet" href="./css/colors.css?v=1.1.20">
-<link rel="stylesheet" href="./css/styles.css?v=1.1.20">
+<link rel="stylesheet" href="./css/colors.css?v=1.1.21">
+<link rel="stylesheet" href="./css/styles.css?v=1.1.21">
 </head>
 <body class="signed-out">
 <main id="login-screen" class="login-screen">
   <div class="login-panel">
-    <img class="login-logo" src="./assets/logo_transparent.png?v=1.1.20" width="160" height="160" alt="CalCal">
-    <small class="login-version">v1.1.20</small>
+    <img class="login-logo" src="./assets/logo_transparent.png?v=1.1.21" width="160" height="160" alt="CalCal">
+    <small class="login-version">v1.1.21</small>
     <div class="login-actions">
     <div class="login-methods">
     <form id="email-login-form" class="email-login-form" onsubmit="signInEmail(event)">
@@ -49,7 +49,7 @@
       <div class="page-title"><span id="home-ddmm"></span></div>
       <div id="home-weekday" style="font-size:14px;color:var(--text3);margin-top:3px;"></div>
     </div>
-    <img class="home-header-logo" src="./assets/logo_transparent.png?v=1.1.20" width="48" height="48" alt="CalCal">
+    <img class="home-header-logo" src="./assets/logo_transparent.png?v=1.1.21" width="48" height="48" alt="CalCal">
     <button class="btn btn-primary btn-sm" onclick="openGoalModal()">Goals</button>
   </div>
 
@@ -96,7 +96,7 @@
     <div class="water-input-row">
       <div class="water-quick" onclick="addWaterQuick(500)">+500</div>
       <div class="water-quick" onclick="addWaterQuick(1500)">+1500</div>
-      <input type="number" id="water-input" placeholder="Custom ml" min="1">
+      <input type="number" inputmode="numeric" id="water-input" placeholder="Custom ml" min="1">
     </div>
   </div>
 
@@ -154,14 +154,14 @@
     <div class="modal-handle"></div>
     <div class="modal-title">Daily goals</div>
     <div class="field-row">
-      <div class="field"><label>Calories (kcal)</label><input type="number" id="g-cal" placeholder="2000"></div>
-      <div class="field"><label>Protein (g)</label><input type="number" id="g-protein" placeholder="150"></div>
+      <div class="field"><label>Calories (kcal)</label><input type="number" inputmode="numeric" id="g-cal" placeholder="2000"></div>
+      <div class="field"><label>Protein (g)</label><input type="number" inputmode="numeric" id="g-protein" placeholder="150"></div>
     </div>
     <div class="field-row">
-      <div class="field"><label>Carbohydrates (g)</label><input type="number" id="g-carbs" placeholder="250"></div>
-      <div class="field"><label>Fat (g)</label><input type="number" id="g-fat" placeholder="65"></div>
+      <div class="field"><label>Carbohydrates (g)</label><input type="number" inputmode="numeric" id="g-carbs" placeholder="250"></div>
+      <div class="field"><label>Fat (g)</label><input type="number" inputmode="numeric" id="g-fat" placeholder="65"></div>
     </div>
-    <div class="field"><label>Water goal (ml)</label><input type="number" id="g-water-ml" placeholder="2000"></div>
+    <div class="field"><label>Water goal (ml)</label><input type="number" inputmode="numeric" id="g-water-ml" placeholder="2000"></div>
     <div class="field">
       <label>Supplements (separate with commas)</label>
       <input type="text" id="g-supps" placeholder="Fish oil, Vitamin D, Calcium">
@@ -182,12 +182,12 @@
     <div class="field"><label for="f-ingredients">Ingredients (optional)</label><input type="text" id="f-ingredients" placeholder="e.g. Chicken, rice, sauce"></div>
     <div class="field"><label for="f-list">Food list</label><select id="f-list"></select></div>
     <div class="field-row">
-      <div class="field"><label for="f-cal">Calories (kcal)</label><input type="number" id="f-cal" min="0" step="any" placeholder="0"></div>
-      <div class="field"><label for="f-protein">Protein (g)</label><input type="number" id="f-protein" min="0" step="any" placeholder="Unknown"></div>
+      <div class="field"><label for="f-cal">Calories (kcal)</label><input type="number" inputmode="numeric" id="f-cal" min="0" step="any" placeholder="0"></div>
+      <div class="field"><label for="f-protein">Protein (g)</label><input type="number" inputmode="numeric" id="f-protein" min="0" step="any" placeholder="Unknown"></div>
     </div>
     <div class="field-row">
-      <div class="field"><label for="f-carbs">Carbs (g)</label><input type="number" id="f-carbs" min="0" step="any" placeholder="Unknown"></div>
-      <div class="field"><label for="f-fat">Fat (g)</label><input type="number" id="f-fat" min="0" step="any" placeholder="Unknown"></div>
+      <div class="field"><label for="f-carbs">Carbs (g)</label><input type="number" inputmode="numeric" id="f-carbs" min="0" step="any" placeholder="Unknown"></div>
+      <div class="field"><label for="f-fat">Fat (g)</label><input type="number" inputmode="numeric" id="f-fat" min="0" step="any" placeholder="Unknown"></div>
     </div>
     <div class="btn-row">
       <button class="btn btn-secondary btn-full" onclick="closeModal('modal-add-food')">Cancel</button>
@@ -258,7 +258,7 @@
     <div id="serve-food-info" style="font-size:13px;color:var(--text2);margin-bottom:20px;"></div>
     <div class="field">
       <label>Servings (1 = the food’s stated portion / unit)</label>
-      <input type="number" id="serve-qty" value="1" min="0.1" step="0.1">
+      <input type="number" inputmode="decimal" id="serve-qty" value="1" min="0.1" step="0.1">
     </div>
     <div id="serve-preview" style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px;margin-bottom:16px;"></div>
     <div class="btn-row">
@@ -270,21 +270,21 @@
 
 <nav class="nav">
   <button class="nav-btn active" aria-label="Today" data-page="home" onclick="switchPage('home',this)">
-    <img class="nav-icon-regular" src="./assets/icons/home.svg?v=1.1.20" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/home-bold.svg?v=1.1.20" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/home.svg?v=1.1.21" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/home-bold.svg?v=1.1.21" width="24" height="24" alt="" aria-hidden="true">
   </button>
   <button class="nav-btn" aria-label="Foods" data-page="lists" onclick="switchPage('lists',this)">
-    <img class="nav-icon-regular" src="./assets/icons/menu.svg?v=1.1.20" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/menu-bold.svg?v=1.1.20" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/menu.svg?v=1.1.21" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/menu-bold.svg?v=1.1.21" width="24" height="24" alt="" aria-hidden="true">
   </button>
   <button class="nav-btn" aria-label="Personal" data-page="person" onclick="switchPage('person',this)">
-    <img class="nav-icon-regular" src="./assets/icons/person.svg?v=1.1.20" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/person-bold.svg?v=1.1.20" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/person.svg?v=1.1.21" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/person-bold.svg?v=1.1.21" width="24" height="24" alt="" aria-hidden="true">
   </button>
 </nav>
 
 <!-- Firebase SDK -->
-<script type="module" src="./js/app.js?v=1.1.20"></script>
-<script type="module" src="./js/earth-background.js?v=1.1.20"></script>
+<script type="module" src="./js/app.js?v=1.1.21"></script>
+<script type="module" src="./js/earth-background.js?v=1.1.21"></script>
 </body>
 </html>
