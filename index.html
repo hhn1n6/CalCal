@@ -7,37 +7,37 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CalCal">
 <meta name="theme-color" content="#ffffff">
-<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.1.24">
-<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.1.24">
-<link rel="manifest" href="./manifest.webmanifest?v=1.1.24">
+<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.1.25">
+<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.1.25">
+<link rel="manifest" href="./manifest.webmanifest?v=1.1.25">
 <title>CalCal Food Tracker</title>
-<link rel="stylesheet" href="./css/colors.css?v=1.1.24">
-<link rel="stylesheet" href="./css/fonts.css?v=1.1.24">
-<link rel="stylesheet" href="./css/styles.css?v=1.1.24">
+<link rel="stylesheet" href="./css/colors.css?v=1.1.25">
+<link rel="stylesheet" href="./css/fonts.css?v=1.1.25">
+<link rel="stylesheet" href="./css/styles.css?v=1.1.25">
 </head>
 <body class="signed-out">
 <main id="login-screen" class="login-screen">
   <div class="login-panel">
-    <img class="login-logo" src="./assets/logo_transparent.png?v=1.1.24" width="160" height="160" alt="CalCal">
-    <small class="login-version">v1.1.24</small>
+    <img class="login-logo" src="./assets/logo_transparent.png?v=1.1.25" width="160" height="160" alt="CalCal">
+    <small class="login-version">v1.1.25</small>
     <div class="login-actions">
     <div class="login-methods">
     <form id="email-login-form" class="email-login-form" onsubmit="signInEmail(event)">
-      <div class="login-field"><label for="login-email">Email</label><input id="login-email" name="email" type="email" autocomplete="username" autocapitalize="none" spellcheck="false" required></div>
-      <div class="login-field"><label for="login-password">Password</label><input id="login-password" name="password" type="password" autocomplete="current-password" required></div>
-      <button id="email-sign-in" type="submit" class="btn btn-primary email-sign-in">Login</button>
+      <div class="login-field"><label for="login-email" data-i18n="Email">Email</label><input id="login-email" name="email" type="email" autocomplete="username" autocapitalize="none" spellcheck="false" required></div>
+      <div class="login-field"><label for="login-password" data-i18n="Password">Password</label><input id="login-password" name="password" type="password" autocomplete="current-password" required></div>
+      <button id="email-sign-in" type="submit" class="btn btn-primary email-sign-in" data-i18n="Login">Login</button>
     </form>
     <div class="platform-login-buttons">
-      <button id="google-sign-in" class="btn platform-sign-in google-sign-in" onclick="signInGoogle()" aria-label="Continue with Google" title="Continue with Google"><img class="platform-mark" src="./assets/google-logo.png" width="20" height="20" alt="" aria-hidden="true"></button>
-      <button id="facebook-sign-in" type="button" class="btn platform-sign-in" disabled aria-label="Facebook sign-in — coming soon" title="Facebook sign-in — coming soon"><img class="platform-mark" src="./assets/icons/facebook.svg" width="20" height="20" alt="" aria-hidden="true"></button>
-      <button id="apple-sign-in" type="button" class="btn platform-sign-in" disabled aria-label="Apple sign-in — coming soon" title="Apple sign-in — coming soon"><img class="platform-mark" src="./assets/icons/apple.svg" width="20" height="20" alt="" aria-hidden="true"></button>
+      <button id="google-sign-in" class="btn platform-sign-in google-sign-in" onclick="signInGoogle()" aria-label="Continue with Google" data-i18n-aria-label="Continue with Google" title="Continue with Google" data-i18n-title="Continue with Google"><img class="platform-mark" src="./assets/google-logo.png" width="20" height="20" alt="" aria-hidden="true"></button>
+      <button id="facebook-sign-in" type="button" class="btn platform-sign-in" disabled aria-label="Facebook sign-in — coming soon" data-i18n-aria-label="Facebook sign-in — coming soon" title="Facebook sign-in — coming soon" data-i18n-title="Facebook sign-in — coming soon"><img class="platform-mark" src="./assets/icons/facebook.svg" width="20" height="20" alt="" aria-hidden="true"></button>
+      <button id="apple-sign-in" type="button" class="btn platform-sign-in" disabled aria-label="Apple sign-in — coming soon" data-i18n-aria-label="Apple sign-in — coming soon" title="Apple sign-in — coming soon" data-i18n-title="Apple sign-in — coming soon"><img class="platform-mark" src="./assets/icons/apple.svg" width="20" height="20" alt="" aria-hidden="true"></button>
     </div>
     </div>
-    <div id="login-status" class="login-spinner" role="status" aria-label="Opening your account"></div>
+    <div id="login-status" class="login-spinner" role="status" aria-label="Opening your account" data-i18n-aria-label="Opening your account"></div>
     <p id="login-error" class="account-error" role="alert"></p>
     <div id="login-retry" hidden>
-      <button class="btn btn-primary" onclick="retryAccount()">Try again</button>
-      <button class="btn btn-secondary" onclick="signOutAccount()">Use another account</button>
+      <button class="btn btn-primary" onclick="retryAccount()" data-i18n="Try again">Try again</button>
+      <button class="btn btn-secondary" onclick="signOutAccount()" data-i18n="Use another account">Use another account</button>
     </div>
     </div>
   </div>
@@ -50,14 +50,14 @@
       <div class="page-title"><span id="home-ddmm"></span></div>
       <div id="home-weekday" style="font-size:14px;color:var(--text3);margin-top:3px;"></div>
     </div>
-    <img class="home-header-logo" src="./assets/logo_transparent.png?v=1.1.24" width="48" height="48" alt="CalCal">
-    <button class="btn btn-primary btn-sm" onclick="openGoalModal()">Goals</button>
+    <img class="home-header-logo" src="./assets/logo_transparent.png?v=1.1.25" width="48" height="48" alt="CalCal">
+    <button class="btn btn-primary btn-sm" onclick="openGoalModal()" data-i18n="Goals">Goals</button>
   </div>
 
   <div class="card nutrition-card" style="text-align:center;">
     <div class="nutrition-card-header">
-      <div class="card-title">Daily nutrition</div>
-      <button class="btn-icon nutrition-history" onclick="openDiaryModal()" aria-label="Open food diary" title="Food diary"><img src="./assets/history.png" width="22" height="22" alt=""></button>
+      <div class="card-title" data-i18n="Daily nutrition">Daily nutrition</div>
+      <button class="btn-icon nutrition-history" onclick="openDiaryModal()" aria-label="Open food diary" data-i18n-aria-label="Open food diary" title="Food diary" data-i18n-title="Food diary"><img src="./assets/history.png" width="22" height="22" alt=""></button>
     </div>
     <div class="ring-wrap">
       <svg width="140" height="140" viewBox="0 0 140 140">
@@ -71,25 +71,25 @@
     </div>
     <div class="macro-row">
       <div class="macro-item">
-        <div class="macro-label"><span>Protein</span><span id="lbl-protein">—</span></div>
+        <div class="macro-label"><span data-i18n="Protein">Protein</span><span id="lbl-protein">—</span></div>
         <div class="macro-bar"><div id="bar-protein" class="macro-fill" style="background:var(--green);width:0%"></div></div>
       </div>
       <div class="macro-item">
-        <div class="macro-label"><span>Carbs</span><span id="lbl-carbs">—</span></div>
+        <div class="macro-label"><span data-i18n="Carbs">Carbs</span><span id="lbl-carbs">—</span></div>
         <div class="macro-bar"><div id="bar-carbs" class="macro-fill" style="background:var(--yellow);width:0%"></div></div>
       </div>
       <div class="macro-item">
-        <div class="macro-label"><span>Fat</span><span id="lbl-fat">—</span></div>
+        <div class="macro-label"><span data-i18n="Fat">Fat</span><span id="lbl-fat">—</span></div>
         <div class="macro-bar"><div id="bar-fat" class="macro-fill" style="background:var(--orange);width:0%"></div></div>
       </div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title">Water</div>
+    <div class="card-title" data-i18n="Water">Water</div>
     <div class="water-bar-wrap">
       <div class="water-nums">
-        <div class="water-intake"><div><span id="water-consumed-big" class="water-consumed-big">0</span><span style="font-size:14px;color:var(--text2);margin-left:4px;">ml</span></div><button class="btn-icon water-reset" onclick="resetWater()" aria-label="Reset water intake" title="Reset water intake"><img src="./assets/reset.png" width="15" height="15" alt=""></button></div>
+        <div class="water-intake"><div><span id="water-consumed-big" class="water-consumed-big">0</span><span style="font-size:14px;color:var(--text2);margin-left:4px;">ml</span></div><button class="btn-icon water-reset" onclick="resetWater()" aria-label="Reset water intake" data-i18n-aria-label="Reset water intake" title="Reset water intake" data-i18n-title="Reset water intake"><img src="./assets/reset.png" width="15" height="15" alt=""></button></div>
         <div id="water-goal-lbl" class="water-goal-txt"></div>
       </div>
       <div class="water-bar-track"><div id="water-bar-fill" class="water-bar-fill" style="width:0%"></div></div>
@@ -97,20 +97,20 @@
     <div class="water-input-row">
       <div class="water-quick" onclick="addWaterQuick(500)">+500</div>
       <div class="water-quick" onclick="addWaterQuick(1500)">+1500</div>
-      <input type="number" inputmode="decimal" id="water-input" placeholder="Custom ml" min="1">
+      <input type="number" inputmode="decimal" id="water-input" placeholder="Custom ml" data-i18n-placeholder="Custom ml" min="1">
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title">Supplements</div>
+    <div class="card-title" data-i18n="Supplements">Supplements</div>
     <div id="supp-row" class="supp-row"></div>
-    <div id="supp-empty" class="empty" style="padding:10px 0;display:none;"><p>No supplements yet. Add them in Goals.</p></div>
+    <div id="supp-empty" class="empty" style="padding:10px 0;display:none;"><p data-i18n="No supplements yet. Add them in Goals.">No supplements yet. Add them in Goals.</p></div>
   </div>
 
   <div class="card weight-card">
     <div class="weight-card-header">
-      <div class="card-title">Weight <span class="weight-unit">(kg)</span></div>
-      <button class="btn-icon weight-add" onclick="openWeightModal()" aria-label="Add weight" title="Add weight">+</button>
+      <div class="card-title"><span data-i18n="Weight">Weight</span> <span class="weight-unit">(kg)</span></div>
+      <button class="btn-icon weight-add" onclick="openWeightModal()" aria-label="Add weight" data-i18n-aria-label="Add weight" title="Add weight" data-i18n-title="Add weight">+</button>
     </div>
     <div id="weight-summary" class="weight-summary"></div>
     <div id="weight-chart"></div>
@@ -126,8 +126,8 @@
 <!-- FOOD LISTS PAGE -->
 <div id="page-lists" class="page">
   <div class="page-header">
-    <button class="page-title category-selector" onclick="openManageListsModal()" aria-label="Choose food category" aria-haspopup="dialog"><span id="current-category-name">Categories</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
-    <button class="btn btn-primary btn-sm" onclick="openAddFoodModal()">+ Add food</button>
+    <button class="page-title category-selector" onclick="openManageListsModal()" aria-label="Choose food category" data-i18n-aria-label="Choose food category" aria-haspopup="dialog"><span id="current-category-name" data-i18n="Categories">Categories</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+    <button class="btn btn-primary btn-sm" onclick="openAddFoodModal()" data-i18n="+ Add food">+ Add food</button>
   </div>
   <div id="food-grid"></div>
 </div>
@@ -135,41 +135,59 @@
 <!-- PERSON PAGE -->
 <div id="page-person" class="page">
   <div class="card account-card">
-    <div class="card-title">Your account</div>
-    <div class="account-profile"><div id="account-initial" class="account-avatar" aria-hidden="true"></div><div><h2 id="account-name"></h2><p id="account-email"></p><small>Signed in with Google · <span id="account-role">Personal account</span></small></div></div>
-    <button id="account-sign-out" class="btn btn-secondary btn-full" onclick="signOutAccount()">Sign out</button>
+    <div class="card-title" data-i18n="Your account">Your account</div>
+    <div class="account-profile"><div id="account-initial" class="account-avatar" aria-hidden="true"></div><div><h2 id="account-name"></h2><p id="account-email"></p><small><span id="account-provider">Signed in with Google</span> · <span id="account-role">Personal account</span></small></div></div>
+    <button id="account-sign-out" class="btn btn-secondary btn-full" onclick="signOutAccount()" data-i18n="Sign out">Sign out</button>
     <p id="account-error" class="account-error" role="alert"></p>
   </div>
+  <div class="card language-card">
+    <div class="card-title" data-i18n="Language">Language</div>
+    <select id="account-language" aria-label="Language" data-i18n-aria-label="Language" onchange="changeAccountLanguage(this.value)">
+      <option value="en">English</option>
+      <option value="zh-HK">繁體中文</option>
+    </select>
+    <p id="language-error" class="account-error" role="alert"></p>
+  </div>
   <div class="card">
-    <div class="card-title">Earth background</div>
-    <p id="earth-location-status" class="earth-location-status" role="status">Hong Kong preview. Sunlight follows the current time.</p>
+    <div class="card-title" data-i18n="Earth background">Earth background</div>
+    <p id="earth-location-status" class="earth-location-status" role="status" data-i18n="Hong Kong preview. Sunlight follows the current time.">Hong Kong preview. Sunlight follows the current time.</p>
     <div class="btn-row">
-      <button id="earth-use-location" class="btn btn-primary">Use my location</button>
-      <button id="earth-reset-location" class="btn btn-secondary">Hong Kong preview</button>
+      <button id="earth-use-location" class="btn btn-primary" data-i18n="Use my location">Use my location</button>
+      <button id="earth-reset-location" class="btn btn-secondary" data-i18n="Hong Kong preview">Hong Kong preview</button>
     </div>
   </div>
 </div>
 <!-- MODALS -->
+<div id="modal-language" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="language-choice-title">
+  <div class="modal language-choice">
+    <div id="language-choice-title" class="modal-title" data-i18n="Choose your preferred language">Choose your preferred language</div>
+    <p data-i18n="You can change this later on the Personal page.">You can change this later on the Personal page.</p>
+    <label class="language-option"><input type="radio" name="first-language" value="en" checked> English</label>
+    <label class="language-option"><input type="radio" name="first-language" value="zh-HK"> 繁體中文</label>
+    <p id="language-choice-error" class="account-error" role="alert"></p>
+    <button id="language-continue" class="btn btn-primary btn-full" onclick="confirmLanguageChoice()" data-i18n="Continue">Continue</button>
+  </div>
+</div>
 <div id="modal-goal" class="modal-overlay">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-title">Daily goals</div>
+    <div class="modal-title" data-i18n="Daily goals">Daily goals</div>
     <div class="field-row">
-      <div class="field"><label>Calories (kcal)</label><input type="number" inputmode="decimal" id="g-cal" placeholder="2000"></div>
-      <div class="field"><label>Protein (g)</label><input type="number" inputmode="decimal" id="g-protein" placeholder="150"></div>
+      <div class="field"><label data-i18n="Calories (kcal)">Calories (kcal)</label><input type="number" inputmode="decimal" id="g-cal" placeholder="2000"></div>
+      <div class="field"><label data-i18n="Protein (g)">Protein (g)</label><input type="number" inputmode="decimal" id="g-protein" placeholder="150"></div>
     </div>
     <div class="field-row">
-      <div class="field"><label>Carbohydrates (g)</label><input type="number" inputmode="decimal" id="g-carbs" placeholder="250"></div>
-      <div class="field"><label>Fat (g)</label><input type="number" inputmode="decimal" id="g-fat" placeholder="65"></div>
+      <div class="field"><label data-i18n="Carbohydrates (g)">Carbohydrates (g)</label><input type="number" inputmode="decimal" id="g-carbs" placeholder="250"></div>
+      <div class="field"><label data-i18n="Fat (g)">Fat (g)</label><input type="number" inputmode="decimal" id="g-fat" placeholder="65"></div>
     </div>
-    <div class="field"><label>Water goal (ml)</label><input type="number" inputmode="decimal" id="g-water-ml" placeholder="2000"></div>
+    <div class="field"><label data-i18n="Water goal (ml)">Water goal (ml)</label><input type="number" inputmode="decimal" id="g-water-ml" placeholder="2000"></div>
     <div class="field">
-      <label>Supplements (separate with commas)</label>
-      <input type="text" id="g-supps" placeholder="Fish oil, Vitamin D, Calcium">
+      <label data-i18n="Supplements (separate with commas)">Supplements (separate with commas)</label>
+      <input type="text" id="g-supps" placeholder="Fish oil, Vitamin D, Calcium" data-i18n-placeholder="Fish oil, Vitamin D, Calcium">
     </div>
     <div class="btn-row">
-      <button class="btn btn-secondary btn-full" onclick="closeModal('modal-goal')">Cancel</button>
-      <button class="btn btn-primary btn-full" onclick="saveGoals()">Save</button>
+      <button class="btn btn-secondary btn-full" onclick="closeModal('modal-goal')" data-i18n="Cancel">Cancel</button>
+      <button class="btn btn-primary btn-full" onclick="saveGoals()" data-i18n="Save">Save</button>
     </div>
   </div>
 </div>
@@ -178,21 +196,21 @@
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title" id="add-food-title">Add food</div>
-    <div class="field"><label for="f-name">Food name</label><input type="text" id="f-name" placeholder="e.g. Chicken breast"></div>
-    <div class="field"><label for="f-portion">Portion / unit (optional)</label><input type="text" id="f-portion" placeholder="e.g. 100 g, 1 bowl, 1 piece"></div>
-    <div class="field"><label for="f-ingredients">Ingredients (optional)</label><input type="text" id="f-ingredients" placeholder="e.g. Chicken, rice, sauce"></div>
-    <div class="field"><label for="f-list">Food list</label><select id="f-list"></select></div>
+    <div class="field"><label for="f-name" data-i18n="Food name">Food name</label><input type="text" id="f-name" placeholder="e.g. Chicken breast" data-i18n-placeholder="e.g. Chicken breast"></div>
+    <div class="field"><label for="f-portion" data-i18n="Portion / unit (optional)">Portion / unit (optional)</label><input type="text" id="f-portion" placeholder="e.g. 100 g, 1 bowl, 1 piece" data-i18n-placeholder="e.g. 100 g, 1 bowl, 1 piece"></div>
+    <div class="field"><label for="f-ingredients" data-i18n="Ingredients (optional)">Ingredients (optional)</label><input type="text" id="f-ingredients" placeholder="e.g. Chicken, rice, sauce" data-i18n-placeholder="e.g. Chicken, rice, sauce"></div>
+    <div class="field"><label for="f-list" data-i18n="Food list">Food list</label><select id="f-list"></select></div>
     <div class="field-row">
-      <div class="field"><label for="f-cal">Calories (kcal)</label><input type="number" inputmode="decimal" id="f-cal" min="0" step="any" placeholder="0"></div>
-      <div class="field"><label for="f-protein">Protein (g)</label><input type="number" inputmode="decimal" id="f-protein" min="0" step="any" placeholder="Unknown"></div>
+      <div class="field"><label for="f-cal" data-i18n="Calories (kcal)">Calories (kcal)</label><input type="number" inputmode="decimal" id="f-cal" min="0" step="any" placeholder="0"></div>
+      <div class="field"><label for="f-protein" data-i18n="Protein (g)">Protein (g)</label><input type="number" inputmode="decimal" id="f-protein" min="0" step="any" placeholder="Unknown" data-i18n-placeholder="Unknown"></div>
     </div>
     <div class="field-row">
-      <div class="field"><label for="f-carbs">Carbs (g)</label><input type="number" inputmode="decimal" id="f-carbs" min="0" step="any" placeholder="Unknown"></div>
-      <div class="field"><label for="f-fat">Fat (g)</label><input type="number" inputmode="decimal" id="f-fat" min="0" step="any" placeholder="Unknown"></div>
+      <div class="field"><label for="f-carbs" data-i18n="Carbs (g)">Carbs (g)</label><input type="number" inputmode="decimal" id="f-carbs" min="0" step="any" placeholder="Unknown" data-i18n-placeholder="Unknown"></div>
+      <div class="field"><label for="f-fat" data-i18n="Fat (g)">Fat (g)</label><input type="number" inputmode="decimal" id="f-fat" min="0" step="any" placeholder="Unknown" data-i18n-placeholder="Unknown"></div>
     </div>
     <div class="btn-row">
-      <button class="btn btn-secondary btn-full" onclick="closeModal('modal-add-food')">Cancel</button>
-      <button id="save-food-btn" class="btn btn-primary btn-full" onclick="saveFood()">Save</button>
+      <button class="btn btn-secondary btn-full" onclick="closeModal('modal-add-food')" data-i18n="Cancel">Cancel</button>
+      <button id="save-food-btn" class="btn btn-primary btn-full" onclick="saveFood()" data-i18n="Save">Save</button>
     </div>
   </div>
 </div>
@@ -200,27 +218,27 @@
 <div id="modal-manage-lists" class="modal-overlay">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-title">Food categories</div>
+    <div class="modal-title" data-i18n="Food categories">Food categories</div>
     <div class="field">
-      <label>New category name</label>
+      <label data-i18n="New category name">New category name</label>
       <div style="display:flex;gap:8px;">
-        <input type="text" id="new-list-name" placeholder="e.g. Breakfast, Protein foods">
-        <button class="btn btn-primary btn-sm" id="add-category-btn" onclick="addFoodList()">Add</button>
+        <input type="text" id="new-list-name" placeholder="e.g. Breakfast, Protein foods" data-i18n-placeholder="e.g. Breakfast, Protein foods">
+        <button class="btn btn-primary btn-sm" id="add-category-btn" onclick="addFoodList()" data-i18n="Add">Add</button>
       </div>
     </div>
     <div id="manage-lists-items"></div>
-    <button class="btn btn-secondary btn-full" style="margin-top:16px;" onclick="closeModal('modal-manage-lists')">Done</button>
+    <button class="btn btn-secondary btn-full" style="margin-top:16px;" onclick="closeModal('modal-manage-lists')" data-i18n="Done">Done</button>
   </div>
 </div>
 
 <div id="modal-edit-category" class="modal-overlay">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-title">Edit category</div>
+    <div class="modal-title" data-i18n="Edit category">Edit category</div>
     <div id="edit-category-field" class="field"></div>
     <div class="modal-actions">
-      <button class="btn btn-secondary btn-full" onclick="closeModal('modal-edit-category')">Cancel</button>
-      <button class="btn btn-primary btn-full" onclick="saveCategoryName()">Save</button>
+      <button class="btn btn-secondary btn-full" onclick="closeModal('modal-edit-category')" data-i18n="Cancel">Cancel</button>
+      <button class="btn btn-primary btn-full" onclick="saveCategoryName()" data-i18n="Save">Save</button>
     </div>
   </div>
 </div>
@@ -228,26 +246,26 @@
 <div id="modal-diary" class="modal-overlay">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div class="diary-header"><div class="modal-title">Food diary</div><span id="log-total-badge"></span></div>
+    <div class="diary-header"><div class="modal-title" data-i18n="Food diary">Food diary</div><span id="log-total-badge"></span></div>
     <div id="log-list"></div>
     <div id="log-empty" class="empty" style="padding:24px 0;">
-      <p>Open Foods to log a meal.</p>
+      <p data-i18n="Open Foods to log a meal.">Open Foods to log a meal.</p>
     </div>
-    <button class="btn btn-secondary btn-full" style="margin-top:16px;" onclick="closeModal('modal-diary')">Done</button>
+    <button class="btn btn-secondary btn-full" style="margin-top:16px;" onclick="closeModal('modal-diary')" data-i18n="Done">Done</button>
   </div>
 </div>
 
 <div id="modal-weight" class="modal-overlay">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-title">Record weight</div>
-    <div class="field"><label for="weight-date">Date</label><input id="weight-date" type="date"></div>
-    <div class="field"><label for="weight-value">Weight (kg)</label><input id="weight-value" type="number" min="0.1" step="0.1" inputmode="decimal" placeholder="e.g. 70.5"></div>
-    <p class="weight-hint">One entry per date. Saving again updates that date’s weight.</p>
+    <div class="modal-title" data-i18n="Record weight">Record weight</div>
+    <div class="field"><label for="weight-date" data-i18n="Date">Date</label><input id="weight-date" type="date"></div>
+    <div class="field"><label for="weight-value" data-i18n="Weight (kg)">Weight (kg)</label><input id="weight-value" type="number" min="0.1" step="0.1" inputmode="decimal" placeholder="e.g. 70.5" data-i18n-placeholder="e.g. 70.5"></div>
+    <p class="weight-hint" data-i18n="One entry per date. Saving again updates that date’s weight.">One entry per date. Saving again updates that date’s weight.</p>
     <p id="weight-error" class="weight-error" role="alert"></p>
     <div class="btn-row">
-      <button class="btn btn-secondary btn-full" onclick="closeModal('modal-weight')">Cancel</button>
-      <button id="save-weight-btn" class="btn btn-primary btn-full" onclick="saveWeight()">Save</button>
+      <button class="btn btn-secondary btn-full" onclick="closeModal('modal-weight')" data-i18n="Cancel">Cancel</button>
+      <button id="save-weight-btn" class="btn btn-primary btn-full" onclick="saveWeight()" data-i18n="Save">Save</button>
     </div>
   </div>
 </div>
@@ -258,34 +276,34 @@
     <div class="modal-title" id="serve-food-name">Choose servings</div>
     <div id="serve-food-info" style="font-size:13px;color:var(--text2);margin-bottom:20px;"></div>
     <div class="field">
-      <label>Servings (1 = the food’s stated portion / unit)</label>
+      <label data-i18n="Servings (1 = the food’s stated portion / unit)">Servings (1 = the food’s stated portion / unit)</label>
       <input type="number" inputmode="decimal" id="serve-qty" value="1" min="0.1" step="0.1">
     </div>
     <div id="serve-preview" style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px;margin-bottom:16px;"></div>
     <div class="btn-row">
-      <button class="btn btn-secondary btn-full" onclick="closeModal('modal-serve')">Cancel</button>
-      <button class="btn btn-primary btn-full" onclick="confirmServe()">Add to diary</button>
+      <button class="btn btn-secondary btn-full" onclick="closeModal('modal-serve')" data-i18n="Cancel">Cancel</button>
+      <button class="btn btn-primary btn-full" onclick="confirmServe()" data-i18n="Add to diary">Add to diary</button>
     </div>
   </div>
 </div>
 
 <nav class="nav">
-  <button class="nav-btn active" aria-label="Today" data-page="home" onclick="switchPage('home',this)">
-    <img class="nav-icon-regular" src="./assets/icons/home.svg?v=1.1.24" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/home-bold.svg?v=1.1.24" width="24" height="24" alt="" aria-hidden="true">
+  <button class="nav-btn active" aria-label="Today" data-i18n-aria-label="Today" data-page="home" onclick="switchPage('home',this)">
+    <img class="nav-icon-regular" src="./assets/icons/home.svg?v=1.1.25" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/home-bold.svg?v=1.1.25" width="24" height="24" alt="" aria-hidden="true">
   </button>
-  <button class="nav-btn" aria-label="Foods" data-page="lists" onclick="switchPage('lists',this)">
-    <img class="nav-icon-regular" src="./assets/icons/menu.svg?v=1.1.24" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/menu-bold.svg?v=1.1.24" width="24" height="24" alt="" aria-hidden="true">
+  <button class="nav-btn" aria-label="Foods" data-i18n-aria-label="Foods" data-page="lists" onclick="switchPage('lists',this)">
+    <img class="nav-icon-regular" src="./assets/icons/menu.svg?v=1.1.25" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/menu-bold.svg?v=1.1.25" width="24" height="24" alt="" aria-hidden="true">
   </button>
-  <button class="nav-btn" aria-label="Personal" data-page="person" onclick="switchPage('person',this)">
-    <img class="nav-icon-regular" src="./assets/icons/person.svg?v=1.1.24" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/person-bold.svg?v=1.1.24" width="24" height="24" alt="" aria-hidden="true">
+  <button class="nav-btn" aria-label="Personal" data-i18n-aria-label="Personal" data-page="person" onclick="switchPage('person',this)">
+    <img class="nav-icon-regular" src="./assets/icons/person.svg?v=1.1.25" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/person-bold.svg?v=1.1.25" width="24" height="24" alt="" aria-hidden="true">
   </button>
 </nav>
 
 <!-- Firebase SDK -->
-<script type="module" src="./js/app.js?v=1.1.24"></script>
-<script type="module" src="./js/earth-background.js?v=1.1.24"></script>
+<script type="module" src="./js/app.js?v=1.1.25"></script>
+<script type="module" src="./js/earth-background.js?v=1.1.25"></script>
 </body>
 </html>

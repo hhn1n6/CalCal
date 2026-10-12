@@ -1,0 +1,97 @@
+// Interface copy only. Food names and other account content are never translated.
+export const chinese = {
+  'CalCal Food Tracker':'CalCal 飲食記錄',
+  'Email':'電郵', 'Password':'密碼', 'Login':'登入',
+  'Continue with Google':'使用 Google 登入',
+  'Facebook sign-in — coming soon':'Facebook 登入 — 即將推出',
+  'Apple sign-in — coming soon':'Apple 登入 — 即將推出',
+  'Opening your account':'正在開啟帳戶', 'Try again':'重試', 'Use another account':'使用其他帳戶',
+  'Goals':'目標', 'Daily nutrition':'每日營養', 'Protein':'蛋白質', 'Carbs':'碳水化合物', 'Fat':'脂肪',
+  'Open food diary':'開啟飲食日記', 'Food diary':'飲食日記', 'Water':'水分',
+  'Reset water intake':'重設飲水量', 'Custom ml':'自訂毫升', 'Supplements':'補充品',
+  'No supplements yet. Add them in Goals.':'尚未加入補充品，請在「目標」中新增。',
+  'Weight':'體重', 'Add weight':'新增體重', 'Categories':'分類', 'Choose food category':'選擇食物分類',
+  '+ Add food':'+ 新增食物', 'Your account':'你的帳戶', 'Signed in with Google':'使用 Google 登入',
+  'Signed in with email':'使用電郵登入', 'Personal account':'個人帳戶', 'Admin':'管理員', 'Sign out':'登出',
+  'Earth background':'地球背景', 'Hong Kong preview. Sunlight follows the current time.':'香港預覽，光照隨目前時間變化。',
+  'Use my location':'使用我的位置', 'Hong Kong preview':'香港預覽', 'Daily goals':'每日目標',
+  'Calories (kcal)':'熱量（kcal）', 'Protein (g)':'蛋白質（g）', 'Carbohydrates (g)':'碳水化合物（g）',
+  'Carbs (g)':'碳水化合物（g）', 'Fat (g)':'脂肪（g）', 'Water goal (ml)':'飲水目標（ml）',
+  'Supplements (separate with commas)':'補充品（以逗號分隔）', 'Fish oil, Vitamin D, Calcium':'魚油、維他命 D、鈣',
+  'Cancel':'取消', 'Save':'儲存', 'Add food':'新增食物', 'Edit food':'編輯食物', 'Food name':'食物名稱',
+  'e.g. Chicken breast':'例如：雞胸肉', 'Portion / unit (optional)':'份量／單位（選填）',
+  'e.g. 100 g, 1 bowl, 1 piece':'例如：100 g、1 碗、1 件', 'Ingredients (optional)':'食材（選填）',
+  'e.g. Chicken, rice, sauce':'例如：雞肉、飯、醬汁', 'Food list':'食物清單', 'Unknown':'未知',
+  'Food categories':'食物分類', 'New category name':'新分類名稱', 'e.g. Breakfast, Protein foods':'例如：早餐、高蛋白食物',
+  'Add':'新增', 'Done':'完成', 'Edit category':'編輯分類', 'Category name':'分類名稱',
+  'Open Foods to log a meal.':'到「食物」頁記錄餐點。', 'Record weight':'記錄體重', 'Date':'日期',
+  'Weight (kg)':'體重（kg）', 'e.g. 70.5':'例如：70.5',
+  'One entry per date. Saving again updates that date’s weight.':'每天一筆記錄，再次儲存會更新當天的體重。',
+  'Choose servings':'選擇份數', 'Servings (1 = the food’s stated portion / unit)':'份數（1＝食物標示的份量／單位）',
+  'Add to diary':'加入日記', 'Today':'今天', 'Foods':'食物', 'Personal':'個人',
+  'Calories':'熱量', 'Ingredients:':'食材：', 'Edit':'編輯', 'Delete':'刪除', 'Reorder':'調整順序',
+  'Delete category':'刪除分類', 'Reorder category':'調整分類順序',
+  'Drag to reorder (keyboard: Up / Down)':'拖曳調整順序（鍵盤：上／下）',
+  'No foods in this list. Tap Add food to get started.':'此分類尚未有食物，按「新增食物」開始。',
+  'No categories yet. Add one above.':'尚未有分類，請在上方新增。',
+  'Could not save. Please try again.':'無法儲存，請重試。', 'Could not delete. Please try again.':'無法刪除，請重試。',
+  'Delete this food?':'要刪除此食物嗎？', 'Delete this category and all its foods?':'要刪除此分類及其中所有食物嗎？',
+  'Please enter a food name.':'請輸入食物名稱。', 'Please create a food list first.':'請先建立食物分類。',
+  'Nutrient values must be zero or positive numbers.':'營養數值必須為零或正數。',
+  'This food no longer exists. Please reopen the list.':'此食物已不存在，請重新開啟清單。', 'Please enter a list name.':'請輸入分類名稱。',
+  'Per serving (1x):':'每份（1 倍）：', '(— means unavailable)':'（— 表示未有資料）',
+  'Protein g':'蛋白質 g', 'Carbs g':'碳水化合物 g', 'Fat g':'脂肪 g',
+  'Tap + to record your first weight.':'按 + 記錄你的首次體重。', 'Weight history in kilograms by date':'按日期顯示的體重記錄（公斤）',
+  'Weight history:':'體重記錄：', 'Choose today or an earlier date.':'請選擇今天或較早的日期。',
+  'Enter a weight greater than zero.':'請輸入大於零的體重。', 'Could not save your weight. Please try again.':'無法儲存體重，請重試。',
+  'Please sign in again.':'請重新登入。',
+  'Your existing history needs an assisted import. Please contact the app owner.':'你的過往記錄需要協助匯入，請聯絡應用程式管理員。',
+  'Account protection is not configured.':'帳戶保護尚未設定。',
+  'Sign-in was cancelled. Try again when you’re ready.':'登入已取消，你可以稍後重試。',
+  'A sign-in window is already open.':'登入視窗已開啟。',
+  'Allow popups for CalCal, then try again. On iPhone, try signing in through Safari.':'請允許 CalCal 開啟彈出視窗後重試。iPhone 用戶可嘗試使用 Safari 登入。',
+  'Google sign-in needs this website to be enabled in Firebase. Please contact the app owner.':'此網站尚未獲准使用 Google 登入，請聯絡應用程式管理員。',
+  'This sign-in method has not been enabled in Firebase yet. Please contact the app owner.':'此登入方式尚未啟用，請聯絡應用程式管理員。',
+  'Sign-in has not been set up yet. Please contact the app owner.':'登入功能尚未設定，請聯絡應用程式管理員。',
+  'Enter a valid email address.':'請輸入有效的電郵地址。',
+  'Email or password is incorrect. If you use Google, continue with Google.':'電郵或密碼不正確。如使用 Google 帳戶，請選擇 Google 登入。',
+  'This account has been disabled. Please contact the app owner.':'此帳戶已停用，請聯絡應用程式管理員。',
+  'Too many attempts. Please wait a little and try again.':'嘗試次數過多，請稍候再試。',
+  'Could not connect. Check your internet connection and try again.':'無法連線，請檢查網絡後重試。',
+  'Your account data could not be opened. Please contact the app owner.':'無法開啟帳戶資料，請聯絡應用程式管理員。',
+  'Google sign-in is ready. Account storage is waiting for the app owner to publish its protection rules. Please try again shortly.':'Google 登入已就緒，帳戶儲存正等待管理員發佈保護規則，請稍後重試。',
+  'Could not open your account. Please try again.':'無法開啟帳戶，請重試。',
+  'Could not sign out. Please try again.':'無法登出，請重試。', 'Could not check sign-in. Reload CalCal to try again.':'無法檢查登入狀態，請重新載入 CalCal。',
+  'Centered on your saved location.':'已置中於你儲存的位置。',
+  'Earth is unavailable on this device. The background stays white.':'此裝置無法顯示地球，背景會保持白色。',
+  'Location is unavailable. Showing Hong Kong preview.':'無法使用定位，現顯示香港預覽。',
+  'Finding your location…':'正在尋找你的位置…',
+  'Centered on your location. Saved on this device only.':'已置中於你的位置，位置只儲存在此裝置。',
+  'Could not get your location. Keeping the current view.':'無法取得你的位置，將保留目前視角。',
+  'Language':'語言', 'Choose your preferred language':'選擇你的慣用語言',
+  'You can change this later on the Personal page.':'你可以稍後在「個人」頁更改。', 'Continue':'繼續',
+  'Could not save your language. Please try again.':'無法儲存語言設定，請重試。',
+  'left':'剩餘', 'over':'超出', 'Goal:':'目標：'
+};
+let language = 'en';
+export const validLanguage = value => value === 'en' || value === 'zh-HK';
+export const getLanguage = () => language;
+export const locale = () => language === 'zh-HK' ? 'zh-HK' : 'en-US';
+export const tr = text => language === 'zh-HK' ? (chinese[text] ?? text) : text;
+export function setLanguage(value) {
+  language = validLanguage(value) ? value : 'en';
+  document.documentElement.lang = language;
+  try { localStorage.setItem('calcal-language', language); } catch {}
+  applyTranslations();
+  document.dispatchEvent(new Event('calcal-language-change'));
+}
+export function applyTranslations() {
+  document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = tr(el.dataset.i18n));
+  for (const attr of ['placeholder','aria-label','title']) {
+    document.querySelectorAll(`[data-i18n-${attr}]`).forEach(el => el.setAttribute(attr,tr(el.getAttribute(`data-i18n-${attr}`))));
+  }
+  document.title = tr('CalCal Food Tracker');
+}
+try { const saved=localStorage.getItem('calcal-language'); if(validLanguage(saved))language=saved; } catch {}
+document.documentElement.lang=language;
+applyTranslations();

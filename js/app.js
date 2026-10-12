@@ -1,3 +1,4 @@
+import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.25';
 import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.1.14';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
 import { setupPageSwipes } from './page-swipe.js?v=1.1.23';
@@ -39,7 +40,7 @@ const REF = {
   day:       (d) => accountRef('days',d),
 };
 function accountRef(...parts){
-  if(!state.user || auth.currentUser?.uid!==state.user.uid) throw new Error('Please sign in again.');
+  if(!state.user || auth.currentUser?.uid!==state.user.uid) throw new Error(tr("Please sign in again."));
   return doc(db,'users',state.user.uid,...parts);
 }
 let stopDayListener=null;
@@ -48,7 +49,8 @@ let accountReady=false;
 
 async function initializeAccount(user){
   const profile=doc(db,'users',user.uid);
-  if((await getDoc(profile)).exists()) return;
+  const existing=await getDoc(profile);
+  if(existing.exists()) return existing.data();
   let legacy=null;
   try{legacy=await fbGet(doc(db,'migration','legacy'));}
   catch(error){if(error.code!=='permission-denied')throw error;}
@@ -60,7 +62,7 @@ async function initializeAccount(user){
       fbGet(doc(db,'migration','legacy','settings','foods')),fbGet(doc(db,'migration','legacy','settings','weights')),
       getDocs(collection(db,'migration','legacy','days')),
     ]);
-    if(days.size>450)throw new Error('Your existing history needs an assisted import. Please contact the app owner.');
+    if(days.size>450)throw new Error(tr("Your existing history needs an assisted import. Please contact the app owner."));
     for(const [name,data] of [['goals',goals],['foodLists',lists],['foods',foods],['weights',weights]]){
       if(data)batch.set(doc(db,'users',user.uid,'settings',name),data);
     }
@@ -70,8 +72,10 @@ async function initializeAccount(user){
     batch.set(doc(db,'users',user.uid,'settings','foodLists'),lists||{lists:[]});
     batch.set(doc(db,'users',user.uid,'settings','foods'),foods||{foods:[]});
   }
-  batch.set(profile,{createdAt:Date.now(),legacyImported:importLegacy});
+  const profileData={createdAt:Date.now(),legacyImported:importLegacy,languageSetupPending:true};
+  batch.set(profile,profileData);
   await batch.commit();
+  return profileData;
 }
 
 async function ensureAccountProtection(){
@@ -80,7 +84,7 @@ async function ensureAccountProtection(){
   const response=await fetch('https://firestore.googleapis.com/v1/projects/fitness-352e8/databases/(default)/documents/users/calcal-account-protection-probe/settings/goals');
   const result=await response.json();
   if(response.status!==403||result.error?.status!=='PERMISSION_DENIED'){
-    const error=new Error('Account protection is not configured.');error.code='calcal/setup-required';throw error;
+    const error=new Error(tr("Account protection is not configured."));error.code='calcal/setup-required';throw error;
   }
 }
 
@@ -183,14 +187,14 @@ function renderHome(){
   const _dd=String(_now.getDate()).padStart(2,'0');
   const _mm=String(_now.getMonth()+1).padStart(2,'0');
   document.getElementById('home-ddmm').textContent=`${_dd}/${_mm}/${_now.getFullYear()}`;
-  document.getElementById('home-weekday').textContent=_now.toLocaleDateString('en-US',{weekday:'long'});
+  document.getElementById('home-weekday').textContent=_now.toLocaleDateString(locale(),{weekday:'long'});
 
   // Ring
   // Subtract the same whole-number total shown in the diary, so the
   // displayed intake and remaining amount always add up to the goal.
   const caloriesLeft=Math.round(g.cal)-Math.round(t.cal);
   document.getElementById('ring-consumed-big').textContent = Math.round(Math.abs(caloriesLeft));
-  document.getElementById('ring-goal-lbl').textContent = `kcal ${caloriesLeft<0?'over':'left'}`;
+  document.getElementById('ring-goal-lbl').textContent = `kcal ${caloriesLeft<0?tr("over"):tr("left")}`;
   const pct=g.cal>0?Math.max(0,Math.min(1,caloriesLeft/g.cal)):0, circ=2*Math.PI*57;
   document.getElementById('ring-cal').style.strokeDashoffset = circ - circ*pct;
   document.getElementById('ring-cal').style.stroke = caloriesLeft<0?'var(--red)':'var(--accent)';
@@ -202,7 +206,7 @@ function renderHome(){
     document.getElementById('bar-'+id).style.width=p+'%';
     document.getElementById('bar-'+id).style.background=color;
     const label=document.getElementById('lbl-'+id);
-    label.innerHTML=`<strong>${Math.abs(left)}</strong>g ${left<0?'over':'left'}`;
+    label.innerHTML=`<strong>${Math.abs(left)}</strong>g ${left<0?tr("over"):tr("left")}`;
     label.classList.toggle('nutrition-over',left<0);
     label.title='';
   };
@@ -213,7 +217,7 @@ function renderHome(){
   // Water
   const wGoal=g.waterMl||2000, wCon=state.water[date]||0;
   document.getElementById('water-consumed-big').textContent=wCon;
-  document.getElementById('water-goal-lbl').textContent=`Goal: ${wGoal} ml (${(wGoal/1000).toFixed(1)}L)`;
+  document.getElementById('water-goal-lbl').textContent=`${tr('Goal:')} ${wGoal} ml (${(wGoal/1000).toFixed(1)}L)`;
   const wPct=Math.min(100,wCon/wGoal*100);
   document.getElementById('water-bar-fill').style.width=wPct+'%';
   document.getElementById('water-bar-fill').style.background=wCon>=wGoal
@@ -254,7 +258,7 @@ function renderHome(){
     <div class="log-item">
       <div>
         <div class="log-name">${escapeHtml(l.name)} <span style="font-size:11px;color:var(--text3)">×${l.qty}</span></div>
-        <div class="log-meta">Protein ${formatNutrient(l.protein)}g · Carbs ${formatNutrient(l.carbs)}g · Fat ${formatNutrient(l.fat)}g</div>
+        <div class="log-meta">${tr("Protein")} ${formatNutrient(l.protein)}g · ${tr("Carbs")} ${formatNutrient(l.carbs)}g · ${tr("Fat")} ${formatNutrient(l.fat)}g</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
         <div class="log-cal">${Math.round(l.cal)}</div>
@@ -269,28 +273,28 @@ window.openDiaryModal=()=>{renderHome();openModal('modal-diary');};
 
 // ── RENDER FOOD LISTS ─────────────────────────────────────
 function renderFoodLists(){
-  document.getElementById('current-category-name').textContent=state.foodLists.find(l=>l.id===state.activeListId)?.name||'Categories';
+  document.getElementById('current-category-name').textContent=state.foodLists.find(l=>l.id===state.activeListId)?.name||tr("Categories");
   const grid=document.getElementById('food-grid');
   const foods=state.foods.filter(f=>f.listId===state.activeListId);
-  if(!foods.length){ grid.innerHTML='<div class="empty"><div class="empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle"><circle cx="12" cy="12" r="6"/><path d="M2 3v6m3-6v6M2 6h3M3.5 9v12M21 3v18M21 3c-4 3-4 8 0 8"/></svg></div><p>No foods in this list. Tap Add food to get started.</p></div>'; return; }
+  if(!foods.length){ grid.innerHTML=`<div class="empty"><div class="empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle"><circle cx="12" cy="12" r="6"/><path d="M2 3v6m3-6v6M2 6h3M3.5 9v12M21 3v18M21 3c-4 3-4 8 0 8"/></svg></div><p>${tr("No foods in this list. Tap Add food to get started.")}</p></div>`; return; }
   grid.innerHTML=foods.map((f,index)=>`
     <div class="food-item-wrap" data-food-id="${escapeHtml(f.id)}">
       <div class="food-item" onclick="window._openServe('${f.id}')">
         <div class="food-details">
           <div class="food-name">${escapeHtml(f.name)}${f.portion?`<span class="food-portion">${escapeHtml(f.portion)}</span>`:''}</div>
           <div class="food-nutrition">
-            ${[['cal','kcal','Calories'],['protein','g','Protein'],['carbs','g','Carbs'],['fat','g','Fat']].map(([key,unit,label])=>`
+            ${[['cal','kcal',tr("Calories")],['protein','g',tr("Protein")],['carbs','g',tr("Carbs")],['fat','g',tr("Fat")]].map(([key,unit,label])=>`
               <div class="food-nutrient"><div class="food-nutrient-value">${formatNutrient(f[key]??0)}<span class="food-nutrient-unit"> ${unit}</span></div><div class="food-nutrient-label">${label}</div></div>
             `).join('')}
           </div>
-          ${f.ingredients?`<div class="food-ingredients">Ingredients: ${escapeHtml(f.ingredients)}</div>`:''}
+          ${f.ingredients?`<div class="food-ingredients">${tr("Ingredients:")} ${escapeHtml(f.ingredients)}</div>`:''}
         </div>
         <div class="food-row-controls">
-          <button class="btn-icon" aria-label="Edit ${escapeHtml(f.name)}" ${state._savingFoods?'disabled':''} onclick="event.stopPropagation();window._editFood('${f.id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 3l5 5L8 21H3v-5zM13 6l5 5"/></svg></button>
-          <button class="btn-icon" aria-label="Delete ${escapeHtml(f.name)}" ${state._savingFoods?'disabled':''} onclick="event.stopPropagation();window._deleteFood('${f.id}')">
+          <button class="btn-icon" aria-label="${tr("Edit")} ${escapeHtml(f.name)}" ${state._savingFoods?'disabled':''} onclick="event.stopPropagation();window._editFood('${f.id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 3l5 5L8 21H3v-5zM13 6l5 5"/></svg></button>
+          <button class="btn-icon" aria-label="${tr("Delete")} ${escapeHtml(f.name)}" ${state._savingFoods?'disabled':''} onclick="event.stopPropagation();window._deleteFood('${f.id}')">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
           </button>
-          <button class="btn-icon food-drag-handle" aria-label="Reorder ${escapeHtml(f.name)}" title="Drag to reorder (keyboard: Up / Down)" ${state._savingFoods?'disabled':''} onclick="event.stopPropagation()" onpointerdown="window._startFoodDrag(event,'${f.id}')" onkeydown="if(event.key==='ArrowUp'||event.key==='ArrowDown'){event.preventDefault();window._moveFood('${f.id}',event.key==='ArrowUp'?-1:1)}">☰</button>
+          <button class="btn-icon food-drag-handle" aria-label="${tr("Reorder")} ${escapeHtml(f.name)}" title="${tr("Drag to reorder (keyboard: Up / Down)")}" ${state._savingFoods?'disabled':''} onclick="event.stopPropagation()" onpointerdown="window._startFoodDrag(event,'${f.id}')" onkeydown="if(event.key==='ArrowUp'||event.key==='ArrowDown'){event.preventDefault();window._moveFood('${f.id}',event.key==='ArrowUp'?-1:1)}">☰</button>
         </div>
       </div>
 
@@ -305,11 +309,11 @@ async function persistFoods(nextFoods){
   document.getElementById('save-food-btn').disabled=true;
   renderFoodLists();
   try{ await saveFoodsDoc(); return generation===accountGeneration; }
-  catch(err){ if(generation===accountGeneration){state.foods=previous; alert('Could not save. Please try again.');} return false; }
+  catch(err){ if(generation===accountGeneration){state.foods=previous; alert(tr("Could not save. Please try again."));} return false; }
   finally{ if(generation===accountGeneration){state._savingFoods=false; document.getElementById('save-food-btn').disabled=false; renderFoodLists();} }
 }
 window._deleteFood=async id=>{
-  if(state._savingFoods||!confirm('Delete this food?'))return;
+  if(state._savingFoods||!confirm(tr("Delete this food?")))return;
   await persistFoods(state.foods.filter(f=>f.id!==id));
 };
 window._moveFood=async(id,direction)=>{
@@ -409,7 +413,7 @@ window.saveGoals=async()=>{
 // ── ADD FOOD ──────────────────────────────────────────────
 window.openAddFoodModal=(prefill)=>{
   state._editFoodId=null;
-  document.getElementById('add-food-title').textContent='Add food';
+  document.getElementById('add-food-title').textContent=tr("Add food");
   document.getElementById('f-name').value=prefill?.name||'';
   document.getElementById('f-portion').value=prefill?.portion||'';
   document.getElementById('f-ingredients').value=prefill?.ingredients||'';
@@ -426,23 +430,23 @@ window._editFood=id=>{
   const food=state.foods.find(f=>f.id===id); if(!food)return;
   window.openAddFoodModal(food);
   state._editFoodId=id;
-  document.getElementById('add-food-title').textContent='Edit food';
+  document.getElementById('add-food-title').textContent=tr("Edit food");
 };
 window.saveFood=async()=>{
   if(state._savingFoods)return;
   const name=document.getElementById('f-name').value.trim();
-  if(!name){alert('Please enter a food name.');return;}
+  if(!name){alert(tr("Please enter a food name."));return;}
   const listId=document.getElementById('f-list').value;
-  if(!state.foodLists.some(l=>l.id===listId)){alert('Please create a food list first.');return;}
+  if(!state.foodLists.some(l=>l.id===listId)){alert(tr("Please create a food list first."));return;}
   const nutrients={};
   for(const key of ['cal','protein','carbs','fat']){
     const input=document.getElementById('f-'+key), text=input.value.trim();
     const value=text===''?(key==='cal'?0:null):Number(text);
-    if(input.validity?.badInput||(value!==null&&(!Number.isFinite(value)||value<0))){alert('Nutrient values must be zero or positive numbers.');return;}
+    if(input.validity?.badInput||(value!==null&&(!Number.isFinite(value)||value<0))){alert(tr("Nutrient values must be zero or positive numbers."));return;}
     nutrients[key]=value;
   }
   const original=state._editFoodId?state.foods.find(f=>f.id===state._editFoodId):null;
-  if(state._editFoodId&&!original){alert('This food no longer exists. Please reopen the list.');return;}
+  if(state._editFoodId&&!original){alert(tr("This food no longer exists. Please reopen the list."));return;}
   const food={
     ...original, id:original?.id||('f'+Date.now()), listId, name,
     portion:document.getElementById('f-portion').value.trim(),
@@ -463,11 +467,11 @@ function renderManageLists(){
     <div class="food-item-wrap category-row">
       <button class="category-name${state.activeListId===l.id?' selected':''}" ${state._savingLists?'disabled':''} onclick="window._chooseCategory('${l.id}')">${escapeHtml(l.name)}</button>
       <div class="food-row-controls">
-        <button class="btn-icon" aria-label="Edit category ${escapeHtml(l.name)}" ${state._savingLists?'disabled':''} onclick="window._editCategory('${l.id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 3l5 5L8 21H3v-5zM13 6l5 5"/></svg></button>
-        <button class="btn-icon" aria-label="Delete category ${escapeHtml(l.name)}" ${state._savingLists||state._savingFoods?'disabled':''} onclick="window._deleteList('${l.id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6M9 6V4h6v2M10 11v6M14 11v6"/></svg></button>
-        <button class="btn-icon food-drag-handle" aria-label="Reorder category ${escapeHtml(l.name)}" title="Drag to reorder (keyboard: Up / Down)" ${state._savingLists?'disabled':''} onpointerdown="window._startCategoryDrag(event,'${l.id}')" onkeydown="if(event.key==='ArrowUp'||event.key==='ArrowDown'){event.preventDefault();window._moveCategory('${l.id}',event.key==='ArrowUp'?-1:1)}">☰</button>
+        <button class="btn-icon" aria-label="${tr("Edit category")} ${escapeHtml(l.name)}" ${state._savingLists?'disabled':''} onclick="window._editCategory('${l.id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 3l5 5L8 21H3v-5zM13 6l5 5"/></svg></button>
+        <button class="btn-icon" aria-label="${tr("Delete category")} ${escapeHtml(l.name)}" ${state._savingLists||state._savingFoods?'disabled':''} onclick="window._deleteList('${l.id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6M9 6V4h6v2M10 11v6M14 11v6"/></svg></button>
+        <button class="btn-icon food-drag-handle" aria-label="${tr("Reorder category")} ${escapeHtml(l.name)}" title="${tr("Drag to reorder (keyboard: Up / Down)")}" ${state._savingLists?'disabled':''} onpointerdown="window._startCategoryDrag(event,'${l.id}')" onkeydown="if(event.key==='ArrowUp'||event.key==='ArrowDown'){event.preventDefault();window._moveCategory('${l.id}',event.key==='ArrowUp'?-1:1)}">☰</button>
       </div>
-    </div>`).join('')||'<div class="empty">No categories yet. Add one above.</div>';
+    </div>`).join('')||`<div class="empty">${tr("No categories yet. Add one above.")}</div>`;
   document.getElementById('add-category-btn').disabled=state._savingLists;
 }
 window._chooseCategory=id=>{
@@ -479,7 +483,7 @@ window._editCategory=id=>{
   if(state._savingLists)return;
   const list=state.foodLists.find(l=>l.id===id);if(!list)return;
   editingCategoryId=id;
-  document.getElementById('edit-category-field').innerHTML=`<label for="list-name-${id}">Category name</label><input id="list-name-${id}" value="${escapeHtml(list.name)}">`;
+  document.getElementById('edit-category-field').innerHTML=`<label for="list-name-${id}">${tr("Category name")}</label><input id="list-name-${id}" value="${escapeHtml(list.name)}">`;
   openModal('modal-edit-category');
 };
 window.saveCategoryName=()=>window._renameList(editingCategoryId);
@@ -490,7 +494,7 @@ async function persistCategories(next){
   state._savingLists=true;state.foodLists=next;
   renderManageLists();
   try{await saveFoodListsDoc();if(generation!==accountGeneration)return false;renderFoodLists();return true;}
-  catch(err){if(generation===accountGeneration){state.foodLists=previous;alert('Could not save. Please try again.');}return false;}
+  catch(err){if(generation===accountGeneration){state.foodLists=previous;alert(tr("Could not save. Please try again."));}return false;}
   finally{if(generation===accountGeneration){state._savingLists=false;renderManageLists();}}
 }
 window._moveCategory=(id,direction)=>window._reorderCategory(id,state.foodLists.findIndex(l=>l.id===id)+direction);
@@ -503,7 +507,7 @@ window._reorderCategory=async(id,to)=>{
 window._renameList=async id=>{
   if(state._savingLists)return;
   const name=document.getElementById('list-name-'+id).value.trim();
-  if(!name){alert('Please enter a list name.');return;}
+  if(!name){alert(tr("Please enter a list name."));return;}
   if(!state.foodLists.some(l=>l.id===id))return;
   if(await persistCategories(state.foodLists.map(l=>l.id===id?{...l,name}:l)))closeModal('modal-edit-category');
 };
@@ -519,7 +523,7 @@ window.addFoodList=async()=>{
 window._deleteList=async id=>{
   if(state._savingLists||state._savingFoods)return;
   const generation=accountGeneration;
-  if(!confirm('Delete this category and all its foods?'))return;
+  if(!confirm(tr("Delete this category and all its foods?")))return;
   const lists=state.foodLists.filter(l=>l.id!==id),foods=state.foods.filter(f=>f.listId!==id);
   state._savingLists=true;state._savingFoods=true;setSyncStatus('loading');
   renderManageLists();renderFoodLists();
@@ -531,7 +535,7 @@ window._deleteList=async id=>{
     state.foodLists=lists;state.foods=foods;
     if(state.activeListId===id)state.activeListId=lists[0]?.id||null;
     setSyncStatus('ok');
-  }catch(err){if(generation===accountGeneration){setSyncStatus('err');alert('Could not delete. Please try again.');}}
+  }catch(err){if(generation===accountGeneration){setSyncStatus('err');alert(tr("Could not delete. Please try again."));}}
   finally{if(generation===accountGeneration){state._savingLists=false;state._savingFoods=false;renderManageLists();renderFoodLists();}}
 };
 
@@ -540,7 +544,7 @@ window._openServe=id=>{
   const f=state.foods.find(x=>x.id===id); if(!f)return;
   state._serveFood=f;
   document.getElementById('serve-food-name').textContent=f.name;
-  document.getElementById('serve-food-info').textContent=`Per serving (1x): ${formatNutrient(f.cal)} kcal · Protein ${formatNutrient(f.protein)}g · Carbs ${formatNutrient(f.carbs)}g · Fat ${formatNutrient(f.fat)}g (— means unavailable)`;
+  document.getElementById('serve-food-info').textContent=`${tr("Per serving (1x):")} ${formatNutrient(f.cal)} kcal · ${tr("Protein")} ${formatNutrient(f.protein)}g · ${tr("Carbs")} ${formatNutrient(f.carbs)}g · ${tr("Fat")} ${formatNutrient(f.fat)}g ${tr("(— means unavailable)")}`;
   document.getElementById('serve-qty').value=1;
   updateServePreview();
   openModal('modal-serve');
@@ -552,9 +556,9 @@ function updateServePreview(){
   document.getElementById('serve-preview').innerHTML=`
     <div style="display:flex;justify-content:space-around;text-align:center;">
       <div><div style="font-size:20px;font-weight:700;color:var(--accent)">${Math.round(f.cal*q)}</div><div style="font-size:11px;color:var(--text2)">kcal</div></div>
-      <div><div style="font-size:20px;font-weight:700;color:var(--green)">${formatNutrient(scaleNutrient(f.protein,q))}</div><div style="font-size:11px;color:var(--text2)">Protein g</div></div>
-      <div><div style="font-size:20px;font-weight:700;color:var(--yellow)">${formatNutrient(scaleNutrient(f.carbs,q))}</div><div style="font-size:11px;color:var(--text2)">Carbs g</div></div>
-      <div><div style="font-size:20px;font-weight:700;color:var(--orange)">${formatNutrient(scaleNutrient(f.fat,q))}</div><div style="font-size:11px;color:var(--text2)">Fat g</div></div>
+      <div><div style="font-size:20px;font-weight:700;color:var(--green)">${formatNutrient(scaleNutrient(f.protein,q))}</div><div style="font-size:11px;color:var(--text2)">${tr("Protein")} g</div></div>
+      <div><div style="font-size:20px;font-weight:700;color:var(--yellow)">${formatNutrient(scaleNutrient(f.carbs,q))}</div><div style="font-size:11px;color:var(--text2)">${tr("Carbs")} g</div></div>
+      <div><div style="font-size:20px;font-weight:700;color:var(--orange)">${formatNutrient(scaleNutrient(f.fat,q))}</div><div style="font-size:11px;color:var(--text2)">${tr("Fat")} g</div></div>
     </div>`;
 }
 window.confirmServe=async()=>{
@@ -579,7 +583,7 @@ const weightDateLabel=date=>date.split('-').reverse().join('/');
 function renderWeightChart(){
   const entries=Object.entries(state.weights).filter(([date,kg])=>validWeightDate(date)&&typeof kg==='number'&&Number.isFinite(kg)&&kg>0).sort(([a],[b])=>a.localeCompare(b));
   const chart=document.getElementById('weight-chart'),summary=document.getElementById('weight-summary');
-  if(!entries.length){summary.textContent='';chart.innerHTML='<div class="empty" style="padding:28px 0;">Tap + to record your first weight.</div>';return;}
+  if(!entries.length){summary.textContent='';chart.innerHTML=`<div class="empty" style="padding:28px 0;">${tr("Tap + to record your first weight.")}</div>`;return;}
   const [lastDate,lastWeight]=entries.at(-1);
   summary.textContent=`${lastWeight.toFixed(1)} kg`;
   const values=entries.map(([,kg])=>kg),min=Math.min(...values),max=Math.max(...values);
@@ -590,8 +594,8 @@ function renderWeightChart(){
   const points=entries.map(([date,kg])=>`${x(date).toFixed(2)},${y(kg).toFixed(2)}`).join(' ');
   const ticks=[low,(low+high)/2,high];
   const dateTicks=Array.from(new Set([0,Math.floor((entries.length-1)/2),entries.length-1]));
-  chart.innerHTML=`<svg class="weight-chart-svg" viewBox="0 0 520 230" role="img" aria-label="Weight history in kilograms by date">
-    <title>Weight history: ${entries.map(([date,kg])=>`${weightDateLabel(date)}: ${kg.toFixed(1)} kg`).join('; ')}</title>
+  chart.innerHTML=`<svg class="weight-chart-svg" viewBox="0 0 520 230" role="img" aria-label="${tr("Weight history in kilograms by date")}">
+    <title>${tr("Weight history:")} ${entries.map(([date,kg])=>`${weightDateLabel(date)}: ${kg.toFixed(1)} kg`).join('; ')}</title>
     ${ticks.map(kg=>`<line class="weight-chart-grid" x1="52" x2="502" y1="${y(kg)}" y2="${y(kg)}"/><text x="44" y="${y(kg)+4}" text-anchor="end">${kg.toFixed(1)}</text>`).join('')}
     <polyline class="weight-chart-line" points="${points}"/>
     ${entries.map(([date,kg])=>`<circle class="weight-chart-point" cx="${x(date)}" cy="${y(kg)}" r="4" tabindex="0" aria-label="${weightDateLabel(date)}: ${kg.toFixed(1)} kg"><title>${weightDateLabel(date)}: ${kg.toFixed(1)} kg</title></circle>`).join('')}
@@ -612,8 +616,8 @@ window.saveWeight=async()=>{
   const date=document.getElementById('weight-date').value;
   const input=document.getElementById('weight-value'),kg=Number(input.value);
   const error=document.getElementById('weight-error');
-  if(!validWeightDate(date)||date>TODAY()){error.textContent='Choose today or an earlier date.';return;}
-  if(input.validity?.badInput||!Number.isFinite(kg)||kg<=0){error.textContent='Enter a weight greater than zero.';return;}
+  if(!validWeightDate(date)||date>TODAY()){error.textContent=tr("Choose today or an earlier date.");return;}
+  if(input.validity?.badInput||!Number.isFinite(kg)||kg<=0){error.textContent=tr("Enter a weight greater than zero.");return;}
   state._savingWeight=true;document.getElementById('save-weight-btn').disabled=true;error.textContent='';
   setSyncStatus('loading');
   try{
@@ -621,7 +625,7 @@ window.saveWeight=async()=>{
     if(generation!==accountGeneration)return;
     state.weights={...state.weights,[date]:kg};setSyncStatus('ok');
     renderWeightChart();closeModal('modal-weight');
-  }catch(err){if(generation===accountGeneration){setSyncStatus('err');error.textContent='Could not save your weight. Please try again.';}}
+  }catch(err){if(generation===accountGeneration){setSyncStatus('err');error.textContent=tr("Could not save your weight. Please try again.");}}
   finally{if(generation===accountGeneration){state._savingWeight=false;document.getElementById('save-weight-btn').disabled=false;}}
 };
 
@@ -668,11 +672,61 @@ window.switchPage=(name,btn,direction)=>{
 setupPageSwipes({canSwitch:()=>accountReady,switchPage:(name,direction)=>window.switchPage(name,document.querySelector(`[data-page="${name}"]`),direction)});
 
 // ── MODALS ────────────────────────────────────────────────
-window.openModal=id=>document.getElementById(id).classList.add('open');
-window.closeModal=id=>document.getElementById(id).classList.remove('open');
+window.openModal=id=>{
+  document.getElementById(id).classList.add('open');
+  if(id==='modal-language'){
+    document.querySelectorAll('.page, .nav').forEach(el=>el.inert=true);
+    document.querySelector('input[name="first-language"]:checked')?.focus?.();
+  }
+};
+window.closeModal=id=>{if(id==='modal-language'&&languageSetupPending)return;document.getElementById(id).classList.remove('open');};
 document.querySelectorAll('.modal-overlay').forEach(o=>{
-  o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('open'); });
+  o.addEventListener('click',e=>{ if(e.target===o) window.closeModal(o.id); });
 });
+
+// Preferences live under this user's account, independently of their food data.
+let languageSetupPending=false;
+let savingLanguage=false;
+function renderAccountLabels(){
+  if(!state.user)return;
+  document.getElementById('account-name').textContent=state.user.displayName||tr('Personal account');
+  document.getElementById('account-role').textContent=tr(state.isAdmin?'Admin':'Personal account');
+  const google=state.user.providerData?.some(provider=>provider.providerId==='google.com');
+  document.getElementById('account-provider').textContent=tr(google?'Signed in with Google':'Signed in with email');
+}
+function updateLanguageUI(language){
+  setLanguage(language);
+  document.getElementById('account-language').value=getLanguage();
+  renderAccountLabels();
+  if(accountReady){
+    renderHome();renderFoodLists();renderManageLists();
+    if(state._serveFood)updateServePreview();
+  }
+}
+async function saveLanguagePreference(language,firstChoice=false){
+  if(!validLanguage(language)||!state.user||savingLanguage)return false;
+  const generation=accountGeneration, previous=getLanguage();
+  const error=document.getElementById(firstChoice?'language-choice-error':'language-error');
+  const button=document.getElementById(firstChoice?'language-continue':'account-language');
+  savingLanguage=true;button.disabled=true;error.textContent='';
+  try{
+    await setDoc(accountRef('settings','preferences'),{language},{merge:true});
+    if(generation!==accountGeneration)return false;
+    updateLanguageUI(language);
+    languageSetupPending=false;
+    document.getElementById('modal-language').classList.remove('open');
+    document.querySelectorAll('.page, .nav').forEach(el=>el.inert=false);
+    return true;
+  }catch(err){
+    if(generation===accountGeneration){document.getElementById('account-language').value=previous;error.textContent=tr('Could not save your language. Please try again.');}
+    return false;
+  }finally{if(generation===accountGeneration){savingLanguage=false;button.disabled=false;}}
+}
+window.changeAccountLanguage=language=>saveLanguagePreference(language);
+window.confirmLanguageChoice=()=>saveLanguagePreference(document.querySelector('input[name="first-language"]:checked').value,true);
+document.querySelectorAll('input[name="first-language"]').forEach(input=>input.addEventListener('change',()=>{
+  updateLanguageUI(input.value);
+}));
 
 // ── INIT ──────────────────────────────────────────────────
 document.getElementById('water-input').addEventListener('keydown',e=>{ if(e.key==='Enter') window.addWater(); });
@@ -684,27 +738,31 @@ function resetAccountState(){
   state.activeListId=null;state._editFoodId=null;state._serveFood=null;
   state.isAdmin=false;
   state._savingFoods=false;state._savingLists=false;state._savingWeight=false;
+  languageSetupPending=false;savingLanguage=false;
+  document.querySelectorAll('.page, .nav').forEach(el=>el.inert=false);
+  document.getElementById('account-language').disabled=false;
+  document.getElementById('language-continue').disabled=false;
   document.querySelectorAll('.modal-overlay').forEach(modal=>modal.classList.remove('open'));
 }
 function authMessage(error){
   const messages={
-    'auth/popup-closed-by-user':'Sign-in was cancelled. Try again when you’re ready.',
-    'auth/cancelled-popup-request':'A sign-in window is already open.',
-    'auth/popup-blocked':'Allow popups for CalCal, then try again. On iPhone, try signing in through Safari.',
-    'auth/unauthorized-domain':'Google sign-in needs this website to be enabled in Firebase. Please contact the app owner.',
-    'auth/operation-not-allowed':'This sign-in method has not been enabled in Firebase yet. Please contact the app owner.',
-    'auth/configuration-not-found':'Sign-in has not been set up yet. Please contact the app owner.',
-    'auth/invalid-email':'Enter a valid email address.',
-    'auth/invalid-credential':'Email or password is incorrect. If you use Google, continue with Google.',
-    'auth/user-not-found':'Email or password is incorrect. If you use Google, continue with Google.',
-    'auth/wrong-password':'Email or password is incorrect. If you use Google, continue with Google.',
-    'auth/user-disabled':'This account has been disabled. Please contact the app owner.',
-    'auth/too-many-requests':'Too many attempts. Please wait a little and try again.',
-    'auth/network-request-failed':'Could not connect. Check your internet connection and try again.',
-    'permission-denied':'Your account data could not be opened. Please contact the app owner.',
-    'calcal/setup-required':'Google sign-in is ready. Account storage is waiting for the app owner to publish its protection rules. Please try again shortly.',
+    'auth/popup-closed-by-user':tr("Sign-in was cancelled. Try again when you’re ready."),
+    'auth/cancelled-popup-request':tr("A sign-in window is already open."),
+    'auth/popup-blocked':tr("Allow popups for CalCal, then try again. On iPhone, try signing in through Safari."),
+    'auth/unauthorized-domain':tr("Google sign-in needs this website to be enabled in Firebase. Please contact the app owner."),
+    'auth/operation-not-allowed':tr("This sign-in method has not been enabled in Firebase yet. Please contact the app owner."),
+    'auth/configuration-not-found':tr("Sign-in has not been set up yet. Please contact the app owner."),
+    'auth/invalid-email':tr("Enter a valid email address."),
+    'auth/invalid-credential':tr("Email or password is incorrect. If you use Google, continue with Google."),
+    'auth/user-not-found':tr("Email or password is incorrect. If you use Google, continue with Google."),
+    'auth/wrong-password':tr("Email or password is incorrect. If you use Google, continue with Google."),
+    'auth/user-disabled':tr("This account has been disabled. Please contact the app owner."),
+    'auth/too-many-requests':tr("Too many attempts. Please wait a little and try again."),
+    'auth/network-request-failed':tr("Could not connect. Check your internet connection and try again."),
+    'permission-denied':tr("Your account data could not be opened. Please contact the app owner."),
+    'calcal/setup-required':tr("Google sign-in is ready. Account storage is waiting for the app owner to publish its protection rules. Please try again shortly."),
   };
-  return messages[error.code]||'Could not open your account. Please try again.';
+  return messages[error.code]||tr("Could not open your account. Please try again.");
 }
 let signInPending=false;
 function setSignInDisabled(disabled){
@@ -736,7 +794,7 @@ window.signInGoogle=async()=>{
 window.signOutAccount=async()=>{
   const button=document.getElementById('account-sign-out');button.disabled=true;
   try{await signOut(auth);}
-  catch(e){document.getElementById('account-error').textContent='Could not sign out. Please try again.';}
+  catch(e){document.getElementById('account-error').textContent=tr("Could not sign out. Please try again.");}
   finally{button.disabled=false;}
 };
 const loginIntroReady=new Promise(resolve=>setTimeout(resolve,1950));
@@ -758,18 +816,25 @@ async function openAccount(user){
   try{
     await ensureAccountProtection();
     if(generation!==accountGeneration)return;
-    await initializeAccount(user);
+    const profile=await initializeAccount(user);
     if(generation!==accountGeneration)return;
+    const preferences=await fbGet(accountRef('settings','preferences'));
+    if(generation!==accountGeneration)return;
+    // Existing accounts retain English until they choose a language. New accounts
+    // are prompted until a valid choice has been saved, including after retries.
+    languageSetupPending=!!profile.languageSetupPending&&!validLanguage(preferences?.language);
+    updateLanguageUI(validLanguage(preferences?.language)?preferences.language:'en');
     await loadFromFirebase();
     if(generation!==accountGeneration)return;
     let admin=null;
     try{admin=await fbGet(doc(db,'access','admin'));}catch(error){if(error.code!=='permission-denied')throw error;}
     if(generation!==accountGeneration)return;
     state.isAdmin=!!(user.emailVerified&&admin?.email===user.email);
-    document.getElementById('account-name').textContent=user.displayName||'Personal account';
+    document.getElementById('account-name').textContent=user.displayName||tr("Personal account");
     document.getElementById('account-email').textContent=user.email||'';
-    document.getElementById('account-role').textContent=state.isAdmin?'Admin':'Personal account';
+    document.getElementById('account-role').textContent=state.isAdmin?tr("Admin"):tr("Personal account");
     document.getElementById('account-initial').textContent=(user.displayName||user.email||'C').slice(0,1).toUpperCase();
+    renderAccountLabels();
     document.getElementById('account-error').textContent='';
     await loginIntroReady;
     if(generation!==accountGeneration)return;
@@ -782,6 +847,11 @@ async function openAccount(user){
     await new Promise(resolve=>setTimeout(resolve,600));
     if(generation!==accountGeneration)return;
     loginScreen.hidden=true;
+    if(languageSetupPending){
+      document.querySelectorAll('input[name="first-language"]').forEach(input=>input.checked=input.value===getLanguage());
+      document.getElementById('language-choice-error').textContent='';
+      window.openModal('modal-language');
+    }
   }catch(error){
     if(generation!==accountGeneration)return;
     resetAccountState();setAccountOpening(false);
@@ -791,7 +861,7 @@ async function openAccount(user){
 }
 window.retryAccount=()=>openAccount(auth.currentUser);
 onAuthStateChanged(auth,openAccount,()=>{
-  document.getElementById('login-error').textContent='Could not check sign-in. Reload CalCal to try again.';
+  document.getElementById('login-error').textContent=tr("Could not check sign-in. Reload CalCal to try again.");
 });
 
 (function setupKeyboardHandling() {

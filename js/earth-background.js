@@ -1,16 +1,20 @@
+import { tr } from './i18n.js?v=1.1.25';
 // Static textures, with sunlight calculated locally. No continuous animation loop.
 const canvas=document.getElementById('earth-background');
 const home=document.getElementById('page-home');
 const artwork=document.querySelector('.home-footer-art');
 const status=document.getElementById('earth-location-status');
 const locationButton=document.getElementById('earth-use-location');
+let locationStatus='Hong Kong preview. Sunlight follows the current time.';
+function setLocationStatus(message){locationStatus=message;status.textContent=tr(message);}
+document.addEventListener('calcal-language-change',()=>setLocationStatus(locationStatus));
 let location={latitude:22.3193,longitude:114.1694};
 let gl,program,ready=false;
 try {
   const saved=JSON.parse(localStorage.getItem('calcal-earth-location'));
   if(Number.isFinite(saved?.latitude)&&Number.isFinite(saved?.longitude)&&Math.abs(saved.latitude)<=90&&Math.abs(saved.longitude)<=180){
     location=saved;
-    status.textContent='Centered on your saved location.';
+    setLocationStatus("Centered on your saved location.");
   }
 } catch {}
 
@@ -116,23 +120,23 @@ async function initialize(){
   }catch(error){
     ready=false;artwork.classList.remove('earth-ready');
     window.dispatchEvent(new Event('earth-background-change'));
-    status.textContent='Earth is unavailable on this device. The background stays white.';
+    setLocationStatus("Earth is unavailable on this device. The background stays white.");
     console.warn('Earth background:',error);
   }
 }
 locationButton.addEventListener('click',()=>{
-  if(!navigator.geolocation){status.textContent='Location is unavailable. Showing Hong Kong preview.';return;}
-  locationButton.disabled=true;status.textContent='Finding your location…';
+  if(!navigator.geolocation){setLocationStatus("Location is unavailable. Showing Hong Kong preview.");return;}
+  locationButton.disabled=true;setLocationStatus("Finding your location…");
   navigator.geolocation.getCurrentPosition(position=>{
     location={latitude:position.coords.latitude,longitude:position.coords.longitude};
     try{localStorage.setItem('calcal-earth-location',JSON.stringify(location));}catch{}
-    status.textContent='Centered on your location. Saved on this device only.';locationButton.disabled=false;render();
-  },()=>{status.textContent='Could not get your location. Keeping the current view.';locationButton.disabled=false;},{enableHighAccuracy:false,timeout:10000,maximumAge:3600000});
+    setLocationStatus("Centered on your location. Saved on this device only.");locationButton.disabled=false;render();
+  },()=>{setLocationStatus("Could not get your location. Keeping the current view.");locationButton.disabled=false;},{enableHighAccuracy:false,timeout:10000,maximumAge:3600000});
 });
 document.getElementById('earth-reset-location').addEventListener('click',()=>{
   location={latitude:22.3193,longitude:114.1694};
   try{localStorage.removeItem('calcal-earth-location');}catch{}
-  status.textContent='Hong Kong preview. Sunlight follows the current time.';render();
+  setLocationStatus("Hong Kong preview. Sunlight follows the current time.");render();
 });
 canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();ready=false;artwork.classList.remove('earth-ready');window.dispatchEvent(new Event('earth-background-change'));});
 canvas.addEventListener('webglcontextrestored',initialize);
