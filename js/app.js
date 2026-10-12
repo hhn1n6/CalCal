@@ -1,5 +1,6 @@
 import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.1.14';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
+import { setupPageSwipes } from './page-swipe.js?v=1.1.23';
 
 // ── STATE ────────────────────────────────────────────────
 let state = {
@@ -641,7 +642,7 @@ window.resetWater=async()=>{
 };
 
 // ── NAV ───────────────────────────────────────────────────
-window.switchPage=(name,btn)=>{
+window.switchPage=(name,btn,direction)=>{
   if(!accountReady)return;
   const previousPage=document.querySelector('.page.active')?.id;
   const nav=document.querySelector('.nav');
@@ -657,7 +658,14 @@ window.switchPage=(name,btn)=>{
   btn.classList.add('active');
   if(name==='home') renderHome();
   if(name==='lists') renderFoodLists();
+  const page=document.getElementById('page-'+name);
+  page.classList.remove('page-enter-left','page-enter-right');
+  if(direction&&previousPage!==page.id){
+    void page.offsetWidth;
+    page.classList.add('page-enter-'+direction);
+  }
 };
+setupPageSwipes({canSwitch:()=>accountReady,switchPage:(name,direction)=>window.switchPage(name,document.querySelector(`[data-page="${name}"]`),direction)});
 
 // ── MODALS ────────────────────────────────────────────────
 window.openModal=id=>document.getElementById(id).classList.add('open');
