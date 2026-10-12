@@ -1,5 +1,6 @@
-import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.27';
-import { calculateSuggestedGoals, activityFactors } from './goal-calculator.js?v=1.1.27';
+import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.28';
+import { calculateSuggestedGoals, activityFactors } from './goal-calculator.js?v=1.1.28';
+import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.28';
 import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.1.14';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
 import { setupPageSwipes } from './page-swipe.js?v=1.1.23';
@@ -697,8 +698,12 @@ let onboardingSuggestion=null;
 let savingOnboarding=false;
 const onboardingSteps=['language','stats','activity','goal','review'];
 function showOnboardingStep(step){
+  const previous=onboardingStep;
   onboardingStep=step;
   onboardingSteps.forEach((name,index)=>document.getElementById('onboarding-'+name).hidden=index!==step);
+  const section=document.getElementById('onboarding-'+onboardingSteps[step]);
+  section.classList.remove('onboarding-enter-left','onboarding-enter-right');
+  if(step!==previous)section.classList.add(step>previous?'onboarding-enter-left':'onboarding-enter-right');
   const title=document.getElementById('onboarding-'+onboardingSteps[step]).querySelector('.modal-title');
   title.id='onboarding-title-'+step;
   title.setAttribute?.('tabindex','-1');
@@ -709,9 +714,10 @@ function showOnboardingStep(step){
   document.getElementById('language-choice-error').textContent='';
   document.querySelector('.onboarding-panel').scrollTop=0;
 }
-window.onboardingBack=()=>{if(!savingOnboarding)showOnboardingStep(Math.max(0,onboardingStep-1));};
+window.onboardingBack=()=>{if(!savingOnboarding&&!savingLanguage&&onboardingStep>0)showOnboardingStep(onboardingStep-1);};
 window.onboardingNext=()=>{
-  if(savingOnboarding)return;
+  if(savingOnboarding||savingLanguage||onboardingStep===4)return;
+  if(onboardingStep===0)return window.confirmLanguageChoice();
   const error=document.getElementById('language-choice-error');
   error.textContent='';
   if(onboardingStep===1){
@@ -816,6 +822,11 @@ window.changeTesterMode=async enabled=>{
   finally{if(generation===accountGeneration){savingTesterMode=false;input.disabled=false;}}
 };
 window.confirmLanguageChoice=()=>saveLanguagePreference(document.querySelector('input[name="first-language"]:checked').value,true);
+setupOnboardingSwipes({
+  panel:document.querySelector('.onboarding-panel'),
+  canNavigate:()=>accountReady&&languageSetupPending&&!savingOnboarding&&!savingLanguage&&document.getElementById('modal-language').classList.contains('open'),
+  next:()=>window.onboardingNext(),back:()=>window.onboardingBack(),
+});
 document.querySelectorAll('input[name="first-language"]').forEach(input=>input.addEventListener('change',()=>{
   updateLanguageUI(input.value);
 }));

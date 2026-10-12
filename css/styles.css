@@ -40,10 +40,20 @@
   .language-choice .btn { margin-top: 16px; }
   html:lang(zh) .macro-item { min-width: 0; }
   html:lang(zh) .macro-row { gap: 4px; }
-  html:lang(zh) .macro-label { flex-direction: row; align-items: center; justify-content: center; gap: 1px; font-size: clamp(9px, 2.6vw, 11px); letter-spacing: -.3px; }
+  html:lang(zh) .macro-label { flex-direction: row; align-items: center; justify-content: space-between; gap: 4px; font-size: clamp(9px, 2.6vw, 11px); letter-spacing: -.3px; }
   html:lang(zh) .macro-label span { white-space: nowrap; }
-  #modal-language { align-items: center; justify-content: center; padding: 20px; background: var(--bg); backdrop-filter: none; -webkit-backdrop-filter: none; }
-  #modal-language .onboarding-panel { max-width: 440px; max-height: calc(100dvh - 40px); border-radius: 20px; border: 1px solid var(--border); padding: 24px; animation: none; }
+  #modal-language { align-items: center; justify-content: center; padding: 20px; background: rgba(0,0,0,.42); backdrop-filter: none; -webkit-backdrop-filter: none; }
+  #modal-language.open { animation: setup-backdrop-in 550ms ease-out both; }
+  #modal-language .onboarding-panel { max-width: 440px; max-height: calc(100dvh - 40px); border-radius: 20px; border: 1px solid var(--border); padding: 24px; animation: setup-box-in 450ms ease-out 80ms both; }
+  .onboarding-enter-left { animation: setup-step-left 220ms ease-out; }
+  .onboarding-enter-right { animation: setup-step-right 220ms ease-out; }
+  @keyframes setup-backdrop-in { from { background-color: rgba(0,0,0,0); } to { background-color: rgba(0,0,0,.42); } }
+  @keyframes setup-box-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes setup-step-left { from { opacity: .3; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes setup-step-right { from { opacity: .3; transform: translateX(-16px); } to { opacity: 1; transform: translateX(0); } }
+  @media (prefers-reduced-motion: reduce) {
+    #modal-language.open, #modal-language .onboarding-panel, .onboarding-enter-left, .onboarding-enter-right { animation: none; }
+  }
   .onboarding-progress { font-size: 12px; color: var(--text3); margin-bottom: 16px; text-align: right; }
   .setup-energy { display: grid; gap: 12px; margin-bottom: 16px; }
   .setup-energy > div { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; }
