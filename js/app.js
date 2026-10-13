@@ -1,6 +1,7 @@
-import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.28';
-import { calculateSuggestedGoals, activityFactors } from './goal-calculator.js?v=1.1.28';
-import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.28';
+import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.29';
+import { calculateSuggestedGoals, activityFactors } from './goal-calculator.js?v=1.1.29';
+import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.29';
+import { createOnboardingTransition } from './onboarding-transition.js?v=1.1.29';
 import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.1.14';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
 import { setupPageSwipes } from './page-swipe.js?v=1.1.23';
@@ -679,6 +680,8 @@ setupPageSwipes({canSwitch:()=>accountReady,switchPage:(name,direction)=>window.
 window.openModal=id=>{
   document.getElementById(id).classList.add('open');
   if(id==='modal-language'){
+    onboardingTransition.reset();
+    document.querySelector('.onboarding-panel').style.animation='';
     document.querySelectorAll('.page, .nav').forEach(el=>el.inert=true);
     document.querySelector('input[name="first-language"]:checked')?.focus?.();
   }
@@ -697,13 +700,15 @@ let onboardingStats=null;
 let onboardingSuggestion=null;
 let savingOnboarding=false;
 const onboardingSteps=['language','stats','activity','goal','review'];
+const onboardingTransition=createOnboardingTransition(document.querySelector('.onboarding-panel'));
 function showOnboardingStep(step){
   const previous=onboardingStep;
+  if(step!==previous)return onboardingTransition.run(()=>renderOnboardingStep(step),step>previous?'next':'back');
+  renderOnboardingStep(step);
+}
+function renderOnboardingStep(step){
   onboardingStep=step;
   onboardingSteps.forEach((name,index)=>document.getElementById('onboarding-'+name).hidden=index!==step);
-  const section=document.getElementById('onboarding-'+onboardingSteps[step]);
-  section.classList.remove('onboarding-enter-left','onboarding-enter-right');
-  if(step!==previous)section.classList.add(step>previous?'onboarding-enter-left':'onboarding-enter-right');
   const title=document.getElementById('onboarding-'+onboardingSteps[step]).querySelector('.modal-title');
   title.id='onboarding-title-'+step;
   title.setAttribute?.('tabindex','-1');
@@ -714,9 +719,9 @@ function showOnboardingStep(step){
   document.getElementById('language-choice-error').textContent='';
   document.querySelector('.onboarding-panel').scrollTop=0;
 }
-window.onboardingBack=()=>{if(!savingOnboarding&&!savingLanguage&&onboardingStep>0)showOnboardingStep(onboardingStep-1);};
+window.onboardingBack=()=>{if(!savingOnboarding&&!savingLanguage&&!onboardingTransition.moving&&onboardingStep>0)showOnboardingStep(onboardingStep-1);};
 window.onboardingNext=()=>{
-  if(savingOnboarding||savingLanguage||onboardingStep===4)return;
+  if(savingOnboarding||savingLanguage||onboardingTransition.moving||onboardingStep===4)return;
   if(onboardingStep===0)return window.confirmLanguageChoice();
   const error=document.getElementById('language-choice-error');
   error.textContent='';
@@ -738,7 +743,7 @@ window.onboardingNext=()=>{
   showOnboardingStep(Math.min(4,onboardingStep+1));
 };
 window.completeOnboarding=async useSuggested=>{
-  if(!state.user||savingOnboarding||!languageSetupPending)return false;
+  if(!state.user||savingOnboarding||onboardingTransition.moving||!languageSetupPending)return false;
   if(useSuggested&&(!onboardingSuggestion||!document.getElementById('onboarding-review-form').reportValidity()))return false;
   const generation=accountGeneration,error=document.getElementById('language-choice-error');
   let goals=null;
@@ -824,7 +829,7 @@ window.changeTesterMode=async enabled=>{
 window.confirmLanguageChoice=()=>saveLanguagePreference(document.querySelector('input[name="first-language"]:checked').value,true);
 setupOnboardingSwipes({
   panel:document.querySelector('.onboarding-panel'),
-  canNavigate:()=>accountReady&&languageSetupPending&&!savingOnboarding&&!savingLanguage&&document.getElementById('modal-language').classList.contains('open'),
+  canNavigate:()=>accountReady&&languageSetupPending&&!savingOnboarding&&!savingLanguage&&!onboardingTransition.moving&&document.getElementById('modal-language').classList.contains('open'),
   next:()=>window.onboardingNext(),back:()=>window.onboardingBack(),
 });
 document.querySelectorAll('input[name="first-language"]').forEach(input=>input.addEventListener('change',()=>{
@@ -835,6 +840,7 @@ document.querySelectorAll('input[name="first-language"]').forEach(input=>input.a
 document.getElementById('water-input').addEventListener('keydown',e=>{ if(e.key==='Enter') window.addWater(); });
 
 function resetAccountState(){
+  onboardingTransition.reset();
   stopDayListener?.(); stopDayListener=null;
   state.goals={cal:2000,protein:150,carbs:250,fat:65,waterMl:2000,supps:[]};
   state.foodLists=[];state.foods=[];state.logs={};state.water={};state.supps={};state.weights={};
