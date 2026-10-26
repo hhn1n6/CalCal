@@ -1,7 +1,7 @@
-import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.32';
-import { calculateSuggestedGoals, activityFactors } from './goal-calculator.js?v=1.1.32';
-import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.32';
-import { createOnboardingTransition } from './onboarding-transition.js?v=1.1.32';
+import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.33';
+import { calculateSuggestedGoals, activityFactors } from './goal-calculator.js?v=1.1.33';
+import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.33';
+import { createOnboardingTransition } from './onboarding-transition.js?v=1.1.33';
 import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.1.14';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
 import { setupPageSwipes } from './page-swipe.js?v=1.1.23';
@@ -714,7 +714,6 @@ function renderOnboardingStep(step){
   title.setAttribute?.('tabindex','-1');
   document.getElementById('modal-language').setAttribute?.('aria-labelledby',title.id);
   title.focus?.();
-  document.getElementById('onboarding-progress').textContent=`${step+1} / ${onboardingSteps.length}`;
   document.getElementById('language-choice-error').textContent='';
   document.querySelector('.onboarding-panel').scrollTop=0;
 }

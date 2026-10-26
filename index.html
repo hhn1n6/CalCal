@@ -7,19 +7,19 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CalCal">
 <meta name="theme-color" content="#ffffff">
-<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.1.32">
-<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.1.32">
-<link rel="manifest" href="./manifest.webmanifest?v=1.1.32">
+<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.1.33">
+<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.1.33">
+<link rel="manifest" href="./manifest.webmanifest?v=1.1.33">
 <title>CalCal Food Tracker</title>
-<link rel="stylesheet" href="./css/colors.css?v=1.1.32">
-<link rel="stylesheet" href="./css/fonts.css?v=1.1.32">
-<link rel="stylesheet" href="./css/styles.css?v=1.1.32">
+<link rel="stylesheet" href="./css/colors.css?v=1.1.33">
+<link rel="stylesheet" href="./css/fonts.css?v=1.1.33">
+<link rel="stylesheet" href="./css/styles.css?v=1.1.33">
 </head>
 <body class="signed-out">
 <main id="login-screen" class="login-screen">
   <div class="login-panel">
-    <img class="login-logo" src="./assets/logo_transparent.png?v=1.1.32" width="160" height="160" alt="CalCal">
-    <small class="login-version">v1.1.32</small>
+    <img class="login-logo" src="./assets/logo_transparent.png?v=1.1.33" width="160" height="160" alt="CalCal">
+    <small class="login-version">v1.1.33</small>
     <div class="login-actions">
     <div class="login-methods">
     <form id="email-login-form" class="email-login-form" onsubmit="signInEmail(event)">
@@ -50,7 +50,7 @@
       <div class="page-title"><span id="home-ddmm"></span></div>
       <div id="home-weekday" style="font-size:14px;color:var(--text3);margin-top:3px;"></div>
     </div>
-    <img class="home-header-logo" src="./assets/logo_transparent.png?v=1.1.32" width="48" height="48" alt="CalCal">
+    <img class="home-header-logo" src="./assets/logo_transparent.png?v=1.1.33" width="48" height="48" alt="CalCal">
     <button class="btn btn-primary btn-sm" onclick="openGoalModal()" data-i18n="Goals">Goals</button>
   </div>
 
@@ -171,13 +171,13 @@
   <div class="modal language-choice onboarding-panel">
     <div id="onboarding-progress" class="onboarding-progress"></div>
     <section id="onboarding-language">
-    <div id="language-choice-title" class="modal-title" data-i18n="Language">Language</div>
+    <div class="onboarding-header"><div id="language-choice-title" class="modal-title" data-i18n="Language">Language</div><span class="onboarding-progress">1 / 4</span></div>
     <label class="language-option"><input type="radio" name="first-language" value="en" checked> English</label>
     <label class="language-option"><input type="radio" name="first-language" value="zh-HK"> 正體中文</label>
     <button id="language-continue" class="btn btn-primary btn-full" onclick="confirmLanguageChoice()" data-i18n="Continue">Continue</button>
     </section>
     <section id="onboarding-stats" hidden>
-      <div class="modal-title" data-i18n="About you">About you</div>
+      <div class="onboarding-header"><div class="modal-title" data-i18n="About you">About you</div><span class="onboarding-progress">2 / 4</span></div>
       <form id="onboarding-stats-form" onsubmit="event.preventDefault();onboardingNext()">
         <div class="field"><label for="setup-gender" data-i18n="Gender">Gender</label><select id="setup-gender" required><option value="" data-i18n="Choose">Choose</option><option value="male" data-i18n="Male">Male</option><option value="female" data-i18n="Female">Female</option></select></div>
         <div class="field-row">
@@ -189,7 +189,7 @@
       </form>
     </section>
     <section id="onboarding-activity" hidden>
-      <div class="modal-title" data-i18n="Activity level">Activity level</div>
+      <div class="onboarding-header"><div class="modal-title" data-i18n="Activity level">Activity level</div><span class="onboarding-progress">3 / 4</span></div>
       <input id="setup-activity" type="hidden" value="">
       <div class="activity-options" role="radiogroup" aria-label="Activity level" data-i18n-aria-label="Activity level">
         <label class="activity-option"><input type="radio" name="setup-activity-choice" value="sedentary" onchange="document.getElementById('setup-activity').value=this.value"><span class="activity-card"><img src="./assets/pictures/web/sedentary.jpg" width="400" height="200" alt=""><span class="activity-copy"><strong data-i18n="Sedentary">Sedentary</strong><small data-i18n="Little or no exercise">Little or no exercise</small></span></span></label>
@@ -204,7 +204,7 @@
       <div class="btn-row"><button class="btn btn-secondary btn-full" onclick="onboardingBack()" data-i18n="Back">Back</button><button class="btn btn-primary btn-full" onclick="onboardingNext()" data-i18n="Continue">Continue</button></div>
     </section>
     <section id="onboarding-review" hidden>
-      <div class="modal-title" data-i18n="Suggested daily goals">Suggested daily goals</div>
+      <div class="onboarding-header"><div class="modal-title" data-i18n="Suggested daily goals">Suggested daily goals</div><span class="onboarding-progress">4 / 4</span></div>
       <div class="setup-energy"><div><span data-i18n="BMR (resting calories)">BMR (resting calories)</span><strong id="setup-bmr"></strong></div><div><span data-i18n="TDEE (daily calorie use)">TDEE (daily calorie use)</span><strong id="setup-tdee"></strong></div></div>
       <p class="setup-note" data-i18n="Starting targets: 10% above or below TDEE. Edit before saving.">Starting targets: 10% above or below TDEE. Edit before saving.</p>
       <p class="setup-note" data-i18n="Minimum suggested calories: 1,500 for males; 1,200 for females.">Minimum suggested calories: 1,500 for males; 1,200 for females.</p>
@@ -339,21 +339,21 @@
 
 <nav class="nav">
   <button class="nav-btn active" aria-label="Today" data-i18n-aria-label="Today" data-page="home" onclick="switchPage('home',this)">
-    <img class="nav-icon-regular" src="./assets/icons/home.svg?v=1.1.32" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/home-bold.svg?v=1.1.32" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/home.svg?v=1.1.33" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/home-bold.svg?v=1.1.33" width="24" height="24" alt="" aria-hidden="true">
   </button>
   <button class="nav-btn" aria-label="Foods" data-i18n-aria-label="Foods" data-page="lists" onclick="switchPage('lists',this)">
-    <img class="nav-icon-regular" src="./assets/icons/menu.svg?v=1.1.32" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/menu-bold.svg?v=1.1.32" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/menu.svg?v=1.1.33" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/menu-bold.svg?v=1.1.33" width="24" height="24" alt="" aria-hidden="true">
   </button>
   <button class="nav-btn" aria-label="Personal" data-i18n-aria-label="Personal" data-page="person" onclick="switchPage('person',this)">
-    <img class="nav-icon-regular" src="./assets/icons/person.svg?v=1.1.32" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/person-bold.svg?v=1.1.32" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/person.svg?v=1.1.33" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/person-bold.svg?v=1.1.33" width="24" height="24" alt="" aria-hidden="true">
   </button>
 </nav>
 
 <!-- Firebase SDK -->
-<script type="module" src="./js/app.js?v=1.1.32"></script>
-<script type="module" src="./js/earth-background.js?v=1.1.32"></script>
+<script type="module" src="./js/app.js?v=1.1.33"></script>
+<script type="module" src="./js/earth-background.js?v=1.1.33"></script>
 </body>
 </html>
