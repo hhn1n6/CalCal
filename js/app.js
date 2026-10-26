@@ -1,7 +1,7 @@
-import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.33';
-import { calculateSuggestedGoals, activityFactors } from './goal-calculator.js?v=1.1.33';
-import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.33';
-import { createOnboardingTransition } from './onboarding-transition.js?v=1.1.33';
+import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.34';
+import { calculateSuggestedGoals, activityFactors } from './goal-calculator.js?v=1.1.34';
+import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.34';
+import { createOnboardingTransition } from './onboarding-transition.js?v=1.1.34';
 import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.1.14';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
 import { setupPageSwipes } from './page-swipe.js?v=1.1.23';
@@ -706,6 +706,30 @@ function showOnboardingStep(step){
   if(step!==previous)return onboardingTransition.run(()=>renderOnboardingStep(step),step>previous?'next':'back');
   renderOnboardingStep(step);
 }
+function clearOnboardingErrors(){
+  document.getElementById('language-choice-error').textContent='';
+  document.querySelectorAll('#modal-language .onboarding-error-title').forEach(el=>el.classList.remove('onboarding-error-title'));
+  document.querySelectorAll('#modal-language [aria-invalid="true"]').forEach(el=>el.removeAttribute('aria-invalid'));
+}
+function showOnboardingError(message,fieldId){
+  document.getElementById('language-choice-error').textContent=tr(message);
+  if(!fieldId){
+    fieldId=/weight between/.test(message)?'setup-weight':/height between/.test(message)?'setup-height':/age between/.test(message)?'setup-age':/Male or Female/.test(message)?'setup-gender':null;
+  }
+  const section=document.getElementById('onboarding-'+onboardingSteps[onboardingStep]);
+  const title=fieldId?document.querySelector('label[for="'+fieldId+'"]'):/weight goal/.test(message)?section.querySelector('.setup-goal-heading'):section.querySelector('.modal-title');
+  if(!title)return;
+  title.classList.add('onboarding-error-title');
+  if(fieldId)document.getElementById(fieldId).setAttribute?.('aria-invalid','true');
+  if(!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)title.animate?.([{transform:'translateX(0)'},{transform:'translateX(-5px)'},{transform:'translateX(5px)'},{transform:'translateX(-4px)'},{transform:'translateX(4px)'},{transform:'translateX(0)'}],{duration:360,easing:'ease-out'});
+}
+const onboardingPanel=document.querySelector('.onboarding-panel');
+onboardingPanel.addEventListener('invalid',event=>{
+  event.preventDefault();
+  showOnboardingError(event.target.validationMessage,event.target.id);
+},true);
+onboardingPanel.addEventListener('input',clearOnboardingErrors);
+onboardingPanel.addEventListener('change',clearOnboardingErrors);
 function renderOnboardingStep(step){
   onboardingStep=step;
   onboardingSteps.forEach((name,index)=>document.getElementById('onboarding-'+name).hidden=index!==step);
@@ -714,7 +738,7 @@ function renderOnboardingStep(step){
   title.setAttribute?.('tabindex','-1');
   document.getElementById('modal-language').setAttribute?.('aria-labelledby',title.id);
   title.focus?.();
-  document.getElementById('language-choice-error').textContent='';
+  clearOnboardingErrors();
   document.querySelector('.onboarding-panel').scrollTop=0;
 }
 window.onboardingBack=()=>{if(!savingOnboarding&&!savingLanguage&&!onboardingTransition.moving&&onboardingStep>0)showOnboardingStep(onboardingStep-1);};
@@ -722,13 +746,13 @@ window.onboardingNext=()=>{
   if(savingOnboarding||savingLanguage||onboardingTransition.moving||onboardingStep===3)return;
   if(onboardingStep===0)return window.confirmLanguageChoice();
   const error=document.getElementById('language-choice-error');
-  error.textContent='';
+  clearOnboardingErrors();
   if(onboardingStep===1){
     if(!document.getElementById('onboarding-stats-form').reportValidity())return;
     onboardingStats={gender:document.getElementById('setup-gender').value,weight:Number(document.getElementById('setup-weight').value),height:Number(document.getElementById('setup-height').value),age:Number(document.getElementById('setup-age').value)};
-    try{calculateSuggestedGoals({...onboardingStats,activity:'sedentary',goal:'gain'});}catch(err){error.textContent=tr(err.message);return;}
+    try{calculateSuggestedGoals({...onboardingStats,activity:'sedentary',goal:'gain'});}catch(err){showOnboardingError(err.message);return;}
   }
-  if(onboardingStep===2&&!Object.hasOwn(activityFactors,document.getElementById('setup-activity').value)){error.textContent=tr('Choose your activity level.');return;}
+  if(onboardingStep===2&&!Object.hasOwn(activityFactors,document.getElementById('setup-activity').value)){showOnboardingError('Choose your activity level.');return;}
   if(onboardingStep===2){
     const goal=document.querySelector('input[name="setup-goal"]:checked')?.value;
     try{
@@ -736,7 +760,7 @@ window.onboardingNext=()=>{
       document.getElementById('setup-bmr').textContent=onboardingSuggestion.bmr+' kcal';
       document.getElementById('setup-tdee').textContent=onboardingSuggestion.tdee+' kcal';
       for(const key of ['cal','protein','carbs','fat'])document.getElementById('setup-'+key).value=onboardingSuggestion[key];
-    }catch(err){error.textContent=tr(err.message);return;}
+    }catch(err){showOnboardingError(err.message);return;}
   }
   showOnboardingStep(Math.min(3,onboardingStep+1));
 };
@@ -749,7 +773,7 @@ window.completeOnboarding=async useSuggested=>{
     goals={...state.goals};
     for(const key of ['cal','protein','carbs','fat']){
       const value=Number(document.getElementById('setup-'+key).value);
-      if(!Number.isInteger(value)||value<0||(key==='cal'&&value<1000)){error.textContent=tr('Enter valid whole-number daily targets.');return false;}
+      if(!Number.isInteger(value)||value<0||(key==='cal'&&value<1000)){showOnboardingError('Enter valid whole-number daily targets.','setup-'+key);return false;}
       goals[key]=value;
     }
   }
@@ -769,7 +793,7 @@ window.completeOnboarding=async useSuggested=>{
     document.getElementById('modal-language').classList.remove('open');
     document.querySelectorAll('.page, .nav').forEach(el=>el.inert=false);
     renderHome();return true;
-  }catch(err){if(generation===accountGeneration)error.textContent=tr('Could not save your setup. Please try again.');return false;}
+  }catch(err){if(generation===accountGeneration)showOnboardingError('Could not save your setup. Please try again.');return false;}
   finally{if(generation===accountGeneration){savingOnboarding=false;document.querySelectorAll('#modal-language button, #modal-language input, #modal-language select').forEach(el=>el.disabled=false);}}
 };
 const TESTER_UID='YbInj1g14YPICxIGszWP3jtt6ZP2';
@@ -807,7 +831,7 @@ async function saveLanguagePreference(language,firstChoice=false){
     document.querySelectorAll('.page, .nav').forEach(el=>el.inert=false);
     return true;
   }catch(err){
-    if(generation===accountGeneration){document.getElementById('account-language').value=previous;error.textContent=tr('Could not save your language. Please try again.');}
+    if(generation===accountGeneration){document.getElementById('account-language').value=previous;if(firstChoice)showOnboardingError('Could not save your language. Please try again.');else error.textContent=tr('Could not save your language. Please try again.');}
     return false;
   }finally{if(generation===accountGeneration){savingLanguage=false;button.disabled=false;}}
 }
