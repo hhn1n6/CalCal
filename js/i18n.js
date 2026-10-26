@@ -1,5 +1,9 @@
 // Interface copy only. Food names and other account content are never translated.
 export const chinese = {
+  'Sedentary':'久坐', 'Light':'輕度', 'Moderate':'中度', 'Active':'活躍', 'Very active':'非常活躍',
+  'Little or no exercise':'很少或不運動', 'Exercise 1–3 days/week':'每週運動 1–3 天',
+  'Exercise 3–5 days/week':'每週運動 3–5 天', 'Exercise 6–7 days/week':'每週運動 6–7 天',
+  'Hard daily exercise / physical job':'每天高強度運動／體力工作',
   'About you':'關於你', 'Gender':'性別', 'Choose':'請選擇', 'Male':'男性', 'Female':'女性',
   'Height (cm)':'身高（cm）', 'Age':'年齡', 'Back':'返回',
   'Exercise habit':'運動習慣', 'Activity level':'活動程度',

@@ -1,4 +1,4 @@
-// Cross-fade complete cards while the backdrop and homepage stay stationary.
+// Fade complete cards out, then in while the backdrop and homepage stay stationary.
 export function createOnboardingTransition(panel){
   let moving=false,animations=[],ghost=null,generation=0;
   function reset(){
@@ -24,7 +24,7 @@ export function createOnboardingTransition(panel){
     panel.style.animation='none';
     update();
     const options={duration:380,easing:'cubic-bezier(.22,.61,.36,1)',fill:'both'};
-    animations=[ghost.animate([{opacity:1},{opacity:0}],options),panel.animate([{opacity:0},{opacity:1}],options)];
+    animations=[ghost.animate([{opacity:1},{opacity:0}],options),panel.animate([{opacity:0},{opacity:1}],{...options,delay:380})];
     Promise.all(animations.map(animation=>animation.finished)).catch(()=>{}).finally(()=>{
       if(current!==generation)return;
       animations.forEach(animation=>animation.cancel());animations=[];
