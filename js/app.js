@@ -1,8 +1,8 @@
-import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.41';
-import { calculateSuggestedGoals, activityFactors } from './goal-calculator.js?v=1.1.41';
-import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.41';
-import { createNumberWheel } from './number-wheel.js?v=1.1.41';
-import { createOnboardingTransition } from './onboarding-transition.js?v=1.1.41';
+import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.42';
+import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.1.42';
+import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.42';
+import { createNumberWheel } from './number-wheel.js?v=1.1.42';
+import { createOnboardingTransition } from './onboarding-transition.js?v=1.1.42';
 import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.1.14';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
 import { setupPageSwipes } from './page-swipe.js?v=1.1.23';
@@ -775,6 +775,15 @@ window.onboardingNext=()=>{
     }catch(err){showOnboardingError(err.message);return;}
   }
   showOnboardingStep(Math.min(3,onboardingStep+1));
+};
+window.roundOnboardingGoals=()=>{
+  if(onboardingStep!==3||savingOnboarding||onboardingTransition.moving)return;
+  clearOnboardingErrors();
+  if(!document.getElementById('onboarding-review-form').reportValidity())return;
+  try{
+    const goals=roundDailyGoals(Object.fromEntries(['cal','protein','carbs','fat'].map(key=>[key,Number(document.getElementById('setup-'+key).value)])));
+    for(const key of ['cal','protein','carbs','fat'])document.getElementById('setup-'+key).value=goals[key];
+  }catch(err){showOnboardingError(err.message);}
 };
 window.completeOnboarding=async useSuggested=>{
   if(!useSuggested||onboardingStep!==3||!state.user||savingOnboarding||onboardingTransition.moving||!languageSetupPending)return false;

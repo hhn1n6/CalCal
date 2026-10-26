@@ -419,3 +419,11 @@
   #onboarding-review .setup-energy, #onboarding-review .field label, #onboarding-review p { line-height: 15px; }
   #onboarding-review p { margin-bottom: 18px; }
   #onboarding-review .field-row { display: block; }
+
+  #onboarding-review .review-calories { max-width: 220px; margin: 0 auto 18px; text-align: center; }
+  #onboarding-review .review-calories input { font-size: 40px; font-weight: 700; text-align: center; padding: 10px 6px; }
+  #onboarding-review .review-macros { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); }
+  #onboarding-review .review-macros .field { position: relative; min-width: 0; margin-bottom: 0; padding: 0 8px; text-align: center; }
+  #onboarding-review .review-macros .field + .field::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom,transparent,rgba(0,0,0,.16) 25%,rgba(0,0,0,.16) 75%,transparent); }
+  #onboarding-review .review-macros input { padding: 10px 2px; font-size: 24px; font-weight: 700; text-align: center; }
+  #onboarding-review .rounding-action { display: block; margin: 16px auto 0; padding: 4px 12px; border: 0; background: transparent; color: var(--text); font-size: 14px; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
