@@ -1,8 +1,8 @@
-import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.45';
-import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.1.45';
-import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.45';
-import { createNumberWheel } from './number-wheel.js?v=1.1.45';
-import { createOnboardingTransition } from './onboarding-transition.js?v=1.1.45';
+import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.46';
+import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.1.46';
+import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.46';
+import { createNumberWheel } from './number-wheel.js?v=1.1.46';
+import { createOnboardingTransition } from './onboarding-transition.js?v=1.1.46';
 import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.1.14';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
 import { setupPageSwipes } from './page-swipe.js?v=1.1.23';
@@ -13,6 +13,8 @@ let state = {
   isAdmin: false,
   isTester: false,
   testerNewUser: false,
+  nutritionDisplay: 'remaining',
+  bodyProfile: {},
   goals:     { cal:2000, protein:150, carbs:250, fat:65, waterMl:2000, supps:[] },
   foodLists: [],
   foods: [],
@@ -198,21 +200,22 @@ function renderHome(){
   // Ring
   // Subtract the same whole-number total shown in the diary, so the
   // displayed intake and remaining amount always add up to the goal.
+  const intakeMode=state.nutritionDisplay==='intake';
   const caloriesLeft=Math.round(g.cal)-Math.round(t.cal);
-  document.getElementById('ring-consumed-big').textContent = Math.round(Math.abs(caloriesLeft));
-  document.getElementById('ring-goal-lbl').textContent = `kcal ${caloriesLeft<0?tr("over"):tr("left")}`;
-  const pct=g.cal>0?Math.max(0,Math.min(1,caloriesLeft/g.cal)):0, circ=2*Math.PI*57;
+  document.getElementById('ring-consumed-big').textContent = intakeMode?Math.round(t.cal):Math.round(Math.abs(caloriesLeft));
+  document.getElementById('ring-goal-lbl').textContent = intakeMode?`/${Math.round(g.cal)}kcal`:(caloriesLeft<0?`kcal ${tr("over")}`:'kcal');
+  const pct=g.cal>0?Math.max(0,Math.min(1,(intakeMode?t.cal:caloriesLeft)/g.cal)):0, circ=2*Math.PI*57;
   document.getElementById('ring-cal').style.strokeDashoffset = circ - circ*pct;
   document.getElementById('ring-cal').style.stroke = caloriesLeft<0?'var(--red)':'var(--accent)';
 
   // Macros
   const setBar=(id,val,goal,color)=>{
     const left=Math.round(goal)-Math.round(val);
-    const p=goal>0?Math.max(0,Math.min(100,left/goal*100)):0;
+    const p=goal>0?Math.max(0,Math.min(100,(intakeMode?val:left)/goal*100)):0;
     document.getElementById('bar-'+id).style.width=p+'%';
     document.getElementById('bar-'+id).style.background=color;
     const label=document.getElementById('lbl-'+id);
-    label.innerHTML=`<strong>${Math.abs(left)}</strong>g ${left<0?tr("over"):tr("left")}`;
+    label.innerHTML=intakeMode?`<strong>${Math.round(val)}</strong>g/${Math.round(goal)}g`:`<strong>${Math.abs(left)}</strong>g${left<0?' '+tr("over"):''}`;
     label.classList.toggle('nutrition-over',left<0);
     label.title='';
   };
@@ -810,12 +813,58 @@ window.completeOnboarding=async useSuggested=>{
     await batch.commit();
     if(generation!==accountGeneration)return false;
     if(goals)state.goals=goals;
+    state.bodyProfile={...state.bodyProfile,...onboardingStats};
+    renderPersonalDetails();
     languageSetupPending=false;
     document.getElementById('modal-language').classList.remove('open');
     document.querySelectorAll('.page, .nav').forEach(el=>el.inert=false);
     renderHome();return true;
   }catch(err){if(generation===accountGeneration)showOnboardingError('Could not save your setup. Please try again.');return false;}
   finally{if(generation===accountGeneration){savingOnboarding=false;document.querySelectorAll('#modal-language button, #modal-language input, #modal-language select').forEach(el=>el.disabled=false);}}
+};
+let savingNutritionDisplay=false,savingPersonalDetails=false;
+function renderPersonalDetails(){
+  document.getElementById('personal-gender').value=['male','female'].includes(state.bodyProfile.gender)?state.bodyProfile.gender:'';
+  document.getElementById('personal-birthday').value=state.bodyProfile.birthday||'';
+  document.getElementById('personal-birthday').max=TODAY();
+}
+window.changeNutritionDisplay=async mode=>{
+  if(!state.user||!accountReady||savingNutritionDisplay||!['remaining','intake'].includes(mode))return false;
+  const generation=accountGeneration,previous=state.nutritionDisplay;
+  const select=document.getElementById('nutrition-display'),error=document.getElementById('nutrition-display-error');
+  savingNutritionDisplay=true;select.disabled=true;error.textContent='';
+  try{
+    await setDoc(accountRef('settings','preferences'),{nutritionDisplay:mode},{merge:true});
+    if(generation!==accountGeneration)return false;
+    state.nutritionDisplay=mode;select.value=mode;renderHome();return true;
+  }catch(err){
+    if(generation===accountGeneration){select.value=previous;error.textContent=tr('Could not save display preference. Please try again.');}
+    return false;
+  }finally{if(generation===accountGeneration){savingNutritionDisplay=false;select.disabled=false;}}
+};
+window.savePersonalDetails=async()=>{
+  if(!state.user||!accountReady||savingPersonalDetails)return false;
+  const error=document.getElementById('personal-details-error'),status=document.getElementById('personal-details-status');
+  error.textContent='';status.textContent='';
+  const gender=document.getElementById('personal-gender').value,birthday=document.getElementById('personal-birthday').value;
+  if(!['','male','female'].includes(gender)){error.textContent=tr('Choose Male or Female.');return false;}
+  const update={gender,birthday,updatedAt:Date.now()};
+  if(birthday){
+    const date=new Date(birthday+'T00:00:00'),parts=birthday.split('-').map(Number),now=new Date();
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(birthday)||!Number.isFinite(date.getTime())||date.getFullYear()!==parts[0]||date.getMonth()+1!==parts[1]||date.getDate()!==parts[2]||birthday>TODAY()){
+      error.textContent=tr('Enter a valid birthday that is not in the future.');return false;
+    }
+    update.age=now.getFullYear()-date.getFullYear()-((now.getMonth()<date.getMonth()||(now.getMonth()===date.getMonth()&&now.getDate()<date.getDate()))?1:0);
+  }
+  const generation=accountGeneration;
+  savingPersonalDetails=true;
+  for(const id of ['personal-gender','personal-birthday','personal-details-save'])document.getElementById(id).disabled=true;
+  try{
+    await setDoc(accountRef('settings','bodyProfile'),update,{merge:true});
+    if(generation!==accountGeneration)return false;
+    state.bodyProfile={...state.bodyProfile,...update};status.textContent=tr('Saved');return true;
+  }catch(err){if(generation===accountGeneration)error.textContent=tr('Could not save personal details. Please try again.');return false;}
+  finally{if(generation===accountGeneration){savingPersonalDetails=false;for(const id of ['personal-gender','personal-birthday','personal-details-save'])document.getElementById(id).disabled=false;}}
 };
 const TESTER_UID='YbInj1g14YPICxIGszWP3jtt6ZP2';
 function renderAccountLabels(){
@@ -830,6 +879,7 @@ function renderAccountLabels(){
 function updateLanguageUI(language){
   setLanguage(language);
   document.getElementById('account-language').value=getLanguage();
+  document.getElementById('nutrition-display').value=state.nutritionDisplay;
   renderAccountLabels();
   if(accountReady){
     renderHome();renderFoodLists();renderManageLists();
@@ -890,6 +940,14 @@ function resetAccountState(){
   state.activeListId=null;state._editFoodId=null;state._serveFood=null;
   state.isAdmin=false;
   state.isTester=false;state.testerNewUser=false;savingTesterMode=false;
+  state.nutritionDisplay='remaining';state.bodyProfile={};savingNutritionDisplay=false;savingPersonalDetails=false;
+  document.getElementById('nutrition-display').value='remaining';document.getElementById('nutrition-display').disabled=false;
+  document.getElementById('nutrition-display-error').textContent='';
+  document.getElementById('personal-details-error').textContent='';
+  document.getElementById('personal-details-status').textContent='';
+  document.getElementById('personal-details-save').disabled=false;
+  document.getElementById('personal-gender').disabled=false;document.getElementById('personal-birthday').disabled=false;
+  renderPersonalDetails();
   document.getElementById('tester-card').hidden=true;
   document.getElementById('tester-new-user').disabled=false;
   state._savingFoods=false;state._savingLists=false;state._savingWeight=false;
@@ -975,10 +1033,12 @@ async function openAccount(user){
     if(generation!==accountGeneration)return;
     const profile=await initializeAccount(user);
     if(generation!==accountGeneration)return;
-    const preferences=await fbGet(accountRef('settings','preferences'));
+    const [preferences,bodyProfile]=await Promise.all([fbGet(accountRef('settings','preferences')),fbGet(accountRef('settings','bodyProfile'))]);
     if(generation!==accountGeneration)return;
     // Existing accounts retain English until they choose a language. New accounts
     // are prompted until a valid choice has been saved, including after retries.
+    state.nutritionDisplay=preferences?.nutritionDisplay==='intake'?'intake':'remaining';
+    state.bodyProfile=bodyProfile||{};renderPersonalDetails();
     state.isTester=user.uid===TESTER_UID&&profile.accountType==='tester';
     state.testerNewUser=state.isTester&&preferences?.testerNewUser===true;
     languageSetupPending=state.testerNewUser||!!profile.languageSetupPending&&preferences?.onboardingComplete!==true;

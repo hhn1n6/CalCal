@@ -430,3 +430,10 @@
 
   #onboarding-review .field input { background: transparent; border: 0; border-bottom: 1px solid var(--border); border-radius: 0; box-shadow: none; }
   #onboarding-review .field input:focus { border-bottom-color: var(--text); }
+
+  #nutrition-display { width: 100%; min-height: 44px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--text); font-size: 16px; }
+  .personal-details-card input[type=date] { min-height: 44px; }
+  .macro-label > span:last-child { white-space: nowrap; }
+
+  .account-status { margin-top: 12px; color: var(--text2); font-size: 13px; }
+  .account-status:empty { display: none; }

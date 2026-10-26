@@ -1,5 +1,11 @@
 // Interface copy only. Food names and other account content are never translated.
 export const chinese = {
+  'Personal details':'個人資料', 'Birthday':'生日', 'Daily nutrition display':'每日營養顯示',
+  'Remaining amount':'剩餘數量', 'Intake / goal':'已攝取／目標',
+  'Could not save display preference. Please try again.':'無法儲存顯示設定，請重試。',
+  'Enter a valid birthday that is not in the future.':'請輸入有效的生日，日期不可在未來。',
+  'Could not save personal details. Please try again.':'無法儲存個人資料，請重試。',
+  'Saved':'已儲存',
   'rounding':'取整',
   'Sedentary':'久坐', 'Light':'輕度', 'Moderate':'中度', 'Active':'活躍', 'Very active':'非常活躍',
   'Little or no exercise':'很少或不運動', 'Exercise 1–3 days/week':'每週運動 1–3 天',
