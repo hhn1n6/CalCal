@@ -1,8 +1,8 @@
-import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.42';
-import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.1.42';
-import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.42';
-import { createNumberWheel } from './number-wheel.js?v=1.1.42';
-import { createOnboardingTransition } from './onboarding-transition.js?v=1.1.42';
+import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.43';
+import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.1.43';
+import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.43';
+import { createNumberWheel } from './number-wheel.js?v=1.1.43';
+import { createOnboardingTransition } from './onboarding-transition.js?v=1.1.43';
 import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.1.14';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
 import { setupPageSwipes } from './page-swipe.js?v=1.1.23';
