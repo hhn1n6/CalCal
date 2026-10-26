@@ -450,12 +450,11 @@
   .goal-activity-copy small { font-size: 12px; }
   #modal-goal .goal-activity-picker select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
   .goal-activity-picker:focus-within { outline: 2px solid #000; outline-offset: 2px; }
-  .goal-current-stats { display: flex; justify-content: space-evenly; gap: 16px; padding: 8px 0 16px; }
+  .goal-current-stats { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 0; }
   .goal-current-stats > div { display: flex; gap: 8px; align-items: baseline; font-size: 13px; }
   .goal-current-stats span { color: var(--text2); }
-  .goal-calculation-actions { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); align-items: center; gap: 12px; margin-top: 16px; }
-  #modal-goal .goal-calculation-actions > .btn { grid-column: 2; }
-  #modal-goal .goal-calculation-actions .rounding-action { grid-column: 3; justify-self: start; margin: 0; padding: 4px 0; }
+  .goal-calculation-actions { display: flex; align-items: center; gap: 12px; margin: 0; flex-shrink: 0; }
+  #modal-goal .goal-calculation-actions .rounding-action { margin: 0; padding: 4px 0; }
   .nutrition-goal-editor .setup-goal-option { margin-bottom: 0; }
   #modal-goal .btn-row { margin-top: 16px; }
   #goal-error:empty, #water-goal-error:empty, #supplement-goal-error:empty { display: none; }
@@ -466,3 +465,12 @@
   #modal-goal .review-calories label, #modal-goal .review-macros label { margin-bottom: 0; }
   #modal-goal .review-calories input { padding: 2px 6px; }
   #modal-goal .review-macros input { padding: 2px; }
+
+  .goal-nutrition-targets { margin-bottom: 20px; }
+  .goal-summary-actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 16px; }
+  @media (max-width: 360px) {
+    .goal-summary-actions, .goal-calculation-actions { gap: 8px; }
+    .goal-current-stats > div { font-size: 12px; gap: 6px; }
+    #modal-goal .goal-calculation-actions .btn { padding: 8px 10px; font-size: 12px; }
+    #modal-goal .goal-calculation-actions .rounding-action { font-size: 12px; }
+  }

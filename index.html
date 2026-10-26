@@ -7,19 +7,19 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CalCal">
 <meta name="theme-color" content="#ffffff">
-<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.1.50">
-<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.1.50">
-<link rel="manifest" href="./manifest.webmanifest?v=1.1.50">
+<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.1.51">
+<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.1.51">
+<link rel="manifest" href="./manifest.webmanifest?v=1.1.51">
 <title>CalCal Food Tracker</title>
-<link rel="stylesheet" href="./css/colors.css?v=1.1.50">
-<link rel="stylesheet" href="./css/fonts.css?v=1.1.50">
-<link rel="stylesheet" href="./css/styles.css?v=1.1.50">
+<link rel="stylesheet" href="./css/colors.css?v=1.1.51">
+<link rel="stylesheet" href="./css/fonts.css?v=1.1.51">
+<link rel="stylesheet" href="./css/styles.css?v=1.1.51">
 </head>
 <body class="signed-out">
 <main id="login-screen" class="login-screen">
   <div class="login-panel">
-    <img class="login-logo" src="./assets/logo_transparent.png?v=1.1.50" width="160" height="160" alt="CalCal">
-    <small class="login-version">v1.1.50</small>
+    <img class="login-logo" src="./assets/logo_transparent.png?v=1.1.51" width="160" height="160" alt="CalCal">
+    <small class="login-version">v1.1.51</small>
     <div class="login-actions">
     <div class="login-methods">
     <form id="email-login-form" class="email-login-form" onsubmit="signInEmail(event)">
@@ -50,7 +50,7 @@
       <div class="page-title"><span id="home-ddmm"></span></div>
       <div id="home-weekday" style="font-size:14px;color:var(--text3);margin-top:3px;"></div>
     </div>
-    <img class="home-header-logo" src="./assets/logo_transparent.png?v=1.1.50" width="48" height="48" alt="CalCal">
+    <img class="home-header-logo" src="./assets/logo_transparent.png?v=1.1.51" width="48" height="48" alt="CalCal">
     <button class="btn btn-primary btn-sm" onclick="openGoalModal()" data-i18n="Goals">Goals</button>
   </div>
 
@@ -248,20 +248,24 @@
   <div class="modal nutrition-goal-editor">
     <div class="modal-handle"></div><div class="modal-title" data-i18n="Daily goals">Daily goals</div>
     <form id="daily-goals-form" onsubmit="event.preventDefault();saveGoals()">
-      <div class="field"><label for="g-activity" data-i18n="Activity level">Activity level</label><div class="goal-activity-picker"><img id="g-activity-image" src="./assets/pictures/web/sedentary.jpg" width="400" height="200" alt=""><span class="goal-activity-copy"><strong id="g-activity-title"></strong><small id="g-activity-description"></small></span><select id="g-activity" aria-label="Activity level" data-i18n-aria-label="Activity level" onchange="updateGoalActivity()"><option value="sedentary" data-i18n="Sedentary — little or no exercise">Sedentary — little or no exercise</option><option value="light" data-i18n="Light — exercise 1–3 days/week">Light — exercise 1–3 days/week</option><option value="moderate" data-i18n="Moderate — exercise 3–5 days/week">Moderate — exercise 3–5 days/week</option><option value="active" data-i18n="Active — exercise 6–7 days/week">Active — exercise 6–7 days/week</option><option value="veryActive" data-i18n="Very active — hard daily exercise / physical job">Very active — hard daily exercise / physical job</option></select></div></div>
-      <div class="field"><label data-i18n="Fitness goal">Fitness goal</label><input id="g-fitness-goal" type="hidden"><div class="setup-goal-options" role="radiogroup" aria-label="Fitness goal" data-i18n-aria-label="Fitness goal">
-        <label class="setup-goal-option"><input type="radio" name="g-fitness-choice" value="lose" onchange="document.getElementById('g-fitness-goal').value=this.value;clearGoalEvaluation()"><span class="setup-goal-button"><img src="./assets/icons/lose-weight.svg" width="28" height="28" alt=""><span data-i18n="Lose weight">Lose weight</span></span></label>
-        <label class="setup-goal-option"><input type="radio" name="g-fitness-choice" value="maintain" onchange="document.getElementById('g-fitness-goal').value=this.value;clearGoalEvaluation()"><span class="setup-goal-button"><img src="./assets/icons/maintain-weight.svg" width="28" height="28" alt=""><span data-i18n="Maintain weight">Maintain weight</span></span></label>
-        <label class="setup-goal-option"><input type="radio" name="g-fitness-choice" value="gain" onchange="document.getElementById('g-fitness-goal').value=this.value;clearGoalEvaluation()"><span class="setup-goal-button"><img src="./assets/icons/gain-weight.svg" width="28" height="28" alt=""><span data-i18n="Gain weight">Gain weight</span></span></label>
-      </div></div>
-      <div class="goal-current-stats"><div><span data-i18n="Age">Age</span><strong id="g-current-age"></strong></div><div><span data-i18n="Weight (kg)">Weight (kg)</span><strong id="g-current-weight"></strong></div></div>
+      <div class="goal-nutrition-targets">
       <div class="field review-calories"><label for="g-cal" data-i18n="Calories (kcal)">Calories (kcal)</label><input id="g-cal" type="number" inputmode="decimal" min="1000" max="20000" step="1" required></div>
       <div class="review-macros">
         <div class="field"><label for="g-protein" data-i18n="Protein (g)">Protein (g)</label><input id="g-protein" type="number" inputmode="decimal" min="0" max="1000" step="1" required></div>
         <div class="field"><label for="g-carbs" data-i18n="Carbs (g)">Carbs (g)</label><input id="g-carbs" type="number" inputmode="decimal" min="0" max="2000" step="1" required></div>
         <div class="field"><label for="g-fat" data-i18n="Fat (g)">Fat (g)</label><input id="g-fat" type="number" inputmode="decimal" min="0" max="1000" step="1" required></div>
       </div>
+      </div>
+      <div class="field"><label for="g-activity" data-i18n="Activity level">Activity level</label><div class="goal-activity-picker"><img id="g-activity-image" src="./assets/pictures/web/sedentary.jpg" width="400" height="200" alt=""><span class="goal-activity-copy"><strong id="g-activity-title"></strong><small id="g-activity-description"></small></span><select id="g-activity" aria-label="Activity level" data-i18n-aria-label="Activity level" onchange="updateGoalActivity()"><option value="sedentary" data-i18n="Sedentary — little or no exercise">Sedentary — little or no exercise</option><option value="light" data-i18n="Light — exercise 1–3 days/week">Light — exercise 1–3 days/week</option><option value="moderate" data-i18n="Moderate — exercise 3–5 days/week">Moderate — exercise 3–5 days/week</option><option value="active" data-i18n="Active — exercise 6–7 days/week">Active — exercise 6–7 days/week</option><option value="veryActive" data-i18n="Very active — hard daily exercise / physical job">Very active — hard daily exercise / physical job</option></select></div></div>
+      <div class="field"><label data-i18n="Fitness goal">Fitness goal</label><input id="g-fitness-goal" type="hidden"><div class="setup-goal-options" role="radiogroup" aria-label="Fitness goal" data-i18n-aria-label="Fitness goal">
+        <label class="setup-goal-option"><input type="radio" name="g-fitness-choice" value="lose" onchange="document.getElementById('g-fitness-goal').value=this.value;clearGoalEvaluation()"><span class="setup-goal-button"><img src="./assets/icons/lose-weight.svg" width="28" height="28" alt=""><span data-i18n="Lose weight">Lose weight</span></span></label>
+        <label class="setup-goal-option"><input type="radio" name="g-fitness-choice" value="maintain" onchange="document.getElementById('g-fitness-goal').value=this.value;clearGoalEvaluation()"><span class="setup-goal-button"><img src="./assets/icons/maintain-weight.svg" width="28" height="28" alt=""><span data-i18n="Maintain weight">Maintain weight</span></span></label>
+        <label class="setup-goal-option"><input type="radio" name="g-fitness-choice" value="gain" onchange="document.getElementById('g-fitness-goal').value=this.value;clearGoalEvaluation()"><span class="setup-goal-button"><img src="./assets/icons/gain-weight.svg" width="28" height="28" alt=""><span data-i18n="Gain weight">Gain weight</span></span></label>
+      </div></div>
+      <div class="goal-summary-actions">
+      <div class="goal-current-stats"><div><span data-i18n="Age">Age</span><strong id="g-current-age"></strong></div><div><span data-i18n="Weight (kg)">Weight (kg)</span><strong id="g-current-weight"></strong></div></div>
       <div class="goal-calculation-actions"><button type="button" class="btn btn-secondary" onclick="reEvaluateGoals()" data-i18n="Re-evaluate">Re-evaluate</button><button type="button" class="rounding-action" onclick="roundHomeGoals()" data-i18n="rounding">rounding</button></div>
+      </div>
       <p id="goal-error" class="account-error" role="alert"></p>
       <div class="btn-row"><button type="button" class="btn btn-secondary btn-full" onclick="closeModal('modal-goal')" data-i18n="Cancel">Cancel</button><button id="g-save" type="submit" class="btn btn-primary btn-full" data-i18n="Save">Save</button></div>
     </form>
@@ -367,21 +371,21 @@
 
 <nav class="nav">
   <button class="nav-btn active" aria-label="Today" data-i18n-aria-label="Today" data-page="home" onclick="switchPage('home',this)">
-    <img class="nav-icon-regular" src="./assets/icons/home.svg?v=1.1.50" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/home-bold.svg?v=1.1.50" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/home.svg?v=1.1.51" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/home-bold.svg?v=1.1.51" width="24" height="24" alt="" aria-hidden="true">
   </button>
   <button class="nav-btn" aria-label="Foods" data-i18n-aria-label="Foods" data-page="lists" onclick="switchPage('lists',this)">
-    <img class="nav-icon-regular" src="./assets/icons/menu.svg?v=1.1.50" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/menu-bold.svg?v=1.1.50" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/menu.svg?v=1.1.51" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/menu-bold.svg?v=1.1.51" width="24" height="24" alt="" aria-hidden="true">
   </button>
   <button class="nav-btn" aria-label="Personal" data-i18n-aria-label="Personal" data-page="person" onclick="switchPage('person',this)">
-    <img class="nav-icon-regular" src="./assets/icons/person.svg?v=1.1.50" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/person-bold.svg?v=1.1.50" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/person.svg?v=1.1.51" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/person-bold.svg?v=1.1.51" width="24" height="24" alt="" aria-hidden="true">
   </button>
 </nav>
 
 <!-- Firebase SDK -->
-<script type="module" src="./js/app.js?v=1.1.50"></script>
-<script type="module" src="./js/earth-background.js?v=1.1.50"></script>
+<script type="module" src="./js/app.js?v=1.1.51"></script>
+<script type="module" src="./js/earth-background.js?v=1.1.51"></script>
 </body>
 </html>
