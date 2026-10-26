@@ -458,3 +458,6 @@
   .nutrition-goal-editor .setup-goal-option { margin-bottom: 0; }
   #modal-goal .btn-row { margin-top: 16px; }
   #goal-error:empty, #water-goal-error:empty, #supplement-goal-error:empty { display: none; }
+
+  #setup-birthday, #personal-birthday { background: transparent; border: 0; border-bottom: 1px solid var(--border); border-radius: 0; box-shadow: none; }
+  #setup-birthday:focus, #personal-birthday:focus { outline: none; border-bottom-color: var(--text); }
