@@ -7,19 +7,19 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CalCal">
 <meta name="theme-color" content="#ffffff">
-<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.1.37">
-<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.1.37">
-<link rel="manifest" href="./manifest.webmanifest?v=1.1.37">
+<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.1.38">
+<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.1.38">
+<link rel="manifest" href="./manifest.webmanifest?v=1.1.38">
 <title>CalCal Food Tracker</title>
-<link rel="stylesheet" href="./css/colors.css?v=1.1.37">
-<link rel="stylesheet" href="./css/fonts.css?v=1.1.37">
-<link rel="stylesheet" href="./css/styles.css?v=1.1.37">
+<link rel="stylesheet" href="./css/colors.css?v=1.1.38">
+<link rel="stylesheet" href="./css/fonts.css?v=1.1.38">
+<link rel="stylesheet" href="./css/styles.css?v=1.1.38">
 </head>
 <body class="signed-out">
 <main id="login-screen" class="login-screen">
   <div class="login-panel">
-    <img class="login-logo" src="./assets/logo_transparent.png?v=1.1.37" width="160" height="160" alt="CalCal">
-    <small class="login-version">v1.1.37</small>
+    <img class="login-logo" src="./assets/logo_transparent.png?v=1.1.38" width="160" height="160" alt="CalCal">
+    <small class="login-version">v1.1.38</small>
     <div class="login-actions">
     <div class="login-methods">
     <form id="email-login-form" class="email-login-form" onsubmit="signInEmail(event)">
@@ -50,7 +50,7 @@
       <div class="page-title"><span id="home-ddmm"></span></div>
       <div id="home-weekday" style="font-size:14px;color:var(--text3);margin-top:3px;"></div>
     </div>
-    <img class="home-header-logo" src="./assets/logo_transparent.png?v=1.1.37" width="48" height="48" alt="CalCal">
+    <img class="home-header-logo" src="./assets/logo_transparent.png?v=1.1.38" width="48" height="48" alt="CalCal">
     <button class="btn btn-primary btn-sm" onclick="openGoalModal()" data-i18n="Goals">Goals</button>
   </div>
 
@@ -169,11 +169,9 @@
 <!-- MODALS -->
 <div id="modal-language" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="language-choice-title">
   <div class="modal language-choice onboarding-panel">
-    <div id="onboarding-progress" class="onboarding-progress"></div>
     <section id="onboarding-language">
     <div class="onboarding-header"><div id="language-choice-title" class="modal-title" data-i18n="Language">Language</div><span class="onboarding-progress">1 / 4</span></div>
-    <label class="language-option"><input type="radio" name="first-language" value="en" checked> English</label>
-    <label class="language-option"><input type="radio" name="first-language" value="zh-HK"> 正體中文</label>
+    <div class="field setup-last-answer"><select id="first-language" aria-label="Language" data-i18n-aria-label="Language"><option value="en">English</option><option value="zh-HK">正體中文</option></select></div>
     <button id="language-continue" class="btn btn-primary btn-full" onclick="confirmLanguageChoice()" data-i18n="Continue">Continue</button>
     </section>
     <section id="onboarding-stats" hidden>
@@ -184,7 +182,7 @@
           <div class="field"><label for="setup-weight" data-i18n="Weight (kg)">Weight (kg)</label><input id="setup-weight" type="number" inputmode="decimal" min="20" max="500" step="any" required></div>
           <div class="field"><label for="setup-height" data-i18n="Height (cm)">Height (cm)</label><input id="setup-height" type="number" inputmode="decimal" min="100" max="250" step="any" required></div>
         </div>
-        <div class="field"><label for="setup-age" data-i18n="Age">Age</label><input id="setup-age" type="number" inputmode="decimal" min="1" max="120" step="1" required></div>
+        <div class="field setup-last-answer"><label for="setup-age" data-i18n="Age">Age</label><input id="setup-age" type="number" inputmode="decimal" min="1" max="120" step="1" required></div>
         <div class="btn-row"><button type="button" class="btn btn-secondary btn-full" onclick="onboardingBack()" data-i18n="Back">Back</button><button type="submit" class="btn btn-primary btn-full" data-i18n="Continue">Continue</button></div>
       </form>
     </section>
@@ -214,7 +212,7 @@
       <form id="onboarding-review-form" novalidate onsubmit="event.preventDefault();completeOnboarding(true)">
         <div class="field-row"><div class="field"><label for="setup-cal" data-i18n="Calories (kcal)">Calories (kcal)</label><input id="setup-cal" type="number" inputmode="decimal" min="1000" max="20000" step="1" required></div><div class="field"><label for="setup-protein" data-i18n="Protein (g)">Protein (g)</label><input id="setup-protein" type="number" inputmode="decimal" min="0" max="1000" step="1" required></div></div>
         <div class="field-row"><div class="field"><label for="setup-carbs" data-i18n="Carbs (g)">Carbs (g)</label><input id="setup-carbs" type="number" inputmode="decimal" min="0" max="2000" step="1" required></div><div class="field"><label for="setup-fat" data-i18n="Fat (g)">Fat (g)</label><input id="setup-fat" type="number" inputmode="decimal" min="0" max="1000" step="1" required></div></div>
-        <p class="setup-note" data-i18n="General adult estimates; not for pregnancy or breastfeeding. Your needs may differ.">General adult estimates; not for pregnancy or breastfeeding. Your needs may differ.</p>
+        <p class="setup-note setup-last-answer" data-i18n="General adult estimates; not for pregnancy or breastfeeding. Your needs may differ.">General adult estimates; not for pregnancy or breastfeeding. Your needs may differ.</p>
         <div class="btn-row"><button type="button" class="btn btn-secondary btn-full" onclick="onboardingBack()" data-i18n="Back">Back</button><button id="setup-save" type="submit" class="btn btn-primary btn-full" data-i18n="Save goals">Save goals</button></div>
       </form>
     </section>
@@ -342,21 +340,21 @@
 
 <nav class="nav">
   <button class="nav-btn active" aria-label="Today" data-i18n-aria-label="Today" data-page="home" onclick="switchPage('home',this)">
-    <img class="nav-icon-regular" src="./assets/icons/home.svg?v=1.1.37" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/home-bold.svg?v=1.1.37" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/home.svg?v=1.1.38" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/home-bold.svg?v=1.1.38" width="24" height="24" alt="" aria-hidden="true">
   </button>
   <button class="nav-btn" aria-label="Foods" data-i18n-aria-label="Foods" data-page="lists" onclick="switchPage('lists',this)">
-    <img class="nav-icon-regular" src="./assets/icons/menu.svg?v=1.1.37" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/menu-bold.svg?v=1.1.37" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/menu.svg?v=1.1.38" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/menu-bold.svg?v=1.1.38" width="24" height="24" alt="" aria-hidden="true">
   </button>
   <button class="nav-btn" aria-label="Personal" data-i18n-aria-label="Personal" data-page="person" onclick="switchPage('person',this)">
-    <img class="nav-icon-regular" src="./assets/icons/person.svg?v=1.1.37" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/person-bold.svg?v=1.1.37" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/person.svg?v=1.1.38" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/person-bold.svg?v=1.1.38" width="24" height="24" alt="" aria-hidden="true">
   </button>
 </nav>
 
 <!-- Firebase SDK -->
-<script type="module" src="./js/app.js?v=1.1.37"></script>
-<script type="module" src="./js/earth-background.js?v=1.1.37"></script>
+<script type="module" src="./js/app.js?v=1.1.38"></script>
+<script type="module" src="./js/earth-background.js?v=1.1.38"></script>
 </body>
 </html>

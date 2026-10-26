@@ -1,7 +1,7 @@
-import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.37';
-import { calculateSuggestedGoals, activityFactors } from './goal-calculator.js?v=1.1.37';
-import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.37';
-import { createOnboardingTransition } from './onboarding-transition.js?v=1.1.37';
+import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.38';
+import { calculateSuggestedGoals, activityFactors } from './goal-calculator.js?v=1.1.38';
+import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.38';
+import { createOnboardingTransition } from './onboarding-transition.js?v=1.1.38';
 import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.1.14';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
 import { setupPageSwipes } from './page-swipe.js?v=1.1.23';
@@ -683,7 +683,7 @@ window.openModal=id=>{
     onboardingTransition.reset();
     document.querySelector('.onboarding-panel').style.animation='';
     document.querySelectorAll('.page, .nav').forEach(el=>el.inert=true);
-    document.querySelector('input[name="first-language"]:checked')?.focus?.();
+    document.getElementById('first-language').focus?.({preventScroll:true});
   }
 };
 window.closeModal=id=>{if(id==='modal-language'&&languageSetupPending)return;document.getElementById(id).classList.remove('open');};
@@ -852,15 +852,15 @@ window.changeTesterMode=async enabled=>{
   }catch(err){if(generation===accountGeneration){input.checked=previous;error.textContent=tr('Could not save tester mode. Please try again.');}}
   finally{if(generation===accountGeneration){savingTesterMode=false;input.disabled=false;}}
 };
-window.confirmLanguageChoice=()=>saveLanguagePreference(document.querySelector('input[name="first-language"]:checked').value,true);
+window.confirmLanguageChoice=()=>saveLanguagePreference(document.getElementById('first-language').value,true);
 setupOnboardingSwipes({
   panel:document.querySelector('.onboarding-panel'),
   canNavigate:()=>accountReady&&languageSetupPending&&!savingOnboarding&&!savingLanguage&&!onboardingTransition.moving&&document.getElementById('modal-language').classList.contains('open'),
   next:()=>window.onboardingNext(),back:()=>window.onboardingBack(),
 });
-document.querySelectorAll('input[name="first-language"]').forEach(input=>input.addEventListener('change',()=>{
-  updateLanguageUI(input.value);
-}));
+document.getElementById('first-language').addEventListener('change',event=>{
+  updateLanguageUI(event.target.value);
+});
 
 // ── INIT ──────────────────────────────────────────────────
 document.getElementById('water-input').addEventListener('keydown',e=>{ if(e.key==='Enter') window.addWater(); });
@@ -993,7 +993,7 @@ async function openAccount(user){
       showOnboardingStep(0);
       for(const id of ['setup-gender','setup-weight','setup-height','setup-age','setup-activity'])document.getElementById(id).value='';
       document.querySelectorAll('input[name="setup-goal"], input[name="setup-activity-choice"]').forEach(input=>input.checked=false);
-      document.querySelectorAll('input[name="first-language"]').forEach(input=>input.checked=input.value===getLanguage());
+      document.getElementById('first-language').value=getLanguage();
       document.getElementById('language-choice-error').textContent='';
       window.openModal('modal-language');
     }
