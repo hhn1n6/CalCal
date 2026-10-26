@@ -277,7 +277,7 @@
 
   /* FOOD LISTS */
   .category-selector { display: flex; align-items: center; gap: 8px; min-width: 0; border: none; background: none; color: var(--text); cursor: pointer; padding: 0; text-align: left; font-size: 32px; }
-  .category-selector span { overflow-wrap: anywhere; }
+  .category-selector span { display: block; min-width: 0; white-space: nowrap; overflow: hidden; overflow-wrap: normal; text-overflow: clip; }
   .category-selector svg { flex-shrink: 0; }
   .category-row { display: flex; align-items: center; gap: 16px; padding: 8px 0; }
   .category-name { flex: 1; min-width: 0; padding: 12px 0; border: none; background: none; color: var(--text); font-size: 18px; text-align: left; cursor: pointer; overflow-wrap: anywhere; }
@@ -482,3 +482,8 @@
   .goal-calorie-heading { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); align-items: center; gap: 8px; }
   .goal-calorie-heading label { grid-column: 2; color: var(--text2); font-size: 12px; line-height: 15px; text-align: center; }
   #modal-goal .goal-calorie-heading .rounding-action { grid-column: 3; justify-self: end; margin: 0; padding: 4px 0; }
+
+  #page-lists > .page-header { gap: 12px; }
+  #page-lists > .page-header > .category-selector { flex: 1 1 0; overflow: hidden; }
+  #page-lists > .page-header > .btn { flex: 0 0 auto; white-space: nowrap; min-width: max-content; }
+  #current-category-name.is-overflowing { -webkit-mask-image: linear-gradient(to right,#000 calc(100% - 24px),transparent); mask-image: linear-gradient(to right,#000 calc(100% - 24px),transparent); }

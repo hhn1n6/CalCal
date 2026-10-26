@@ -1,9 +1,9 @@
-import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.53';
-import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.1.53';
-import { ageFromBirthday, currentProfileWeight } from './profile-utils.js?v=1.1.53';
-import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.53';
-import { createNumberWheel } from './number-wheel.js?v=1.1.53';
-import { createOnboardingTransition } from './onboarding-transition.js?v=1.1.53';
+import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.54';
+import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.1.54';
+import { ageFromBirthday, currentProfileWeight } from './profile-utils.js?v=1.1.54';
+import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.54';
+import { createNumberWheel } from './number-wheel.js?v=1.1.54';
+import { createOnboardingTransition } from './onboarding-transition.js?v=1.1.54';
 import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.1.14';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
 import { setupPageSwipes } from './page-swipe.js?v=1.1.23';
@@ -282,8 +282,17 @@ window._deleteLog=(date,idx)=>{ state.logs[date].splice(idx,1); saveDayDoc(date)
 window.openDiaryModal=()=>{renderHome();openModal('modal-diary');};
 
 // ── RENDER FOOD LISTS ─────────────────────────────────────
+function updateCategoryTitleFade(){
+  const title=document.getElementById('current-category-name');
+  title.classList.toggle('is-overflowing',title.clientWidth>0&&title.scrollWidth>title.clientWidth+1);
+  title.title=title.textContent;
+}
+if(typeof ResizeObserver!=='undefined')new ResizeObserver(updateCategoryTitleFade).observe(document.getElementById('current-category-name'));
+window.addEventListener('resize',updateCategoryTitleFade);
+document.fonts?.addEventListener('loadingdone',updateCategoryTitleFade);
 function renderFoodLists(){
   document.getElementById('current-category-name').textContent=state.foodLists.find(l=>l.id===state.activeListId)?.name||tr("Categories");
+  updateCategoryTitleFade();
   const grid=document.getElementById('food-grid');
   const foods=state.foods.filter(f=>f.listId===state.activeListId);
   if(!foods.length){ grid.innerHTML=`<div class="empty"><div class="empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:middle"><circle cx="12" cy="12" r="6"/><path d="M2 3v6m3-6v6M2 6h3M3.5 9v12M21 3v18M21 3c-4 3-4 8 0 8"/></svg></div><p>${tr("No foods in this list. Tap Add food to get started.")}</p></div>`; return; }
