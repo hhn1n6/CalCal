@@ -414,3 +414,8 @@
   .number-wheel { -webkit-mask-image: linear-gradient(to bottom,transparent 0%,#000 28%,#000 72%,transparent 100%); mask-image: linear-gradient(to bottom,transparent 0%,#000 28%,#000 72%,transparent 100%); }
   .number-wheel-editor { position: absolute; z-index: 2; top: 72px; left: 8px; width: calc(100% - 16px); height: 36px; padding: 0; border: 0; border-radius: 4px; background: var(--surface); color: var(--text); font-size: 24px; font-weight: 700; text-align: center; }
   .number-wheel-editor:focus { outline: 1px solid var(--border); }
+
+  #onboarding-review .onboarding-header { margin-bottom: 20px; }
+  #onboarding-review .setup-energy, #onboarding-review .field label, #onboarding-review p { line-height: 15px; }
+  #onboarding-review p { margin-bottom: 18px; }
+  #onboarding-review .field-row { display: block; }
