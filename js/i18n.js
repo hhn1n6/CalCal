@@ -12,7 +12,7 @@ export const chinese = {
   'Moderate — exercise 3–5 days/week':'中度 — 每週運動 3–5 天',
   'Active — exercise 6–7 days/week':'活躍 — 每週運動 6–7 天',
   'Very active — hard daily exercise / physical job':'非常活躍 — 每天高強度運動／體力工作',
-  'Your goal':'你的目標', 'Gain weight':'增重', 'Lose weight':'減重',
+  'Fitness goal':'健身目標', 'Gain weight':'增重', 'Lose weight':'減重',
   'Suggested daily goals':'建議每日目標', 'BMR (resting calories)':'BMR（靜息熱量）', 'TDEE (daily calorie use)':'TDEE（每日熱量消耗）',
   'Starting targets: 10% above or below TDEE. Edit before saving.':'初始目標：TDEE 上下調整 10%，儲存前可修改。',
   'Minimum suggested calories: 1,500 for males; 1,200 for females.':'建議熱量下限：男性 1,500 kcal；女性 1,200 kcal。',

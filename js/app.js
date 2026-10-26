@@ -1,7 +1,7 @@
-import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.34';
-import { calculateSuggestedGoals, activityFactors } from './goal-calculator.js?v=1.1.34';
-import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.34';
-import { createOnboardingTransition } from './onboarding-transition.js?v=1.1.34';
+import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.35';
+import { calculateSuggestedGoals, activityFactors } from './goal-calculator.js?v=1.1.35';
+import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.35';
+import { createOnboardingTransition } from './onboarding-transition.js?v=1.1.35';
 import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.1.14';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
 import { setupPageSwipes } from './page-swipe.js?v=1.1.23';
@@ -732,6 +732,10 @@ onboardingPanel.addEventListener('input',clearOnboardingErrors);
 onboardingPanel.addEventListener('change',clearOnboardingErrors);
 function renderOnboardingStep(step){
   onboardingStep=step;
+  if(step===2){
+    const activity=document.getElementById('setup-activity').value;
+    document.querySelectorAll('#onboarding-activity input[name="setup-activity-choice"]').forEach(input=>input.checked=input.value===activity);
+  }
   onboardingSteps.forEach((name,index)=>document.getElementById('onboarding-'+name).hidden=index!==step);
   const title=document.getElementById('onboarding-'+onboardingSteps[step]).querySelector('.modal-title');
   title.id='onboarding-title-'+step;

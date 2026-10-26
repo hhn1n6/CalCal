@@ -14,6 +14,8 @@ export function createOnboardingTransition(panel){
     ghost=panel.cloneNode(true);
     ghost.removeAttribute('id');
     ghost.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
+    // A checked clone must never join the real form's radio groups.
+    ghost.querySelectorAll('[name]').forEach(el=>el.removeAttribute('name'));
     ghost.setAttribute('aria-hidden','true');ghost.inert=true;
     Object.assign(ghost.style,{position:'fixed',left:rect.left+'px',top:rect.top+'px',width:rect.width+'px',height:rect.height+'px',maxHeight:'none',margin:'0',animation:'none',pointerEvents:'none',zIndex:'1'});
     ghost.scrollTop=panel.scrollTop;
