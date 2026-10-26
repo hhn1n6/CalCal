@@ -24,6 +24,8 @@ export function createOnboardingTransition(panel){
     panel.parentElement.appendChild(ghost);
     // Detached elements have no scroll range: restore only after layout exists.
     ghost.scrollTop=scrollTop;
+    const wheels=panel.querySelectorAll('[data-number-wheel]');
+    ghost.querySelectorAll('[data-number-wheel]').forEach((wheel,index)=>wheel.scrollTop=wheels[index].scrollTop);
     panel.style.animation='none';
     update();
     const options={duration:380,easing:'cubic-bezier(.22,.61,.36,1)',fill:'both'};

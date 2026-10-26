@@ -6,7 +6,7 @@ export function setupOnboardingSwipes({panel,canNavigate,next,back}){
   let gesture=null;
   panel.addEventListener('touchstart',event=>{
     gesture=null;
-    if(!canNavigate()||event.touches.length!==1||event.target.closest('button,input,select,textarea,a,[contenteditable]'))return;
+    if(!canNavigate()||event.touches.length!==1||event.target.closest('button,input,select,textarea,a,[contenteditable],[role="spinbutton"]'))return;
     const touch=event.touches[0];
     gesture={x:touch.clientX,y:touch.clientY,time:Date.now(),axis:null};
   },{passive:true});

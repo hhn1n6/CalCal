@@ -7,19 +7,19 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CalCal">
 <meta name="theme-color" content="#ffffff">
-<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.1.38">
-<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.1.38">
-<link rel="manifest" href="./manifest.webmanifest?v=1.1.38">
+<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.1.39">
+<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.1.39">
+<link rel="manifest" href="./manifest.webmanifest?v=1.1.39">
 <title>CalCal Food Tracker</title>
-<link rel="stylesheet" href="./css/colors.css?v=1.1.38">
-<link rel="stylesheet" href="./css/fonts.css?v=1.1.38">
-<link rel="stylesheet" href="./css/styles.css?v=1.1.38">
+<link rel="stylesheet" href="./css/colors.css?v=1.1.39">
+<link rel="stylesheet" href="./css/fonts.css?v=1.1.39">
+<link rel="stylesheet" href="./css/styles.css?v=1.1.39">
 </head>
 <body class="signed-out">
 <main id="login-screen" class="login-screen">
   <div class="login-panel">
-    <img class="login-logo" src="./assets/logo_transparent.png?v=1.1.38" width="160" height="160" alt="CalCal">
-    <small class="login-version">v1.1.38</small>
+    <img class="login-logo" src="./assets/logo_transparent.png?v=1.1.39" width="160" height="160" alt="CalCal">
+    <small class="login-version">v1.1.39</small>
     <div class="login-actions">
     <div class="login-methods">
     <form id="email-login-form" class="email-login-form" onsubmit="signInEmail(event)">
@@ -50,7 +50,7 @@
       <div class="page-title"><span id="home-ddmm"></span></div>
       <div id="home-weekday" style="font-size:14px;color:var(--text3);margin-top:3px;"></div>
     </div>
-    <img class="home-header-logo" src="./assets/logo_transparent.png?v=1.1.38" width="48" height="48" alt="CalCal">
+    <img class="home-header-logo" src="./assets/logo_transparent.png?v=1.1.39" width="48" height="48" alt="CalCal">
     <button class="btn btn-primary btn-sm" onclick="openGoalModal()" data-i18n="Goals">Goals</button>
   </div>
 
@@ -177,12 +177,19 @@
     <section id="onboarding-stats" hidden>
       <div class="onboarding-header"><div class="modal-title" data-i18n="About you">About you</div><span class="onboarding-progress">2 / 4</span></div>
       <form id="onboarding-stats-form" novalidate onsubmit="event.preventDefault();onboardingNext()">
-        <div class="field"><label for="setup-gender" data-i18n="Gender">Gender</label><select id="setup-gender" required><option value="" data-i18n="Choose">Choose</option><option value="male" data-i18n="Male">Male</option><option value="female" data-i18n="Female">Female</option></select></div>
-        <div class="field-row">
-          <div class="field"><label for="setup-weight" data-i18n="Weight (kg)">Weight (kg)</label><input id="setup-weight" type="number" inputmode="decimal" min="20" max="500" step="any" required></div>
-          <div class="field"><label for="setup-height" data-i18n="Height (cm)">Height (cm)</label><input id="setup-height" type="number" inputmode="decimal" min="100" max="250" step="any" required></div>
+        <div class="field">
+          <label id="setup-gender-label" for="setup-gender" data-i18n="Gender">Gender</label>
+          <input id="setup-gender" type="hidden">
+          <div class="setup-gender-options" role="radiogroup" aria-labelledby="setup-gender-label">
+            <label class="setup-gender-option" for="setup-gender-male"><input id="setup-gender-male" type="radio" name="setup-gender-choice" value="male" required onchange="document.getElementById('setup-gender').value=this.value"><span class="setup-gender-button"><img src="./assets/icons/male.svg" width="32" height="32" alt=""><span data-i18n="Male">Male</span></span></label>
+            <label class="setup-gender-option" for="setup-gender-female"><input id="setup-gender-female" type="radio" name="setup-gender-choice" value="female" required onchange="document.getElementById('setup-gender').value=this.value"><span class="setup-gender-button"><img src="./assets/icons/female.svg" width="32" height="32" alt=""><span data-i18n="Female">Female</span></span></label>
+          </div>
         </div>
-        <div class="field setup-last-answer"><label for="setup-age" data-i18n="Age">Age</label><input id="setup-age" type="number" inputmode="decimal" min="1" max="120" step="1" required></div>
+        <div class="setup-number-wheels setup-last-answer">
+          <div class="setup-wheel-column"><label id="setup-age-label" for="setup-age" data-i18n="Age">Age</label><input id="setup-age" type="hidden"><div class="number-wheel-frame"><div class="number-wheel" role="spinbutton" tabindex="0" aria-labelledby="setup-age-label" data-number-wheel="setup-age" data-min="1" data-max="120" data-step="1" data-initial="25"></div></div></div>
+          <div class="setup-wheel-column"><label id="setup-height-label" for="setup-height" data-i18n="Height (cm)">Height (cm)</label><input id="setup-height" type="hidden"><div class="number-wheel-frame"><div class="number-wheel" role="spinbutton" tabindex="0" aria-labelledby="setup-height-label" data-number-wheel="setup-height" data-min="100" data-max="250" data-step="1" data-initial="170"></div></div></div>
+          <div class="setup-wheel-column"><label id="setup-weight-label" for="setup-weight" data-i18n="Weight (kg)">Weight (kg)</label><input id="setup-weight" type="hidden"><div class="number-wheel-frame"><div class="number-wheel" role="spinbutton" tabindex="0" aria-labelledby="setup-weight-label" data-number-wheel="setup-weight" data-min="20" data-max="500" data-step="0.1" data-initial="70"></div></div></div>
+        </div>
         <div class="btn-row"><button type="button" class="btn btn-secondary btn-full" onclick="onboardingBack()" data-i18n="Back">Back</button><button type="submit" class="btn btn-primary btn-full" data-i18n="Continue">Continue</button></div>
       </form>
     </section>
@@ -340,21 +347,21 @@
 
 <nav class="nav">
   <button class="nav-btn active" aria-label="Today" data-i18n-aria-label="Today" data-page="home" onclick="switchPage('home',this)">
-    <img class="nav-icon-regular" src="./assets/icons/home.svg?v=1.1.38" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/home-bold.svg?v=1.1.38" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/home.svg?v=1.1.39" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/home-bold.svg?v=1.1.39" width="24" height="24" alt="" aria-hidden="true">
   </button>
   <button class="nav-btn" aria-label="Foods" data-i18n-aria-label="Foods" data-page="lists" onclick="switchPage('lists',this)">
-    <img class="nav-icon-regular" src="./assets/icons/menu.svg?v=1.1.38" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/menu-bold.svg?v=1.1.38" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/menu.svg?v=1.1.39" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/menu-bold.svg?v=1.1.39" width="24" height="24" alt="" aria-hidden="true">
   </button>
   <button class="nav-btn" aria-label="Personal" data-i18n-aria-label="Personal" data-page="person" onclick="switchPage('person',this)">
-    <img class="nav-icon-regular" src="./assets/icons/person.svg?v=1.1.38" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/person-bold.svg?v=1.1.38" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/person.svg?v=1.1.39" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/person-bold.svg?v=1.1.39" width="24" height="24" alt="" aria-hidden="true">
   </button>
 </nav>
 
 <!-- Firebase SDK -->
-<script type="module" src="./js/app.js?v=1.1.38"></script>
-<script type="module" src="./js/earth-background.js?v=1.1.38"></script>
+<script type="module" src="./js/app.js?v=1.1.39"></script>
+<script type="module" src="./js/earth-background.js?v=1.1.39"></script>
 </body>
 </html>

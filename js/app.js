@@ -1,7 +1,8 @@
-import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.38';
-import { calculateSuggestedGoals, activityFactors } from './goal-calculator.js?v=1.1.38';
-import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.38';
-import { createOnboardingTransition } from './onboarding-transition.js?v=1.1.38';
+import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.39';
+import { calculateSuggestedGoals, activityFactors } from './goal-calculator.js?v=1.1.39';
+import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.39';
+import { createNumberWheel } from './number-wheel.js?v=1.1.39';
+import { createOnboardingTransition } from './onboarding-transition.js?v=1.1.39';
 import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.1.14';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
 import { setupPageSwipes } from './page-swipe.js?v=1.1.23';
@@ -700,6 +701,7 @@ let onboardingStats=null;
 let onboardingSuggestion=null;
 let savingOnboarding=false;
 const onboardingSteps=['language','stats','activity','review'];
+const statsWheels=Array.from(document.querySelectorAll('[data-number-wheel]'),viewport=>createNumberWheel(document.getElementById(viewport.dataset.numberWheel),viewport,{min:Number(viewport.dataset.min),max:Number(viewport.dataset.max),step:Number(viewport.dataset.step),initial:Number(viewport.dataset.initial)}));
 const onboardingTransition=createOnboardingTransition(document.querySelector('.onboarding-panel'));
 function showOnboardingStep(step){
   const previous=onboardingStep;
@@ -726,7 +728,7 @@ function showOnboardingError(message,fieldId){
 const onboardingPanel=document.querySelector('.onboarding-panel');
 onboardingPanel.addEventListener('invalid',event=>{
   event.preventDefault();
-  showOnboardingError(event.target.validationMessage,event.target.id);
+  showOnboardingError(event.target.validationMessage,event.target.name==='setup-gender-choice'?'setup-gender':event.target.id);
 },true);
 onboardingPanel.addEventListener('input',clearOnboardingErrors);
 onboardingPanel.addEventListener('change',clearOnboardingErrors);
@@ -737,6 +739,11 @@ function renderOnboardingStep(step){
     document.querySelectorAll('#onboarding-activity input[name="setup-activity-choice"]').forEach(input=>input.checked=input.value===activity);
   }
   onboardingSteps.forEach((name,index)=>document.getElementById('onboarding-'+name).hidden=index!==step);
+  if(step===1){
+    statsWheels.forEach(wheel=>wheel.sync());
+    const gender=document.getElementById('setup-gender').value;
+    document.querySelectorAll('input[name="setup-gender-choice"]').forEach(input=>input.checked=input.value===gender);
+  }
   const title=document.getElementById('onboarding-'+onboardingSteps[step]).querySelector('.modal-title');
   title.id='onboarding-title-'+step;
   title.setAttribute?.('tabindex','-1');
@@ -752,6 +759,7 @@ window.onboardingNext=()=>{
   const error=document.getElementById('language-choice-error');
   clearOnboardingErrors();
   if(onboardingStep===1){
+    statsWheels.forEach(wheel=>wheel.flush());
     if(!document.getElementById('onboarding-stats-form').reportValidity())return;
     onboardingStats={gender:document.getElementById('setup-gender').value,weight:Number(document.getElementById('setup-weight').value),height:Number(document.getElementById('setup-height').value),age:Number(document.getElementById('setup-age').value)};
     try{calculateSuggestedGoals({...onboardingStats,activity:'sedentary',goal:'gain'});}catch(err){showOnboardingError(err.message);return;}
@@ -992,7 +1000,7 @@ async function openAccount(user){
     if(languageSetupPending){
       showOnboardingStep(0);
       for(const id of ['setup-gender','setup-weight','setup-height','setup-age','setup-activity'])document.getElementById(id).value='';
-      document.querySelectorAll('input[name="setup-goal"], input[name="setup-activity-choice"]').forEach(input=>input.checked=false);
+      document.querySelectorAll('input[name="setup-goal"], input[name="setup-activity-choice"], input[name="setup-gender-choice"]').forEach(input=>input.checked=false);
       document.getElementById('first-language').value=getLanguage();
       document.getElementById('language-choice-error').textContent='';
       window.openModal('modal-language');
