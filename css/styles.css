@@ -466,7 +466,7 @@
   #modal-goal .review-calories input { padding: 2px 6px; }
   #modal-goal .review-macros input { padding: 2px; }
 
-  .goal-nutrition-targets { margin-bottom: 20px; }
+  .goal-nutrition-targets { margin-bottom: 0; }
   .goal-summary-actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 16px; }
   @media (max-width: 360px) {
     .goal-summary-actions, .goal-calculation-actions { gap: 8px; }
@@ -474,3 +474,7 @@
     #modal-goal .goal-calculation-actions .btn { padding: 8px 10px; font-size: 12px; }
     #modal-goal .goal-calculation-actions .rounding-action { font-size: 12px; }
   }
+
+  #modal-goal .goal-section + .goal-section::before { content: ''; display: block; height: 1px; margin: 16px 0; background: linear-gradient(to right,transparent,rgba(0,0,0,.16) 25%,rgba(0,0,0,.16) 75%,transparent); }
+  #modal-goal .goal-text-action { padding: 4px 0; border: 0; background: transparent; color: var(--text); font-size: 14px; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  #modal-goal .goal-save-section .btn-row { margin-top: 0; }
