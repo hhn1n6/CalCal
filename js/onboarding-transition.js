@@ -1,4 +1,4 @@
-// Move both complete cards, keeping the backdrop and homepage stationary.
+// Cross-fade complete cards while the backdrop and homepage stay stationary.
 export function createOnboardingTransition(panel){
   let moving=false,animations=[],ghost=null,generation=0;
   function reset(){
@@ -6,7 +6,7 @@ export function createOnboardingTransition(panel){
     animations.forEach(animation=>animation.cancel());animations=[];
     ghost?.remove();ghost=null;
   }
-  function run(update,direction){
+  function run(update){
     if(moving)return false;
     if(!panel.animate||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){update();return true;}
     moving=true;
@@ -23,9 +23,8 @@ export function createOnboardingTransition(panel){
     panel.parentElement.appendChild(ghost);
     panel.style.animation='none';
     update();
-    const offset=direction==='next'?window.innerWidth:-window.innerWidth;
     const options={duration:380,easing:'cubic-bezier(.22,.61,.36,1)',fill:'both'};
-    animations=[ghost.animate([{transform:'translateX(0)'},{transform:`translateX(${-offset}px)`}],options),panel.animate([{transform:`translateX(${offset}px)`},{transform:'translateX(0)'}],options)];
+    animations=[ghost.animate([{opacity:1},{opacity:0}],options),panel.animate([{opacity:0},{opacity:1}],options)];
     Promise.all(animations.map(animation=>animation.finished)).catch(()=>{}).finally(()=>{
       if(current!==generation)return;
       animations.forEach(animation=>animation.cancel());animations=[];

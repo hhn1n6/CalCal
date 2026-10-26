@@ -7,19 +7,19 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CalCal">
 <meta name="theme-color" content="#ffffff">
-<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.1.29">
-<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.1.29">
-<link rel="manifest" href="./manifest.webmanifest?v=1.1.29">
+<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.1.30">
+<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.1.30">
+<link rel="manifest" href="./manifest.webmanifest?v=1.1.30">
 <title>CalCal Food Tracker</title>
-<link rel="stylesheet" href="./css/colors.css?v=1.1.29">
-<link rel="stylesheet" href="./css/fonts.css?v=1.1.29">
-<link rel="stylesheet" href="./css/styles.css?v=1.1.29">
+<link rel="stylesheet" href="./css/colors.css?v=1.1.30">
+<link rel="stylesheet" href="./css/fonts.css?v=1.1.30">
+<link rel="stylesheet" href="./css/styles.css?v=1.1.30">
 </head>
 <body class="signed-out">
 <main id="login-screen" class="login-screen">
   <div class="login-panel">
-    <img class="login-logo" src="./assets/logo_transparent.png?v=1.1.29" width="160" height="160" alt="CalCal">
-    <small class="login-version">v1.1.29</small>
+    <img class="login-logo" src="./assets/logo_transparent.png?v=1.1.30" width="160" height="160" alt="CalCal">
+    <small class="login-version">v1.1.30</small>
     <div class="login-actions">
     <div class="login-methods">
     <form id="email-login-form" class="email-login-form" onsubmit="signInEmail(event)">
@@ -50,7 +50,7 @@
       <div class="page-title"><span id="home-ddmm"></span></div>
       <div id="home-weekday" style="font-size:14px;color:var(--text3);margin-top:3px;"></div>
     </div>
-    <img class="home-header-logo" src="./assets/logo_transparent.png?v=1.1.29" width="48" height="48" alt="CalCal">
+    <img class="home-header-logo" src="./assets/logo_transparent.png?v=1.1.30" width="48" height="48" alt="CalCal">
     <button class="btn btn-primary btn-sm" onclick="openGoalModal()" data-i18n="Goals">Goals</button>
   </div>
 
@@ -184,24 +184,21 @@
           <div class="field"><label for="setup-weight" data-i18n="Weight (kg)">Weight (kg)</label><input id="setup-weight" type="number" inputmode="decimal" min="20" max="500" step="any" required></div>
           <div class="field"><label for="setup-height" data-i18n="Height (cm)">Height (cm)</label><input id="setup-height" type="number" inputmode="decimal" min="100" max="250" step="any" required></div>
         </div>
-        <div class="field"><label for="setup-age" data-i18n="Age (18+)">Age (18+)</label><input id="setup-age" type="number" inputmode="decimal" min="18" max="100" step="1" required></div>
+        <div class="field"><label for="setup-age" data-i18n="Age">Age</label><input id="setup-age" type="number" inputmode="decimal" min="1" max="120" step="1" required></div>
         <div class="btn-row"><button type="button" class="btn btn-secondary btn-full" onclick="onboardingBack()" data-i18n="Back">Back</button><button type="submit" class="btn btn-primary btn-full" data-i18n="Continue">Continue</button></div>
       </form>
     </section>
     <section id="onboarding-activity" hidden>
-      <div class="modal-title" data-i18n="Exercise habit">Exercise habit</div>
-      <div class="field"><label for="setup-activity" data-i18n="Activity level">Activity level</label><select id="setup-activity">
-        <option value="" data-i18n="Choose">Choose</option>
-        <option value="sedentary" data-i18n="Sedentary — little or no exercise">Sedentary — little or no exercise</option>
-        <option value="light" data-i18n="Light — exercise 1–3 days/week">Light — exercise 1–3 days/week</option>
-        <option value="moderate" data-i18n="Moderate — exercise 3–5 days/week">Moderate — exercise 3–5 days/week</option>
-        <option value="active" data-i18n="Active — exercise 6–7 days/week">Active — exercise 6–7 days/week</option>
-        <option value="veryActive" data-i18n="Very active — hard daily exercise / physical job">Very active — hard daily exercise / physical job</option>
-      </select></div>
-      <div class="btn-row"><button class="btn btn-secondary btn-full" onclick="onboardingBack()" data-i18n="Back">Back</button><button class="btn btn-primary btn-full" onclick="onboardingNext()" data-i18n="Continue">Continue</button></div>
-    </section>
-    <section id="onboarding-goal" hidden>
-      <div class="modal-title" data-i18n="Your goal">Your goal</div>
+      <div class="modal-title" data-i18n="Activity level">Activity level</div>
+      <input id="setup-activity" type="hidden" value="">
+      <div class="activity-options" role="radiogroup" aria-label="Activity level" data-i18n-aria-label="Activity level">
+        <label class="activity-option"><input type="radio" name="setup-activity-choice" value="sedentary" onchange="document.getElementById('setup-activity').value=this.value"><span class="activity-card"><img src="./assets/pictures/web/sedentary.jpg" width="400" height="200" alt=""><span data-i18n="Sedentary — little or no exercise">Sedentary — little or no exercise</span></span></label>
+        <label class="activity-option"><input type="radio" name="setup-activity-choice" value="light" onchange="document.getElementById('setup-activity').value=this.value"><span class="activity-card"><img src="./assets/pictures/web/light.jpg" width="400" height="200" alt=""><span data-i18n="Light — exercise 1–3 days/week">Light — exercise 1–3 days/week</span></span></label>
+        <label class="activity-option"><input type="radio" name="setup-activity-choice" value="moderate" onchange="document.getElementById('setup-activity').value=this.value"><span class="activity-card"><img src="./assets/pictures/web/moderate.jpg" width="400" height="200" alt=""><span data-i18n="Moderate — exercise 3–5 days/week">Moderate — exercise 3–5 days/week</span></span></label>
+        <label class="activity-option"><input type="radio" name="setup-activity-choice" value="active" onchange="document.getElementById('setup-activity').value=this.value"><span class="activity-card"><img src="./assets/pictures/web/active.jpg" width="400" height="200" alt=""><span data-i18n="Active — exercise 6–7 days/week">Active — exercise 6–7 days/week</span></span></label>
+        <label class="activity-option"><input type="radio" name="setup-activity-choice" value="veryActive" onchange="document.getElementById('setup-activity').value=this.value"><span class="activity-card"><img src="./assets/pictures/web/extra.jpg" width="400" height="200" alt=""><span data-i18n="Very active — hard daily exercise / physical job">Very active — hard daily exercise / physical job</span></span></label>
+      </div>
+      <h3 class="setup-goal-heading" data-i18n="Your goal">Your goal</h3>
       <label class="language-option"><input type="radio" name="setup-goal" value="gain"> <span data-i18n="Gain weight">Gain weight</span></label>
       <label class="language-option"><input type="radio" name="setup-goal" value="lose"> <span data-i18n="Lose weight">Lose weight</span></label>
       <div class="btn-row"><button class="btn btn-secondary btn-full" onclick="onboardingBack()" data-i18n="Back">Back</button><button class="btn btn-primary btn-full" onclick="onboardingNext()" data-i18n="Continue">Continue</button></div>
@@ -218,7 +215,6 @@
         <div class="btn-row"><button type="button" class="btn btn-secondary btn-full" onclick="onboardingBack()" data-i18n="Back">Back</button><button id="setup-save" type="submit" class="btn btn-primary btn-full" data-i18n="Save goals">Save goals</button></div>
       </form>
     </section>
-    <button id="setup-keep" class="btn btn-secondary btn-full setup-keep" onclick="completeOnboarding(false)" data-i18n="Keep current goals" hidden>Keep current goals</button>
     <p id="language-choice-error" class="account-error" role="alert"></p>
   </div>
 </div>
@@ -343,21 +339,21 @@
 
 <nav class="nav">
   <button class="nav-btn active" aria-label="Today" data-i18n-aria-label="Today" data-page="home" onclick="switchPage('home',this)">
-    <img class="nav-icon-regular" src="./assets/icons/home.svg?v=1.1.29" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/home-bold.svg?v=1.1.29" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/home.svg?v=1.1.30" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/home-bold.svg?v=1.1.30" width="24" height="24" alt="" aria-hidden="true">
   </button>
   <button class="nav-btn" aria-label="Foods" data-i18n-aria-label="Foods" data-page="lists" onclick="switchPage('lists',this)">
-    <img class="nav-icon-regular" src="./assets/icons/menu.svg?v=1.1.29" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/menu-bold.svg?v=1.1.29" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/menu.svg?v=1.1.30" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/menu-bold.svg?v=1.1.30" width="24" height="24" alt="" aria-hidden="true">
   </button>
   <button class="nav-btn" aria-label="Personal" data-i18n-aria-label="Personal" data-page="person" onclick="switchPage('person',this)">
-    <img class="nav-icon-regular" src="./assets/icons/person.svg?v=1.1.29" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/person-bold.svg?v=1.1.29" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/person.svg?v=1.1.30" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/person-bold.svg?v=1.1.30" width="24" height="24" alt="" aria-hidden="true">
   </button>
 </nav>
 
 <!-- Firebase SDK -->
-<script type="module" src="./js/app.js?v=1.1.29"></script>
-<script type="module" src="./js/earth-background.js?v=1.1.29"></script>
+<script type="module" src="./js/app.js?v=1.1.30"></script>
+<script type="module" src="./js/earth-background.js?v=1.1.30"></script>
 </body>
 </html>

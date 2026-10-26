@@ -1,7 +1,7 @@
-import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.29';
-import { calculateSuggestedGoals, activityFactors } from './goal-calculator.js?v=1.1.29';
-import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.29';
-import { createOnboardingTransition } from './onboarding-transition.js?v=1.1.29';
+import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.30';
+import { calculateSuggestedGoals, activityFactors } from './goal-calculator.js?v=1.1.30';
+import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.30';
+import { createOnboardingTransition } from './onboarding-transition.js?v=1.1.30';
 import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.1.14';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
 import { setupPageSwipes } from './page-swipe.js?v=1.1.23';
@@ -699,7 +699,7 @@ let onboardingStep=0;
 let onboardingStats=null;
 let onboardingSuggestion=null;
 let savingOnboarding=false;
-const onboardingSteps=['language','stats','activity','goal','review'];
+const onboardingSteps=['language','stats','activity','review'];
 const onboardingTransition=createOnboardingTransition(document.querySelector('.onboarding-panel'));
 function showOnboardingStep(step){
   const previous=onboardingStep;
@@ -715,13 +715,12 @@ function renderOnboardingStep(step){
   document.getElementById('modal-language').setAttribute?.('aria-labelledby',title.id);
   title.focus?.();
   document.getElementById('onboarding-progress').textContent=`${step+1} / ${onboardingSteps.length}`;
-  document.getElementById('setup-keep').hidden=step===0;
   document.getElementById('language-choice-error').textContent='';
   document.querySelector('.onboarding-panel').scrollTop=0;
 }
 window.onboardingBack=()=>{if(!savingOnboarding&&!savingLanguage&&!onboardingTransition.moving&&onboardingStep>0)showOnboardingStep(onboardingStep-1);};
 window.onboardingNext=()=>{
-  if(savingOnboarding||savingLanguage||onboardingTransition.moving||onboardingStep===4)return;
+  if(savingOnboarding||savingLanguage||onboardingTransition.moving||onboardingStep===3)return;
   if(onboardingStep===0)return window.confirmLanguageChoice();
   const error=document.getElementById('language-choice-error');
   error.textContent='';
@@ -731,7 +730,7 @@ window.onboardingNext=()=>{
     try{calculateSuggestedGoals({...onboardingStats,activity:'sedentary',goal:'gain'});}catch(err){error.textContent=tr(err.message);return;}
   }
   if(onboardingStep===2&&!Object.hasOwn(activityFactors,document.getElementById('setup-activity').value)){error.textContent=tr('Choose your activity level.');return;}
-  if(onboardingStep===3){
+  if(onboardingStep===2){
     const goal=document.querySelector('input[name="setup-goal"]:checked')?.value;
     try{
       onboardingSuggestion=calculateSuggestedGoals({...onboardingStats,activity:document.getElementById('setup-activity').value,goal});
@@ -740,10 +739,10 @@ window.onboardingNext=()=>{
       for(const key of ['cal','protein','carbs','fat'])document.getElementById('setup-'+key).value=onboardingSuggestion[key];
     }catch(err){error.textContent=tr(err.message);return;}
   }
-  showOnboardingStep(Math.min(4,onboardingStep+1));
+  showOnboardingStep(Math.min(3,onboardingStep+1));
 };
 window.completeOnboarding=async useSuggested=>{
-  if(!state.user||savingOnboarding||onboardingTransition.moving||!languageSetupPending)return false;
+  if(!useSuggested||onboardingStep!==3||!state.user||savingOnboarding||onboardingTransition.moving||!languageSetupPending)return false;
   if(useSuggested&&(!onboardingSuggestion||!document.getElementById('onboarding-review-form').reportValidity()))return false;
   const generation=accountGeneration,error=document.getElementById('language-choice-error');
   let goals=null;
@@ -966,7 +965,7 @@ async function openAccount(user){
     if(languageSetupPending){
       showOnboardingStep(0);
       for(const id of ['setup-gender','setup-weight','setup-height','setup-age','setup-activity'])document.getElementById(id).value='';
-      document.querySelectorAll('input[name="setup-goal"]').forEach(input=>input.checked=false);
+      document.querySelectorAll('input[name="setup-goal"], input[name="setup-activity-choice"]').forEach(input=>input.checked=false);
       document.querySelectorAll('input[name="first-language"]').forEach(input=>input.checked=input.value===getLanguage());
       document.getElementById('language-choice-error').textContent='';
       window.openModal('modal-language');

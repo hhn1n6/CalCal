@@ -1,7 +1,7 @@
 // Interface copy only. Food names and other account content are never translated.
 export const chinese = {
   'About you':'關於你', 'Gender':'性別', 'Choose':'請選擇', 'Male':'男性', 'Female':'女性',
-  'Height (cm)':'身高（cm）', 'Age (18+)':'年齡（18 歲或以上）', 'Back':'返回',
+  'Height (cm)':'身高（cm）', 'Age':'年齡', 'Back':'返回',
   'Exercise habit':'運動習慣', 'Activity level':'活動程度',
   'Sedentary — little or no exercise':'久坐 — 很少或不運動',
   'Light — exercise 1–3 days/week':'輕度 — 每週運動 1–3 天',
@@ -15,7 +15,7 @@ export const chinese = {
   'General adult estimates; not for pregnancy or breastfeeding. Your needs may differ.':'一般成人估算，不適用於懷孕或哺乳期間。實際需要因人而異。',
   'Save goals':'儲存目標', 'Keep current goals':'保留目前目標',
   'Choose Male or Female.':'請選擇男性或女性。', 'Enter a weight between 20 and 500 kg.':'請輸入 20 至 500 kg 的體重。',
-  'Enter a height between 100 and 250 cm.':'請輸入 100 至 250 cm 的身高。', 'Enter an age between 18 and 100.':'請輸入 18 至 100 歲的年齡。',
+  'Enter a height between 100 and 250 cm.':'請輸入 100 至 250 cm 的身高。', 'Enter an age between 1 and 120.':'請輸入 1 至 120 歲的年齡。',
   'Choose your activity level.':'請選擇活動程度。', 'Choose your weight goal.':'請選擇體重目標。',
   'These stats do not produce a usable estimate. Check your entries.':'這些資料無法得出有效估算，請檢查輸入。',
   'Enter valid whole-number daily targets.':'請輸入有效的整數每日目標。', 'Could not save your setup. Please try again.':'無法儲存設定，請重試。',

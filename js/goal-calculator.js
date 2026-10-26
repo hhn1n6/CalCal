@@ -6,7 +6,7 @@ export function calculateSuggestedGoals({gender,weight,height,age,activity,goal}
   if(!['male','female'].includes(gender))throw new Error('Choose Male or Female.');
   if(!Number.isFinite(weight)||weight<20||weight>500)throw new Error('Enter a weight between 20 and 500 kg.');
   if(!Number.isFinite(height)||height<100||height>250)throw new Error('Enter a height between 100 and 250 cm.');
-  if(!Number.isInteger(age)||age<18||age>100)throw new Error('Enter an age between 18 and 100.');
+  if(!Number.isInteger(age)||age<1||age>120)throw new Error('Enter an age between 1 and 120.');
   if(!Object.hasOwn(activityFactors,activity))throw new Error('Choose your activity level.');
   if(!['gain','lose'].includes(goal))throw new Error('Choose your weight goal.');
   const bmr=10*weight+6.25*height-5*age+(gender==='male'?5:-161);
