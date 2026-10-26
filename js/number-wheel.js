@@ -1,4 +1,4 @@
-const ROW=36, PAD=72;
+const ROW=36, PAD=36;
 export function wheelIndex(value,min,max,step){
   return Math.max(0,Math.min(Math.round((max-min)/step),Math.round((value-min)/step)));
 }

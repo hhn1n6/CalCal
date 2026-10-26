@@ -1,8 +1,9 @@
-import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.46';
-import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.1.46';
-import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.46';
-import { createNumberWheel } from './number-wheel.js?v=1.1.46';
-import { createOnboardingTransition } from './onboarding-transition.js?v=1.1.46';
+import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.47';
+import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.1.47';
+import { ageFromBirthday, currentProfileWeight } from './profile-utils.js?v=1.1.47';
+import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.47';
+import { createNumberWheel } from './number-wheel.js?v=1.1.47';
+import { createOnboardingTransition } from './onboarding-transition.js?v=1.1.47';
 import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.1.14';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
 import { setupPageSwipes } from './page-swipe.js?v=1.1.23';
@@ -397,27 +398,103 @@ function startRowDrag(event,id,isCategory){
 };
 
 // ── GOALS ─────────────────────────────────────────────────
+let savingGoalSettings=false,goalEvaluation=null;
+const activityPictures={
+  sedentary:['sedentary','Sedentary','Little or no exercise'],
+  light:['light','Light','Exercise 1–3 days/week'],
+  moderate:['moderate','Moderate','Exercise 3–5 days/week'],
+  active:['active','Active','Exercise 6–7 days/week'],
+  veryActive:['extra','Very active','Hard daily exercise / physical job'],
+};
+function goalProfileStats(){
+  return {...state.bodyProfile,age:ageFromBirthday(state.bodyProfile.birthday,TODAY())??state.bodyProfile.age,
+    weight:currentProfileWeight(state.weights,state.bodyProfile,TODAY())};
+}
+function renderGoalProfileStats(){
+  const stats=goalProfileStats();
+  document.getElementById('g-current-age').textContent=Number.isFinite(stats.age)?stats.age:'—';
+  document.getElementById('g-current-weight').textContent=Number.isFinite(stats.weight)?stats.weight.toFixed(1):'—';
+}
+window.clearGoalEvaluation=()=>{goalEvaluation=null;};
+window.updateGoalActivity=()=>{
+  goalEvaluation=null;
+  const picture=activityPictures[document.getElementById('g-activity').value];
+  if(!picture)return;
+  document.getElementById('g-activity-image').src='./assets/pictures/web/'+picture[0]+'.jpg';
+  document.getElementById('g-activity-title').textContent=tr(picture[1]);
+  document.getElementById('g-activity-description').textContent=tr(picture[2]);
+};
 window.openGoalModal=()=>{
-  const g=state.goals;
-  document.getElementById('g-cal').value=g.cal||'';
-  document.getElementById('g-protein').value=g.protein||'';
-  document.getElementById('g-carbs').value=g.carbs||'';
-  document.getElementById('g-fat').value=g.fat||'';
-  document.getElementById('g-water-ml').value=g.waterMl||'';
-  document.getElementById('g-supps').value=(g.supps||[]).join(', ');
+  for(const key of ['cal','protein','carbs','fat'])document.getElementById('g-'+key).value=state.goals[key]??'';
+  document.getElementById('g-activity').value=Object.hasOwn(activityFactors,state.bodyProfile.activity)?state.bodyProfile.activity:'sedentary';
+  const goal=['gain','lose','maintain'].includes(state.bodyProfile.goal)?state.bodyProfile.goal:'maintain';
+  document.getElementById('g-fitness-goal').value=goal;
+  document.querySelectorAll('input[name="g-fitness-choice"]').forEach(input=>input.checked=input.value===goal);
+  window.updateGoalActivity();renderGoalProfileStats();
+  document.getElementById('goal-error').textContent='';
   openModal('modal-goal');
 };
-window.saveGoals=async()=>{
-  state.goals={
-    cal:+document.getElementById('g-cal').value||2000,
-    protein:+document.getElementById('g-protein').value||150,
-    carbs:+document.getElementById('g-carbs').value||250,
-    fat:+document.getElementById('g-fat').value||65,
-    waterMl:+document.getElementById('g-water-ml').value||2000,
-    supps: (document.getElementById('g-supps').value||'').split(',').map(s=>s.trim()).filter(Boolean),
-  };
-  await saveGoalsDoc(); closeModal('modal-goal'); renderHome();
+window.reEvaluateGoals=()=>{
+  if(savingGoalSettings)return false;
+  const stats=goalProfileStats(),error=document.getElementById('goal-error');error.textContent='';
+  renderGoalProfileStats();
+  if(!['male','female'].includes(stats.gender)||!Number.isFinite(stats.age)||!Number.isFinite(stats.height)||!Number.isFinite(stats.weight)){
+    error.textContent=tr('Add gender, birthday and height in Personal details, and record your weight first.');return false;
+  }
+  try{
+    const activity=document.getElementById('g-activity').value,goal=document.getElementById('g-fitness-goal').value;
+    const suggestion=calculateSuggestedGoals({...stats,activity,goal});
+    for(const key of ['cal','protein','carbs','fat'])document.getElementById('g-'+key).value=suggestion[key];
+    goalEvaluation={...stats,activity,goal,bmr:suggestion.bmr,tdee:suggestion.tdee,formula:'Mifflin-St Jeor'};
+    return true;
+  }catch(err){error.textContent=tr(err.message);return false;}
 };
+window.roundHomeGoals=()=>{
+  if(savingGoalSettings)return false;
+  const error=document.getElementById('goal-error');error.textContent='';
+  if(!document.getElementById('daily-goals-form').reportValidity())return false;
+  try{
+    const rounded=roundDailyGoals(Object.fromEntries(['cal','protein','carbs','fat'].map(key=>[key,Number(document.getElementById('g-'+key).value)])));
+    for(const key of ['cal','protein','carbs','fat'])document.getElementById('g-'+key).value=rounded[key];return true;
+  }catch(err){error.textContent=tr(err.message);return false;}
+};
+window.saveGoals=async()=>{
+  if(!state.user||!accountReady||savingGoalSettings)return false;
+  const error=document.getElementById('goal-error');error.textContent='';
+  if(!document.getElementById('daily-goals-form').reportValidity())return false;
+  const next=Object.fromEntries(['cal','protein','carbs','fat'].map(key=>[key,Number(document.getElementById('g-'+key).value)]));
+  if(!Object.values(next).every(Number.isInteger)||next.cal<1000||next.cal>20000||next.protein<0||next.protein>1000||next.carbs<0||next.carbs>2000||next.fat<0||next.fat>1000){error.textContent=tr('Enter valid whole-number daily targets.');return false;}
+  const activity=document.getElementById('g-activity').value,goal=document.getElementById('g-fitness-goal').value;
+  if(!Object.hasOwn(activityFactors,activity)){error.textContent=tr('Choose your activity level.');return false;}
+  if(!['gain','lose','maintain'].includes(goal)){error.textContent=tr('Choose your weight goal.');return false;}
+  const profilePatch={...(goalEvaluation?.activity===activity&&goalEvaluation?.goal===goal?goalEvaluation:{}),activity,goal,updatedAt:Date.now()};
+  const generation=accountGeneration;savingGoalSettings=true;document.getElementById('g-save').disabled=true;
+  try{
+    const batch=writeBatch(db);batch.set(REF.goals(),next,{merge:true});batch.set(accountRef('settings','bodyProfile'),profilePatch,{merge:true});await batch.commit();
+    if(generation!==accountGeneration)return false;
+    state.goals={...state.goals,...next};state.bodyProfile={...state.bodyProfile,...profilePatch};renderPersonalDetails();
+    closeModal('modal-goal');renderHome();return true;
+  }catch(err){if(generation===accountGeneration)error.textContent=tr('Could not save goals. Please try again.');return false;}
+  finally{if(generation===accountGeneration){savingGoalSettings=false;document.getElementById('g-save').disabled=false;}}
+};
+window.openWaterGoalModal=()=>{document.getElementById('g-water-ml').value=state.goals.waterMl||2000;document.getElementById('water-goal-error').textContent='';openModal('modal-water-goal');};
+window.openSupplementGoalModal=()=>{document.getElementById('g-supps').value=(state.goals.supps||[]).join(', ');document.getElementById('supplement-goal-error').textContent='';openModal('modal-supplement-goal');};
+async function saveCardGoal(kind,patch){
+  if(!state.user||!accountReady||savingGoalSettings)return false;
+  const generation=accountGeneration,error=document.getElementById(kind+'-goal-error'),button=document.getElementById(kind+'-goal-save');
+  savingGoalSettings=true;button.disabled=true;error.textContent='';
+  try{
+    await setDoc(REF.goals(),patch,{merge:true});if(generation!==accountGeneration)return false;
+    state.goals={...state.goals,...patch};closeModal('modal-'+kind+'-goal');renderHome();return true;
+  }catch(err){if(generation===accountGeneration)error.textContent=tr('Could not save goals. Please try again.');return false;}
+  finally{if(generation===accountGeneration){savingGoalSettings=false;button.disabled=false;}}
+}
+window.saveWaterGoal=()=>{
+  const value=Number(document.getElementById('g-water-ml').value);
+  if(!Number.isInteger(value)||value<=0){document.getElementById('water-goal-error').textContent=tr('Enter a positive whole-number water goal.');return false;}
+  return saveCardGoal('water',{waterMl:value});
+};
+window.saveSupplementGoal=()=>saveCardGoal('supplement',{supps:[...new Set(document.getElementById('g-supps').value.split(/[,，]/).map(value=>value.trim()).filter(Boolean))]});
 
 // ── ADD FOOD ──────────────────────────────────────────────
 window.openAddFoodModal=(prefill)=>{
@@ -719,7 +796,7 @@ function clearOnboardingErrors(){
 function showOnboardingError(message,fieldId){
   document.getElementById('language-choice-error').textContent=tr(message);
   if(!fieldId){
-    fieldId=/weight between/.test(message)?'setup-weight':/height between/.test(message)?'setup-height':/age between/.test(message)?'setup-age':/Male or Female/.test(message)?'setup-gender':null;
+    fieldId=/weight between/.test(message)?'setup-weight':/height between/.test(message)?'setup-height':/age between/.test(message)?'setup-birthday':/Male or Female/.test(message)?'setup-gender':null;
   }
   const section=document.getElementById('onboarding-'+onboardingSteps[onboardingStep]);
   const title=fieldId?document.querySelector('label[for="'+fieldId+'"]'):/weight goal/.test(message)?section.querySelector('.setup-goal-heading'):section.querySelector('.modal-title');
@@ -743,6 +820,7 @@ function renderOnboardingStep(step){
   }
   onboardingSteps.forEach((name,index)=>document.getElementById('onboarding-'+name).hidden=index!==step);
   if(step===1){
+    document.getElementById('setup-birthday').max=TODAY();
     statsWheels.forEach(wheel=>wheel.sync());
     const gender=document.getElementById('setup-gender').value;
     document.querySelectorAll('input[name="setup-gender-choice"]').forEach(input=>input.checked=input.value===gender);
@@ -764,7 +842,10 @@ window.onboardingNext=()=>{
   if(onboardingStep===1){
     statsWheels.forEach(wheel=>wheel.flush());
     if(!document.getElementById('onboarding-stats-form').reportValidity())return;
-    onboardingStats={gender:document.getElementById('setup-gender').value,weight:Number(document.getElementById('setup-weight').value),height:Number(document.getElementById('setup-height').value),age:Number(document.getElementById('setup-age').value)};
+    const birthday=document.getElementById('setup-birthday').value,age=ageFromBirthday(birthday,TODAY());
+    if(age===null){showOnboardingError('Enter a valid birthday that is not in the future.','setup-birthday');return;}
+    document.getElementById('setup-age').value=age;
+    onboardingStats={birthday,gender:document.getElementById('setup-gender').value,weight:Number(document.getElementById('setup-weight').value),height:Number(document.getElementById('setup-height').value),age:Number(document.getElementById('setup-age').value)};
     try{calculateSuggestedGoals({...onboardingStats,activity:'sedentary',goal:'gain'});}catch(err){showOnboardingError(err.message);return;}
   }
   if(onboardingStep===2&&!Object.hasOwn(activityFactors,document.getElementById('setup-activity').value)){showOnboardingError('Choose your activity level.');return;}
@@ -813,7 +894,7 @@ window.completeOnboarding=async useSuggested=>{
     await batch.commit();
     if(generation!==accountGeneration)return false;
     if(goals)state.goals=goals;
-    state.bodyProfile={...state.bodyProfile,...onboardingStats};
+    state.bodyProfile={...state.bodyProfile,...onboardingStats,activity:document.getElementById('setup-activity').value,goal:document.querySelector('input[name="setup-goal"]:checked').value,bmr:onboardingSuggestion.bmr,tdee:onboardingSuggestion.tdee};
     renderPersonalDetails();
     languageSetupPending=false;
     document.getElementById('modal-language').classList.remove('open');
@@ -826,6 +907,7 @@ let savingNutritionDisplay=false,savingPersonalDetails=false;
 function renderPersonalDetails(){
   document.getElementById('personal-gender').value=['male','female'].includes(state.bodyProfile.gender)?state.bodyProfile.gender:'';
   document.getElementById('personal-birthday').value=state.bodyProfile.birthday||'';
+  document.getElementById('personal-height').value=state.bodyProfile.height||'';
   document.getElementById('personal-birthday').max=TODAY();
 }
 window.changeNutritionDisplay=async mode=>{
@@ -849,6 +931,8 @@ window.savePersonalDetails=async()=>{
   const gender=document.getElementById('personal-gender').value,birthday=document.getElementById('personal-birthday').value;
   if(!['','male','female'].includes(gender)){error.textContent=tr('Choose Male or Female.');return false;}
   const update={gender,birthday,updatedAt:Date.now()};
+  const height=document.getElementById('personal-height').value;
+  if(height!==''){if(!Number.isFinite(Number(height))||Number(height)<100||Number(height)>250){error.textContent=tr('Enter a height between 100 and 250 cm.');return false;}update.height=Number(height);}
   if(birthday){
     const date=new Date(birthday+'T00:00:00'),parts=birthday.split('-').map(Number),now=new Date();
     if(!/^\d{4}-\d{2}-\d{2}$/.test(birthday)||!Number.isFinite(date.getTime())||date.getFullYear()!==parts[0]||date.getMonth()+1!==parts[1]||date.getDate()!==parts[2]||birthday>TODAY()){
@@ -858,13 +942,13 @@ window.savePersonalDetails=async()=>{
   }
   const generation=accountGeneration;
   savingPersonalDetails=true;
-  for(const id of ['personal-gender','personal-birthday','personal-details-save'])document.getElementById(id).disabled=true;
+  for(const id of ['personal-gender','personal-birthday','personal-height','personal-details-save'])document.getElementById(id).disabled=true;
   try{
     await setDoc(accountRef('settings','bodyProfile'),update,{merge:true});
     if(generation!==accountGeneration)return false;
     state.bodyProfile={...state.bodyProfile,...update};status.textContent=tr('Saved');return true;
   }catch(err){if(generation===accountGeneration)error.textContent=tr('Could not save personal details. Please try again.');return false;}
-  finally{if(generation===accountGeneration){savingPersonalDetails=false;for(const id of ['personal-gender','personal-birthday','personal-details-save'])document.getElementById(id).disabled=false;}}
+  finally{if(generation===accountGeneration){savingPersonalDetails=false;for(const id of ['personal-gender','personal-birthday','personal-height','personal-details-save'])document.getElementById(id).disabled=false;}}
 };
 const TESTER_UID='YbInj1g14YPICxIGszWP3jtt6ZP2';
 function renderAccountLabels(){
@@ -940,13 +1024,15 @@ function resetAccountState(){
   state.activeListId=null;state._editFoodId=null;state._serveFood=null;
   state.isAdmin=false;
   state.isTester=false;state.testerNewUser=false;savingTesterMode=false;
+  savingGoalSettings=false;goalEvaluation=null;
+  for(const id of ['g-save','water-goal-save','supplement-goal-save'])document.getElementById(id).disabled=false;
   state.nutritionDisplay='remaining';state.bodyProfile={};savingNutritionDisplay=false;savingPersonalDetails=false;
   document.getElementById('nutrition-display').value='remaining';document.getElementById('nutrition-display').disabled=false;
   document.getElementById('nutrition-display-error').textContent='';
   document.getElementById('personal-details-error').textContent='';
   document.getElementById('personal-details-status').textContent='';
   document.getElementById('personal-details-save').disabled=false;
-  document.getElementById('personal-gender').disabled=false;document.getElementById('personal-birthday').disabled=false;
+  document.getElementById('personal-gender').disabled=false;document.getElementById('personal-birthday').disabled=false;document.getElementById('personal-height').disabled=false;
   renderPersonalDetails();
   document.getElementById('tester-card').hidden=true;
   document.getElementById('tester-new-user').disabled=false;
@@ -1068,7 +1154,7 @@ async function openAccount(user){
     loginScreen.hidden=true;
     if(languageSetupPending){
       showOnboardingStep(0);
-      for(const id of ['setup-gender','setup-weight','setup-height','setup-age','setup-activity'])document.getElementById(id).value='';
+      for(const id of ['setup-gender','setup-weight','setup-height','setup-age','setup-birthday','setup-activity'])document.getElementById(id).value='';
       document.querySelectorAll('input[name="setup-goal"], input[name="setup-activity-choice"], input[name="setup-gender-choice"]').forEach(input=>input.checked=false);
       document.getElementById('first-language').value=getLanguage();
       document.getElementById('language-choice-error').textContent='';

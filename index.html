@@ -7,19 +7,19 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CalCal">
 <meta name="theme-color" content="#ffffff">
-<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.1.46">
-<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.1.46">
-<link rel="manifest" href="./manifest.webmanifest?v=1.1.46">
+<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.1.47">
+<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.1.47">
+<link rel="manifest" href="./manifest.webmanifest?v=1.1.47">
 <title>CalCal Food Tracker</title>
-<link rel="stylesheet" href="./css/colors.css?v=1.1.46">
-<link rel="stylesheet" href="./css/fonts.css?v=1.1.46">
-<link rel="stylesheet" href="./css/styles.css?v=1.1.46">
+<link rel="stylesheet" href="./css/colors.css?v=1.1.47">
+<link rel="stylesheet" href="./css/fonts.css?v=1.1.47">
+<link rel="stylesheet" href="./css/styles.css?v=1.1.47">
 </head>
 <body class="signed-out">
 <main id="login-screen" class="login-screen">
   <div class="login-panel">
-    <img class="login-logo" src="./assets/logo_transparent.png?v=1.1.46" width="160" height="160" alt="CalCal">
-    <small class="login-version">v1.1.46</small>
+    <img class="login-logo" src="./assets/logo_transparent.png?v=1.1.47" width="160" height="160" alt="CalCal">
+    <small class="login-version">v1.1.47</small>
     <div class="login-actions">
     <div class="login-methods">
     <form id="email-login-form" class="email-login-form" onsubmit="signInEmail(event)">
@@ -50,7 +50,7 @@
       <div class="page-title"><span id="home-ddmm"></span></div>
       <div id="home-weekday" style="font-size:14px;color:var(--text3);margin-top:3px;"></div>
     </div>
-    <img class="home-header-logo" src="./assets/logo_transparent.png?v=1.1.46" width="48" height="48" alt="CalCal">
+    <img class="home-header-logo" src="./assets/logo_transparent.png?v=1.1.47" width="48" height="48" alt="CalCal">
     <button class="btn btn-primary btn-sm" onclick="openGoalModal()" data-i18n="Goals">Goals</button>
   </div>
 
@@ -86,7 +86,7 @@
   </div>
 
   <div class="card">
-    <div class="card-title" data-i18n="Water">Water</div>
+    <div class="card-settings-header"><div class="card-title" data-i18n="Water">Water</div><button class="btn-icon" onclick="openWaterGoalModal()" aria-label="Edit water goal" data-i18n-aria-label="Edit water goal"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3l5 5L8 21H3v-5zM13 6l5 5"/></svg></button></div>
     <div class="water-bar-wrap">
       <div class="water-nums">
         <div class="water-intake"><div><span id="water-consumed-big" class="water-consumed-big">0</span><span style="font-size:14px;color:var(--text2);margin-left:4px;">ml</span></div><button class="btn-icon water-reset" onclick="resetWater()" aria-label="Reset water intake" data-i18n-aria-label="Reset water intake" title="Reset water intake" data-i18n-title="Reset water intake"><img src="./assets/reset.png" width="15" height="15" alt=""></button></div>
@@ -102,9 +102,9 @@
   </div>
 
   <div class="card">
-    <div class="card-title" data-i18n="Supplements">Supplements</div>
+    <div class="card-settings-header"><div class="card-title" data-i18n="Supplements">Supplements</div><button class="btn-icon" onclick="openSupplementGoalModal()" aria-label="Edit supplements" data-i18n-aria-label="Edit supplements"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3l5 5L8 21H3v-5zM13 6l5 5"/></svg></button></div>
     <div id="supp-row" class="supp-row"></div>
-    <div id="supp-empty" class="empty" style="padding:10px 0;display:none;"><p data-i18n="No supplements yet. Add them in Goals.">No supplements yet. Add them in Goals.</p></div>
+    <div id="supp-empty" class="empty" style="padding:10px 0;display:none;"><p data-i18n="No supplements yet. Tap the pencil to add them.">No supplements yet. Tap the pencil to add them.</p></div>
   </div>
 
   <div class="card weight-card">
@@ -144,6 +144,7 @@
     <div class="card-title" data-i18n="Personal details">Personal details</div>
     <form id="personal-details-form" onsubmit="event.preventDefault();savePersonalDetails()">
       <div class="field"><label for="personal-gender" data-i18n="Gender">Gender</label><select id="personal-gender"><option value="" data-i18n="Choose">Choose</option><option value="male" data-i18n="Male">Male</option><option value="female" data-i18n="Female">Female</option></select></div>
+      <div class="field"><label for="personal-height" data-i18n="Height (cm)">Height (cm)</label><input id="personal-height" type="number" inputmode="decimal" min="100" max="250" step="any"></div>
       <div class="field"><label for="personal-birthday" data-i18n="Birthday">Birthday</label><input id="personal-birthday" type="date"></div>
       <button id="personal-details-save" class="btn btn-primary btn-full" type="submit" data-i18n="Save">Save</button>
       <p id="personal-details-error" class="account-error" role="alert"></p>
@@ -200,8 +201,8 @@
             <label class="setup-gender-option" for="setup-gender-female"><input id="setup-gender-female" type="radio" name="setup-gender-choice" value="female" required onchange="document.getElementById('setup-gender').value=this.value"><span class="setup-gender-button"><img src="./assets/icons/female.svg" width="32" height="32" alt=""><span data-i18n="Female">Female</span></span></label>
           </div>
         </div>
+        <div class="setup-birthday-row"><label for="setup-birthday" data-i18n="Birthday">Birthday</label><input id="setup-birthday" type="date" required><input id="setup-age" type="hidden"></div>
         <div class="setup-number-wheels setup-last-answer">
-          <div class="setup-wheel-column"><label id="setup-age-label" for="setup-age" data-i18n="Age">Age</label><input id="setup-age" type="hidden"><div class="number-wheel-frame"><div class="number-wheel" role="spinbutton" tabindex="0" aria-labelledby="setup-age-label" data-number-wheel="setup-age" data-min="1" data-max="120" data-step="1" data-initial="25"></div></div></div>
           <div class="setup-wheel-column"><label id="setup-height-label" for="setup-height" data-i18n="Height (cm)">Height (cm)</label><input id="setup-height" type="hidden"><div class="number-wheel-frame"><div class="number-wheel" role="spinbutton" tabindex="0" aria-labelledby="setup-height-label" data-number-wheel="setup-height" data-min="100" data-max="250" data-step="1" data-initial="170"></div></div></div>
           <div class="setup-wheel-column"><label id="setup-weight-label" for="setup-weight" data-i18n="Weight (kg)">Weight (kg)</label><input id="setup-weight" type="hidden"><div class="number-wheel-frame"><div class="number-wheel" role="spinbutton" tabindex="0" aria-labelledby="setup-weight-label" data-number-wheel="setup-weight" data-min="20" data-max="500" data-step="0.1" data-initial="70"></div></div></div>
         </div>
@@ -244,28 +245,30 @@
   </div>
 </div>
 <div id="modal-goal" class="modal-overlay">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title" data-i18n="Daily goals">Daily goals</div>
-    <div class="field-row">
-      <div class="field"><label data-i18n="Calories (kcal)">Calories (kcal)</label><input type="number" inputmode="decimal" id="g-cal" placeholder="2000"></div>
-      <div class="field"><label data-i18n="Protein (g)">Protein (g)</label><input type="number" inputmode="decimal" id="g-protein" placeholder="150"></div>
-    </div>
-    <div class="field-row">
-      <div class="field"><label data-i18n="Carbohydrates (g)">Carbohydrates (g)</label><input type="number" inputmode="decimal" id="g-carbs" placeholder="250"></div>
-      <div class="field"><label data-i18n="Fat (g)">Fat (g)</label><input type="number" inputmode="decimal" id="g-fat" placeholder="65"></div>
-    </div>
-    <div class="field"><label data-i18n="Water goal (ml)">Water goal (ml)</label><input type="number" inputmode="decimal" id="g-water-ml" placeholder="2000"></div>
-    <div class="field">
-      <label data-i18n="Supplements (separate with commas)">Supplements (separate with commas)</label>
-      <input type="text" id="g-supps" placeholder="Fish oil, Vitamin D, Calcium" data-i18n-placeholder="Fish oil, Vitamin D, Calcium">
-    </div>
-    <div class="btn-row">
-      <button class="btn btn-secondary btn-full" onclick="closeModal('modal-goal')" data-i18n="Cancel">Cancel</button>
-      <button class="btn btn-primary btn-full" onclick="saveGoals()" data-i18n="Save">Save</button>
-    </div>
+  <div class="modal nutrition-goal-editor">
+    <div class="modal-handle"></div><div class="modal-title" data-i18n="Daily goals">Daily goals</div>
+    <form id="daily-goals-form" onsubmit="event.preventDefault();saveGoals()">
+      <div class="field"><label for="g-activity" data-i18n="Activity level">Activity level</label><div class="goal-activity-picker"><img id="g-activity-image" src="./assets/pictures/web/sedentary.jpg" width="400" height="200" alt=""><span class="goal-activity-copy"><strong id="g-activity-title"></strong><small id="g-activity-description"></small></span><select id="g-activity" aria-label="Activity level" data-i18n-aria-label="Activity level" onchange="updateGoalActivity()"><option value="sedentary" data-i18n="Sedentary — little or no exercise">Sedentary — little or no exercise</option><option value="light" data-i18n="Light — exercise 1–3 days/week">Light — exercise 1–3 days/week</option><option value="moderate" data-i18n="Moderate — exercise 3–5 days/week">Moderate — exercise 3–5 days/week</option><option value="active" data-i18n="Active — exercise 6–7 days/week">Active — exercise 6–7 days/week</option><option value="veryActive" data-i18n="Very active — hard daily exercise / physical job">Very active — hard daily exercise / physical job</option></select></div></div>
+      <div class="field"><label data-i18n="Fitness goal">Fitness goal</label><input id="g-fitness-goal" type="hidden"><div class="setup-goal-options" role="radiogroup" aria-label="Fitness goal" data-i18n-aria-label="Fitness goal">
+        <label class="setup-goal-option"><input type="radio" name="g-fitness-choice" value="lose" onchange="document.getElementById('g-fitness-goal').value=this.value;clearGoalEvaluation()"><span class="setup-goal-button"><img src="./assets/icons/lose-weight.svg" width="28" height="28" alt=""><span data-i18n="Lose weight">Lose weight</span></span></label>
+        <label class="setup-goal-option"><input type="radio" name="g-fitness-choice" value="maintain" onchange="document.getElementById('g-fitness-goal').value=this.value;clearGoalEvaluation()"><span class="setup-goal-button"><img src="./assets/icons/maintain-weight.svg" width="28" height="28" alt=""><span data-i18n="Maintain weight">Maintain weight</span></span></label>
+        <label class="setup-goal-option"><input type="radio" name="g-fitness-choice" value="gain" onchange="document.getElementById('g-fitness-goal').value=this.value;clearGoalEvaluation()"><span class="setup-goal-button"><img src="./assets/icons/gain-weight.svg" width="28" height="28" alt=""><span data-i18n="Gain weight">Gain weight</span></span></label>
+      </div></div>
+      <div class="goal-current-stats"><div><span data-i18n="Age">Age</span><strong id="g-current-age"></strong></div><div><span data-i18n="Weight (kg)">Weight (kg)</span><strong id="g-current-weight"></strong></div></div>
+      <div class="field review-calories"><label for="g-cal" data-i18n="Calories (kcal)">Calories (kcal)</label><input id="g-cal" type="number" inputmode="decimal" min="1000" max="20000" step="1" required></div>
+      <div class="review-macros">
+        <div class="field"><label for="g-protein" data-i18n="Protein (g)">Protein (g)</label><input id="g-protein" type="number" inputmode="decimal" min="0" max="1000" step="1" required></div>
+        <div class="field"><label for="g-carbs" data-i18n="Carbs (g)">Carbs (g)</label><input id="g-carbs" type="number" inputmode="decimal" min="0" max="2000" step="1" required></div>
+        <div class="field"><label for="g-fat" data-i18n="Fat (g)">Fat (g)</label><input id="g-fat" type="number" inputmode="decimal" min="0" max="1000" step="1" required></div>
+      </div>
+      <div class="goal-calculation-actions"><button type="button" class="btn btn-secondary" onclick="reEvaluateGoals()" data-i18n="Re-evaluate">Re-evaluate</button><button type="button" class="rounding-action" onclick="roundHomeGoals()" data-i18n="rounding">rounding</button></div>
+      <p id="goal-error" class="account-error" role="alert"></p>
+      <div class="btn-row"><button type="button" class="btn btn-secondary btn-full" onclick="closeModal('modal-goal')" data-i18n="Cancel">Cancel</button><button id="g-save" type="submit" class="btn btn-primary btn-full" data-i18n="Save">Save</button></div>
+    </form>
   </div>
 </div>
+<div id="modal-water-goal" class="modal-overlay"><div class="modal"><div class="modal-handle"></div><div class="modal-title" data-i18n="Water goal (ml)">Water goal (ml)</div><form onsubmit="event.preventDefault();saveWaterGoal()"><div class="field"><label for="g-water-ml" data-i18n="Water goal (ml)">Water goal (ml)</label><input id="g-water-ml" type="number" inputmode="decimal" min="1" step="1" required></div><p id="water-goal-error" class="account-error" role="alert"></p><div class="btn-row"><button type="button" class="btn btn-secondary btn-full" onclick="closeModal('modal-water-goal')" data-i18n="Cancel">Cancel</button><button id="water-goal-save" type="submit" class="btn btn-primary btn-full" data-i18n="Save">Save</button></div></form></div></div>
+<div id="modal-supplement-goal" class="modal-overlay"><div class="modal"><div class="modal-handle"></div><div class="modal-title" data-i18n="Supplements">Supplements</div><form onsubmit="event.preventDefault();saveSupplementGoal()"><div class="field"><label for="g-supps" data-i18n="Supplements (separate with commas)">Supplements (separate with commas)</label><input id="g-supps" type="text" placeholder="Fish oil, Vitamin D, Calcium" data-i18n-placeholder="Fish oil, Vitamin D, Calcium"></div><p id="supplement-goal-error" class="account-error" role="alert"></p><div class="btn-row"><button type="button" class="btn btn-secondary btn-full" onclick="closeModal('modal-supplement-goal')" data-i18n="Cancel">Cancel</button><button id="supplement-goal-save" type="submit" class="btn btn-primary btn-full" data-i18n="Save">Save</button></div></form></div></div>
 
 <div id="modal-add-food" class="modal-overlay">
   <div class="modal">
@@ -364,21 +367,21 @@
 
 <nav class="nav">
   <button class="nav-btn active" aria-label="Today" data-i18n-aria-label="Today" data-page="home" onclick="switchPage('home',this)">
-    <img class="nav-icon-regular" src="./assets/icons/home.svg?v=1.1.46" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/home-bold.svg?v=1.1.46" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/home.svg?v=1.1.47" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/home-bold.svg?v=1.1.47" width="24" height="24" alt="" aria-hidden="true">
   </button>
   <button class="nav-btn" aria-label="Foods" data-i18n-aria-label="Foods" data-page="lists" onclick="switchPage('lists',this)">
-    <img class="nav-icon-regular" src="./assets/icons/menu.svg?v=1.1.46" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/menu-bold.svg?v=1.1.46" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/menu.svg?v=1.1.47" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/menu-bold.svg?v=1.1.47" width="24" height="24" alt="" aria-hidden="true">
   </button>
   <button class="nav-btn" aria-label="Personal" data-i18n-aria-label="Personal" data-page="person" onclick="switchPage('person',this)">
-    <img class="nav-icon-regular" src="./assets/icons/person.svg?v=1.1.46" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/person-bold.svg?v=1.1.46" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/person.svg?v=1.1.47" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/person-bold.svg?v=1.1.47" width="24" height="24" alt="" aria-hidden="true">
   </button>
 </nav>
 
 <!-- Firebase SDK -->
-<script type="module" src="./js/app.js?v=1.1.46"></script>
-<script type="module" src="./js/earth-background.js?v=1.1.46"></script>
+<script type="module" src="./js/app.js?v=1.1.47"></script>
+<script type="module" src="./js/earth-background.js?v=1.1.47"></script>
 </body>
 </html>

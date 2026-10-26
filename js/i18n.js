@@ -1,5 +1,10 @@
 // Interface copy only. Food names and other account content are never translated.
 export const chinese = {
+  'Edit water goal':'編輯飲水目標', 'Edit supplements':'編輯補充品', 'Re-evaluate':'重新評估',
+  'No supplements yet. Tap the pencil to add them.':'尚未設定補充品，按鉛筆圖示新增。',
+  'Add gender, birthday and height in Personal details, and record your weight first.':'請先在個人資料填寫性別、生日及身高，並記錄體重。',
+  'Could not save goals. Please try again.':'無法儲存目標，請重試。',
+  'Enter a positive whole-number water goal.':'請輸入大於零的整數飲水目標。',
   'Personal details':'個人資料', 'Birthday':'生日', 'Daily nutrition display':'每日營養顯示',
   'Remaining amount':'剩餘數量', 'Intake / goal':'已攝取／目標',
   'Could not save display preference. Please try again.':'無法儲存顯示設定，請重試。',
