@@ -475,6 +475,10 @@
     #modal-goal .goal-calculation-actions .rounding-action { font-size: 12px; }
   }
 
-  #modal-goal .goal-section + .goal-section::before { content: ''; display: block; height: 1px; margin: 16px 0; background: linear-gradient(to right,transparent,rgba(0,0,0,.16) 25%,rgba(0,0,0,.16) 75%,transparent); }
+  #modal-goal .goal-section + .goal-section::before { content: ''; display: block; height: 1px; margin: 28px 0; background: linear-gradient(to right,transparent,rgba(0,0,0,.16) 25%,rgba(0,0,0,.16) 75%,transparent); }
   #modal-goal .goal-text-action { padding: 4px 0; border: 0; background: transparent; color: var(--text); font-size: 14px; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
   #modal-goal .goal-save-section .btn-row { margin-top: 0; }
+
+  .goal-calorie-heading { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); align-items: center; gap: 8px; }
+  .goal-calorie-heading label { grid-column: 2; color: var(--text2); font-size: 12px; line-height: 15px; text-align: center; }
+  #modal-goal .goal-calorie-heading .rounding-action { grid-column: 3; justify-self: end; margin: 0; padding: 4px 0; }
