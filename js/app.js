@@ -1,9 +1,9 @@
-import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.48';
-import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.1.48';
-import { ageFromBirthday, currentProfileWeight } from './profile-utils.js?v=1.1.48';
-import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.48';
-import { createNumberWheel } from './number-wheel.js?v=1.1.48';
-import { createOnboardingTransition } from './onboarding-transition.js?v=1.1.48';
+import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.1.49';
+import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.1.49';
+import { ageFromBirthday, currentProfileWeight } from './profile-utils.js?v=1.1.49';
+import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.1.49';
+import { createNumberWheel } from './number-wheel.js?v=1.1.49';
+import { createOnboardingTransition } from './onboarding-transition.js?v=1.1.49';
 import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.1.14';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
 import { setupPageSwipes } from './page-swipe.js?v=1.1.23';
@@ -872,7 +872,7 @@ window.roundOnboardingGoals=()=>{
 window.completeOnboarding=async useSuggested=>{
   if(!useSuggested||onboardingStep!==3||!state.user||savingOnboarding||onboardingTransition.moving||!languageSetupPending)return false;
   if(useSuggested&&(!onboardingSuggestion||!document.getElementById('onboarding-review-form').reportValidity()))return false;
-  const generation=accountGeneration,error=document.getElementById('language-choice-error');
+  const generation=accountGeneration,weightDate=TODAY(),error=document.getElementById('language-choice-error');
   let goals=null;
   if(useSuggested){
     goals={...state.goals};
@@ -889,11 +889,12 @@ window.completeOnboarding=async useSuggested=>{
     batch.set(accountRef('settings','preferences'),{language:getLanguage(),onboardingComplete:true,onboardingCompletedAt:Date.now()},{merge:true});
     if(useSuggested){
       batch.set(REF.goals(),goals);
+      batch.set(REF.weights(),{[weightDate]:onboardingStats.weight},{merge:true});
       batch.set(accountRef('settings','bodyProfile'),{...onboardingStats,activity:document.getElementById('setup-activity').value,goal:document.querySelector('input[name="setup-goal"]:checked').value,bmr:onboardingSuggestion.bmr,tdee:onboardingSuggestion.tdee,formula:'Mifflin-St Jeor',updatedAt:Date.now()},{merge:true});
     }
     await batch.commit();
     if(generation!==accountGeneration)return false;
-    if(goals)state.goals=goals;
+    if(goals){state.goals=goals;state.weights={...state.weights,[weightDate]:onboardingStats.weight};}
     state.bodyProfile={...state.bodyProfile,...onboardingStats,activity:document.getElementById('setup-activity').value,goal:document.querySelector('input[name="setup-goal"]:checked').value,bmr:onboardingSuggestion.bmr,tdee:onboardingSuggestion.tdee};
     renderPersonalDetails();
     languageSetupPending=false;

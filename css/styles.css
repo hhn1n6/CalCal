@@ -453,11 +453,16 @@
   .goal-current-stats { display: flex; justify-content: space-evenly; gap: 16px; padding: 8px 0 16px; }
   .goal-current-stats > div { display: flex; gap: 8px; align-items: baseline; font-size: 13px; }
   .goal-current-stats span { color: var(--text2); }
-  .goal-calculation-actions { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 16px; }
-  #modal-goal .goal-calculation-actions .rounding-action { margin: 0 0 0 auto; }
+  .goal-calculation-actions { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); align-items: center; gap: 12px; margin-top: 16px; }
+  #modal-goal .goal-calculation-actions > .btn { grid-column: 2; }
+  #modal-goal .goal-calculation-actions .rounding-action { grid-column: 3; justify-self: start; margin: 0; padding: 4px 0; }
   .nutrition-goal-editor .setup-goal-option { margin-bottom: 0; }
   #modal-goal .btn-row { margin-top: 16px; }
   #goal-error:empty, #water-goal-error:empty, #supplement-goal-error:empty { display: none; }
 
   #setup-birthday, #personal-birthday { background: transparent; border: 0; border-bottom: 1px solid var(--border); border-radius: 0; box-shadow: none; }
   #setup-birthday:focus, #personal-birthday:focus { outline: none; border-bottom-color: var(--text); }
+
+  #modal-goal .review-calories label, #modal-goal .review-macros label { margin-bottom: 0; }
+  #modal-goal .review-calories input { padding: 2px 6px; }
+  #modal-goal .review-macros input { padding: 2px; }
