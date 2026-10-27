@@ -26,7 +26,6 @@ export function completeSet(session,weight,reps,best={},now=Date.now()){
   const current=locate(session);
   if(!current||!session.startedAt||session.phase!=='set')throw Error('Start the workout before logging a set.');
   weight=optionalNumber(weight,'weight');reps=optionalNumber(reps,'reps');
-  current.set.weight=weight;current.set.reps=reps;
   session.results[current.set.id]={exerciseId:current.exercise.exerciseId,name:current.exercise.name,weight,reps,completedAt:now};
   const updated=copy(best);updated.byWeight??={};
   if(weight!==null&&reps!==null){

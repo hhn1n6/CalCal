@@ -1,5 +1,7 @@
 // Interface copy only. Food names and other account content are never translated.
 export const chinese = {
+  "Target kg":"目標 kg",
+  "Target reps":"目標次數",
   "Workout Name":"訓練名稱",
   "Average time":"平均時間",
   "Delete this exercise?":"刪除此動作？",
