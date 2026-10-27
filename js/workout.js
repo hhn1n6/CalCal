@@ -1,5 +1,5 @@
-import {copy,uid,newSet,exerciseInstance,positions,locate,createSession,nextPosition,startSession,completeSet,advanceRest,extendRest,selectSet,validateWorkout,optionalNumber} from './workout-model.js?v=1.2.0';
-import {defaultExercises} from './workout-catalog.js?v=1.2.0';
+import {copy,uid,newSet,exerciseInstance,positions,locate,createSession,nextPosition,startSession,completeSet,advanceRest,extendRest,selectSet,validateWorkout,optionalNumber} from './workout-model.js?v=1.2.1';
+import {defaultExercises} from './workout-catalog.js?v=1.2.1';
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const time=seconds=>{seconds=Math.max(0,Math.floor(seconds));return String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');};
 export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> 'en-GB'}){
@@ -57,9 +57,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
     if(!loaded){root.innerHTML=`<p role="alert">${escape(error)}</p>${button('reload','Try again')}`;tracker.hidden=true;return;}
     const alert=error?`<p class="workout-error" role="alert">${escape(error)}</p>`:'';
     if(view==='library'){
-      root.innerHTML=alert+`<div class="workout-library-actions">${button('history','Workout history')}</div>`+(session?`<div class="card workout-resume"><strong>${escape(session.workout.name)}</strong>${button('resume','Resume workout')}</div>`:'')+(templates.length?templates.map(workout=>`<div class="card workout-card"><button type="button" class="workout-open" data-action="open" data-id="${escape(workout.id)}"><strong>${escape(workout.name)}</strong><span>${workout.exercises.length} ${escape(tr('exercises'))} · ${positions(workout).length} ${escape(tr('sets'))}</span></button><button type="button" class="btn-icon" data-action="edit" data-id="${escape(workout.id)}" aria-label="${escape(tr('Edit workout'))}">✎</button></div>`).join(''):`<div class="empty">${escape(tr('No workouts yet. Tap + to create one.'))}</div>`);
-    }else if(view==='history'){
-      root.innerHTML=button('library','Back to workouts')+alert+(history.length?history.map(log=>`<div class="card workout-history"><strong>${escape(log.workout.name)}</strong><p>${escape(new Date(log.endedAt).toLocaleString(locale()))} · ${time(log.elapsedSeconds)}</p>${log.status==='discarded'?`<small>${escape(tr('Stopped early'))}</small>`:''}${historySets(log)}</div>`).join(''):`<div class="empty">${escape(tr('No completed workouts yet.'))}</div>`);
+      root.innerHTML=alert+(session?`<div class="card workout-resume"><strong>${escape(session.workout.name)}</strong>${button('resume','Resume workout')}</div>`:'')+(templates.length?templates.map(workout=>`<div class="card workout-card"><button type="button" class="workout-open" data-action="open" data-id="${escape(workout.id)}"><strong>${escape(workout.name)}</strong><span>${workout.exercises.length} ${escape(tr('exercises'))} · ${positions(workout).length} ${escape(tr('sets'))}</span></button><button type="button" class="btn-icon" data-action="edit" data-id="${escape(workout.id)}" aria-label="${escape(tr('Edit workout'))}">✎</button></div>`).join(''):`<div class="empty">${escape(tr('No workouts yet. Tap + to create one.'))}</div>`);
     }else{
       const workout=currentWorkout(),running=view==='session';
       root.innerHTML=button('library','Back to workouts')+alert+`<div class="workout-editor-header"><label>${escape(tr('Workout name'))}<input id="workout-name" type="text" maxlength="100" data-field="name" value="${escape(workout.name)}"></label>${button(running?'save-session':'save-template',running?'Save changes':'Save workout')}</div>`+workout.exercises.map((ex,exIndex)=>`<section class="card workout-exercise"><div class="workout-exercise-heading"><button type="button" class="workout-exercise-name" data-action="jump-exercise" data-id="${escape(ex.id)}">${exIndex+1}. ${escape(ex.name)}</button><button type="button" class="btn-icon" data-action="remove-exercise" data-id="${escape(ex.id)}" aria-label="${escape(tr('Remove exercise'))}">×</button></div><div class="workout-exercise-options"><label>${escape(tr('Sets'))}<input type="number" inputmode="decimal" min="1" max="50" step="1" data-field="count" data-ex="${ex.id}" value="${ex.sets.length}"></label><label>${escape(tr('Rest (seconds)'))}<input type="number" inputmode="decimal" min="0" max="3600" step="1" data-field="rest" data-ex="${ex.id}" value="${ex.restSeconds}"></label></div><div class="workout-set-head"><span>${escape(tr('Set'))}</span><span>kg</span><span>${escape(tr('Reps'))}</span><span></span></div><div data-set-list="${ex.id}">${setRows(ex,running)}</div>${button('add-set','Add set',`data-ex="${ex.id}"`)}</section>`).join('')+picker()+ (running?`<div class="workout-session-end">${button('finish','Finish workout')}${button('discard','Stop workout')}</div>`:'');
@@ -71,6 +69,10 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
     disable(busy);
   }
   function setRows(ex,running){return ex.sets.map((set,index)=>{const result=running?session.results[set.id]:null,selected=running&&session.current?.setId===set.id;return `<div class="workout-set-row${selected?' current':''}${result?' completed':''}"><button type="button" data-action="jump" data-ex="${ex.id}" data-set="${set.id}" aria-label="${escape(tr('Select set'))} ${index+1}">${result?'✓':index+1}</button>${number(result?.weight??set.weight,'weight',`data-ex="${ex.id}" data-set="${set.id}" aria-label="${escape(ex.name+' '+tr('Set')+' '+(index+1)+' kg')}"`)}${number(result?.reps??set.reps,'reps',`data-ex="${ex.id}" data-set="${set.id}" aria-label="${escape(ex.name+' '+tr('Set')+' '+(index+1)+' '+tr('Reps'))}"`)}<button type="button" class="btn-icon" data-action="remove-set" data-ex="${ex.id}" data-set="${set.id}" aria-label="${escape(tr('Remove set'))} ${index+1}">×</button></div>`;}).join('');}
+  function historyHTML(){
+    if(!loaded)return '<div class="empty">'+escape(error||tr('Loading workouts…'))+'</div>';
+    return history.length?history.map(log=>'<div class="card workout-history"><strong>'+escape(log.workout.name)+'</strong><p>'+escape(new Date(log.endedAt).toLocaleString(locale()))+' · '+time(log.elapsedSeconds)+'</p>'+(log.status==='discarded'?'<small>'+escape(tr('Stopped early'))+'</small>':'')+historySets(log)+'</div>').join(''):'<div class="empty">'+escape(tr('No completed workouts yet.'))+'</div>';
+  }
   function historySets(log){
     const groups=new Map();
     for(const result of Object.values(log.results)){if(!groups.has(result.exerciseId))groups.set(result.exerciseId,[]);groups.get(result.exerciseId).push(result);}
@@ -158,7 +160,6 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
     const type=target.dataset.action,workout=currentWorkout();
     if(type==='reload'){loaded=false;await open();return;}
     if(type==='library'){view='library';error='';render();return;}
-    if(type==='history'){view='history';render();return;}
     if(type==='resume'){view='session';render();return;}
     if(type==='edit'){draft=copy(templates.find(item=>item.id===target.dataset.id));view='editor';render();return;}
     if(type==='open'){
@@ -201,7 +202,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
         const endedAt=Date.now(),log={...copy(session),endedAt,elapsedSeconds:session.startedAt?Math.floor((endedAt-session.startedAt)/1000):0,status:type==='finish'?'finished':'discarded'};
         const writes=[{path:path('workoutSessions',session.id),value:log},{path:path('settings','workoutActive'),value:{session:null,updatedAt:endedAt}}];
         if(type==='finish'){validateWorkout(session.workout);writes.push({path:path('workoutTemplates',session.templateId),value:session.workout});}
-        await commit(writes);if(type==='finish')templates=templates.map(item=>item.id===session.templateId?copy(session.workout):item);history.unshift(log);session=null;view='history';
+        await commit(writes);if(type==='finish')templates=templates.map(item=>item.id===session.templateId?copy(session.workout):item);history.unshift(log);session=null;view='library';
       }
     });
   }
@@ -212,5 +213,5 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
   function create(){if(busy)return;if(!loaded){pendingCreate=true;open();return;}draft={id:uid(),name:'',exercises:[],createdAt:Date.now()};view='editor';error='';render();}
   function setVisible(value){visible=value;tracker.hidden=!value||view!=='session'||!session;}
   if(typeof ResizeObserver!=='undefined')new ResizeObserver(()=>root.style.setProperty('--workout-tracker-height',tracker.getBoundingClientRect().height+'px')).observe(tracker);
-  return {open,create,reset,refresh,setVisible};
+  return {open,create,reset,refresh,setVisible,historyHTML};
 }

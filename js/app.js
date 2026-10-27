@@ -1,13 +1,13 @@
-import { createWorkoutFeature } from './workout.js?v=1.2.0';
-import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.2.0';
-import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.2.0';
-import { ageFromBirthday, currentProfileWeight } from './profile-utils.js?v=1.2.0';
-import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.2.0';
-import { createNumberWheel } from './number-wheel.js?v=1.2.0';
-import { createOnboardingTransition } from './onboarding-transition.js?v=1.2.0';
+import { createWorkoutFeature } from './workout.js?v=1.2.1';
+import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.2.1';
+import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.2.1';
+import { ageFromBirthday, currentProfileWeight } from './profile-utils.js?v=1.2.1';
+import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.2.1';
+import { createNumberWheel } from './number-wheel.js?v=1.2.1';
+import { createOnboardingTransition } from './onboarding-transition.js?v=1.2.1';
 import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.1.14';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
-import { setupPageSwipes } from './page-swipe.js?v=1.2.0';
+import { setupPageSwipes } from './page-swipe.js?v=1.2.1';
 
 // ── STATE ────────────────────────────────────────────────
 let state = {
@@ -36,6 +36,13 @@ const workoutFeature=createWorkoutFeature({root:document.getElementById('workout
   store:{read:parts=>fbGet(doc(db,...parts)),list:async parts=>{const snapshot=await getDocs(collection(db,...parts)),items=[];snapshot.forEach(item=>items.push({...item.data(),id:item.id}));return items;},commit:async writes=>{const batch=writeBatch(db);for(const write of writes)batch.set(doc(db,...write.path),write.value,{merge:false});await batch.commit();}}
 });
 window.createWorkout=()=>workoutFeature.create();
+window.openWorkoutHistory=async()=>{
+  const content=document.getElementById('workout-history-content');
+  content.innerHTML=workoutFeature.historyHTML();
+  openModal('modal-workout-history');
+  await workoutFeature.open();
+  if(accountReady)content.innerHTML=workoutFeature.historyHTML();
+};
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 
 const TODAY = () => {

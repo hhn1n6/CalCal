@@ -3,6 +3,7 @@ export const chinese = {
   'Back muscles':'背部',
   "Workout":"訓練",
   "Create workout":"建立訓練",
+  "+ Add workout": "+ 新增訓練",
   "Workout history":"訓練紀錄",
   "Resume workout":"繼續訓練",
   "exercises":"項動作",

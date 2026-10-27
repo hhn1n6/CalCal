@@ -200,9 +200,9 @@
   .home-header-logo { display: block; width: 48px; height: 48px; object-fit: contain; justify-self: center; }
   .home-header > .btn { justify-self: end; }
   .home-header .page-title { white-space: nowrap; font-size: 18px; }
-  #page-lists { padding-top: 0; }
-  #page-lists > .page-header { position: sticky; top: 0; z-index: 10; margin: 0 -16px 20px; padding: 8px 16px; background: var(--bg); }
-  #page-lists > .page-header::after { content: ''; position: absolute; top: 100%; left: 0; right: 0; height: 16px; background: linear-gradient(to bottom, var(--bg), transparent); pointer-events: none; }
+  #page-lists, #page-workout { padding-top: 0; }
+  #page-lists > .page-header, #page-workout > .page-header { position: sticky; top: 0; z-index: 10; margin: 0 -16px 20px; padding: 8px 16px; background: var(--bg); }
+  #page-lists > .page-header::after, #page-workout > .page-header::after { content: ''; position: absolute; top: 100%; left: 0; right: 0; height: 16px; background: linear-gradient(to bottom, var(--bg), transparent); pointer-events: none; }
   .page-title { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
 
   /* CARDS */
@@ -490,7 +490,12 @@
   #current-category-name.is-overflowing { -webkit-mask-image: linear-gradient(to right,#000 calc(100% - 24px),transparent); mask-image: linear-gradient(to right,#000 calc(100% - 24px),transparent); }
 
   .workout-error { color: #620607; margin: 12px 0; font-size: 14px; }
-  .workout-library-actions { display: flex; justify-content: flex-end; margin-bottom: 16px; }
+  #page-workout > .page-header { gap: 12px; }
+  .workout-page-title { font-size: 32px; min-width: 0; }
+  .workout-header-actions { display: flex; align-items: center; gap: 12px; flex: 0 0 auto; }
+  .workout-header-actions > .btn { white-space: nowrap; }
+  .workout-history-button { width: 30px; height: 30px; justify-content: center; }
+  .workout-history-button img { display: block; width: 22px; height: 22px; object-fit: contain; }
   .workout-card, .workout-resume { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .workout-open { flex: 1; min-width: 0; border: 0; background: none; text-align: left; color: var(--text); cursor: pointer; }
   .workout-open strong { display: block; font-size: 22px; overflow-wrap: anywhere; }
