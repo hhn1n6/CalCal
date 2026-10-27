@@ -1,4 +1,4 @@
-const pages=['home','lists','person'];
+const pages=['home','lists','workout','person'];
 export function swipeDestination(page,dx,dy,elapsed){
   if(elapsed>900||Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.5)return null;
   const index=pages.indexOf(page);

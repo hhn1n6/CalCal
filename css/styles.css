@@ -125,8 +125,8 @@
     justify-content: space-around;
     align-items: center;
 
-    width: calc(100% - 64px);
-    max-width: 280px;
+    width: calc(100% - 48px);
+    max-width: 320px;
     height: var(--nav-base-height);
     margin: 0 auto;
 
@@ -144,7 +144,7 @@
     transform: translateY(0);
     transition: transform .18s ease;
   }
-  .nav::before { content: ''; position: absolute; top: 9px; left: calc(6px + (100% - 12px) / 6 - 32px); width: 64px; height: 40px; border-radius: 20px; background: #EEEEEE; pointer-events: none; transition: left 240ms cubic-bezier(.22, 1.12, .36, 1); }
+  .nav::before { content: ''; position: absolute; top: 9px; left: calc(6px + (100% - 12px) / 8 - 32px); width: 64px; height: 40px; border-radius: 20px; background: #EEEEEE; pointer-events: none; transition: left 240ms cubic-bezier(.22, 1.12, .36, 1); }
   .nav.liquid-moving::before { animation: nav-liquid-settle 300ms ease-out; }
   @keyframes nav-liquid-settle {
     0%, 100% { transform: scale(1, 1); }
@@ -152,8 +152,9 @@
     58% { transform: scale(.94, 1.06); }
     80% { transform: scale(1.03, .98); }
   }
-  .nav:has([data-page="lists"].active)::before { left: calc(50% - 32px); }
-  .nav:has([data-page="person"].active)::before { left: calc(100% - 6px - (100% - 12px) / 6 - 32px); }
+  .nav:has([data-page="lists"].active)::before { left: calc(6px + 3 * (100% - 12px) / 8 - 32px); }
+  .nav:has([data-page="workout"].active)::before { left: calc(6px + 5 * (100% - 12px) / 8 - 32px); }
+  .nav:has([data-page="person"].active)::before { left: calc(6px + 7 * (100% - 12px) / 8 - 32px); }
   .nav-btn { position: relative; display: flex; align-items: center; justify-content: center; width: 64px; height: 46px; border-radius: 20px; border: none; background: none; color: var(--text2); cursor: pointer; transition: color .2s; -webkit-tap-highlight-color: transparent; }
   .nav-btn.active { color: var(--accent); }
   .nav-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -487,3 +488,57 @@
   #page-lists > .page-header > .category-selector { flex: 1 1 0; overflow: hidden; }
   #page-lists > .page-header > .btn { flex: 0 0 auto; white-space: nowrap; min-width: max-content; }
   #current-category-name.is-overflowing { -webkit-mask-image: linear-gradient(to right,#000 calc(100% - 24px),transparent); mask-image: linear-gradient(to right,#000 calc(100% - 24px),transparent); }
+
+  .workout-error { color: #620607; margin: 12px 0; font-size: 14px; }
+  .workout-library-actions { display: flex; justify-content: flex-end; margin-bottom: 16px; }
+  .workout-card, .workout-resume { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .workout-open { flex: 1; min-width: 0; border: 0; background: none; text-align: left; color: var(--text); cursor: pointer; }
+  .workout-open strong { display: block; font-size: 22px; overflow-wrap: anywhere; }
+  .workout-open span { display: block; margin-top: 8px; color: var(--text2); font-size: 13px; }
+  .workout-editor-header { margin: 18px 0; display: flex; align-items: flex-end; gap: 12px; }
+  .workout-editor-header > label { flex: 1; min-width: 0; }
+  #workout-content label, .workout-tracker label { font-size: 12px; color: var(--text2); }
+  #workout-content input, #workout-content select, .workout-tracker input { display: block; width: 100%; min-height: 42px; padding: 8px; font-size: 16px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); margin-top: 5px; }
+  .workout-exercise-heading { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .workout-exercise-name { flex: 1; min-width: 0; border: 0; background: none; text-align: left; font-size: 18px; font-weight: 700; color: var(--text); cursor: pointer; }
+  .workout-exercise-options { display: flex; gap: 16px; margin-bottom: 12px; }
+  .workout-exercise-options label { flex: 1; }
+  .workout-set-row, .workout-set-head { display: grid; grid-template-columns: 34px minmax(0,1fr) minmax(0,1fr) 24px; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .workout-set-head { color: var(--text2); font-size: 12px; text-align: center; }
+  .workout-set-row > button:first-child { width: 30px; min-height: 36px; background: transparent; color: var(--text); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; }
+  .workout-set-row.current { background: var(--surface2); border-radius: 8px; outline: 1px solid var(--text); outline-offset: 4px; }
+  .workout-set-row.completed > button:first-child { background: #eee; font-weight: 700; }
+  .workout-set-row input { text-align: center; }
+  .workout-picker > strong { display: block; margin-bottom: 12px; }
+  .workout-picker > input, .workout-picker > label { margin-bottom: 12px; }
+  #workout-exercise-options { max-height: 220px; overflow-y: auto; overscroll-behavior: contain; }
+  #workout-exercise-options > button { display: block; width: 100%; padding: 12px 0; background: none; color: var(--text); border: 0; border-bottom: 1px solid var(--border); text-align: left; font-size: 15px; cursor: pointer; }
+  #workout-exercise-options small { display: block; margin-top: 3px; color: var(--text2); font-size: 12px; }
+  .workout-picker details { margin-top: 14px; }
+  .workout-picker details label { display: block; margin: 12px 0; }
+  .workout-session-end { display: flex; justify-content: space-between; gap: 12px; margin: 20px 0; }
+  .workout-has-tracker { padding-bottom: calc(var(--workout-tracker-height, 320px) + 24px); }
+  .workout-tracker { position: fixed; z-index: 60; bottom: calc(var(--nav-base-height) + var(--nav-bottom-gap) + 12px); left: 16px; right: 16px; max-width: 480px; margin: auto; padding: 14px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); box-shadow: 0 4px 22px rgba(0,0,0,.12); max-height: calc(100dvh - 190px); overflow-y: auto; }
+  .workout-tracker-header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 12px; font-size: 12px; }
+  .workout-tracker-header strong { font-size: 18px; }
+  .workout-start { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 48px; border: 0; border-radius: 10px; background: #000; color: #fff; font-size: 17px; cursor: pointer; }
+  .workout-start img, .workout-complete-set img { filter: invert(1); }
+  .workout-current-title { display: flex; gap: 12px; align-items: baseline; justify-content: space-between; font-size: 14px; }
+  .workout-current-title span { white-space: nowrap; font-size: 12px; }
+  .workout-current-inputs { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr) 44px; align-items: end; gap: 10px; margin-top: 10px; }
+  .workout-current-inputs input { font-size: 22px; text-align: center; }
+  .workout-complete-set { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 10px; background: #000; cursor: pointer; }
+  .workout-bests { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; margin-top: 10px; color: var(--text2); font-size: 11px; }
+  .workout-best-editor { margin-top: 8px; font-size: 12px; }
+  .workout-best-editor label { display: block; margin-top: 10px; }
+  .workout-best-editor .btn { margin-top: 10px; }
+  .workout-rest { display: flex; align-items: center; gap: 14px; }
+  .workout-rest-circle { position: relative; width: 90px; height: 90px; flex-shrink: 0; }
+  .workout-rest-circle svg { width: 90px; height: 90px; transform: rotate(-90deg); }
+  .workout-rest-circle circle { fill: none; stroke-width: 5; }
+  .rest-track { stroke: #ddd; }.rest-progress { stroke: #000; }
+  .workout-rest-circle > span { position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; font-size: 20px; }
+  .workout-rest-actions { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+  .workout-rest small { color: var(--text2); font-size: 11px; }
+  .workout-history { margin-top: 16px; }.workout-history > strong { font-size: 20px; }
+  .workout-history p { margin: 6px 0 14px; font-size: 13px; color: var(--text2); }
