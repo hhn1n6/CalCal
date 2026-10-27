@@ -9,7 +9,7 @@ export function mountRestWheel(input,viewport){
     }
     viewport.setAttribute('aria-valuenow',String(index));
   }
-  function commit(value){index=Math.max(0,Math.min(max,Math.round(value)));input.value=index;paint();input.dispatchEvent(new Event('input',{bubbles:true}));}
+  function commit(value){index=Math.max(0,Math.min(max,Math.round(value)));const changed=input.value===''||Number(input.value)!==index;input.value=index;paint();if(changed)input.dispatchEvent(new Event('input',{bubbles:true}));}
   viewport.scrollTop=index*row;paint();
   viewport.addEventListener('scroll',()=>{if(editing)return;commit(viewport.scrollTop/row);clearTimeout(timer);timer=setTimeout(()=>{viewport.scrollTop=index*row;},100);},{passive:true});
   viewport.addEventListener('keydown',e=>{if(!['ArrowUp','ArrowDown','Home','End'].includes(e.key))return;e.preventDefault();commit(e.key==='Home'?0:e.key==='End'?max:index+(e.key==='ArrowUp'?-1:1));viewport.scrollTop=index*row;});
