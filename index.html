@@ -7,19 +7,19 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CalCal">
 <meta name="theme-color" content="#ffffff">
-<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.2.6">
-<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.2.6">
-<link rel="manifest" href="./manifest.webmanifest?v=1.2.6">
+<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.2.7">
+<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.2.7">
+<link rel="manifest" href="./manifest.webmanifest?v=1.2.7">
 <title>CalCal Food Tracker</title>
-<link rel="stylesheet" href="./css/colors.css?v=1.2.6">
-<link rel="stylesheet" href="./css/fonts.css?v=1.2.6">
-<link rel="stylesheet" href="./css/styles.css?v=1.2.6">
+<link rel="stylesheet" href="./css/colors.css?v=1.2.7">
+<link rel="stylesheet" href="./css/fonts.css?v=1.2.7">
+<link rel="stylesheet" href="./css/styles.css?v=1.2.7">
 </head>
 <body class="signed-out">
 <main id="login-screen" class="login-screen">
   <div class="login-panel">
-    <img class="login-logo" src="./assets/logo_transparent.png?v=1.2.6" width="160" height="160" alt="CalCal">
-    <small class="login-version">v1.2.6</small>
+    <img class="login-logo" src="./assets/logo_transparent.png?v=1.2.7" width="160" height="160" alt="CalCal">
+    <small class="login-version">v1.2.7</small>
     <div class="login-actions">
     <div class="login-methods">
     <form id="email-login-form" class="email-login-form" onsubmit="signInEmail(event)">
@@ -50,7 +50,7 @@
       <div class="page-title"><span id="home-ddmm"></span></div>
       <div id="home-weekday" style="font-size:14px;color:var(--text3);margin-top:3px;"></div>
     </div>
-    <img class="home-header-logo" src="./assets/logo_transparent.png?v=1.2.6" width="48" height="48" alt="CalCal">
+    <img class="home-header-logo" src="./assets/logo_transparent.png?v=1.2.7" width="48" height="48" alt="CalCal">
     <button class="btn btn-primary btn-sm" onclick="openGoalModal()" data-i18n="Goals">Goals</button>
   </div>
 
@@ -341,6 +341,26 @@
   </div>
 </div>
 
+<div id="modal-target-reps" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="rep-range-title">
+  <div class="modal rep-range-selector">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="rep-range-title" data-i18n="Target reps">Target reps</div>
+    <output id="rep-range-value" class="rep-range-value">8–12</output>
+    <div class="rep-range-sliders">
+      <div class="rep-range-track"></div>
+      <input id="rep-range-min" class="rep-range-min" type="range" min="0" max="50" step="1" aria-label="Minimum reps" data-i18n-aria-label="Minimum reps">
+      <input id="rep-range-max" class="rep-range-max" type="range" min="0" max="50" step="1" aria-label="Maximum reps" data-i18n-aria-label="Maximum reps">
+    </div>
+    <div class="rep-range-inputs">
+      <label><span data-i18n="Minimum reps">Minimum reps</span><input id="rep-input-min" type="number" inputmode="decimal" min="0" max="10000" step="1"></label>
+      <label><span data-i18n="Maximum reps">Maximum reps</span><input id="rep-input-max" type="number" inputmode="decimal" min="0" max="10000" step="1"></label>
+    </div>
+    <p id="rep-range-error" class="workout-error" role="alert"></p>
+    <button type="button" class="rep-range-clear" data-rep-action="clear" data-i18n="Clear target">Clear target</button>
+    <div class="btn-row"><button type="button" class="btn btn-secondary btn-full" data-rep-action="cancel" data-i18n="Cancel">Cancel</button><button type="button" class="btn btn-primary btn-full" data-rep-action="save" data-i18n="Save">Save</button></div>
+  </div>
+</div>
+
 <div id="modal-workout-history" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="workout-history-title">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -397,25 +417,25 @@
 <div id="workout-tracker" class="workout-tracker" hidden></div>
 <nav class="nav">
   <button class="nav-btn active" aria-label="Today" data-i18n-aria-label="Today" data-page="home" onclick="switchPage('home',this)">
-    <img class="nav-icon-regular" src="./assets/icons/home.svg?v=1.2.6" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/home-bold.svg?v=1.2.6" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/home.svg?v=1.2.7" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/home-bold.svg?v=1.2.7" width="24" height="24" alt="" aria-hidden="true">
   </button>
   <button class="nav-btn" aria-label="Foods" data-i18n-aria-label="Foods" data-page="lists" onclick="switchPage('lists',this)">
-    <img class="nav-icon-regular" src="./assets/icons/menu.svg?v=1.2.6" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/menu-bold.svg?v=1.2.6" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/menu.svg?v=1.2.7" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/menu-bold.svg?v=1.2.7" width="24" height="24" alt="" aria-hidden="true">
   </button>
   <button class="nav-btn" aria-label="Workout" data-i18n-aria-label="Workout" data-page="workout" onclick="switchPage('workout',this)">
-    <img class="nav-icon-regular" src="./assets/icons/workout-outline.svg?v=1.2.6" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/workout-solid.svg?v=1.2.6" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/workout-outline.svg?v=1.2.7" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/workout-solid.svg?v=1.2.7" width="24" height="24" alt="" aria-hidden="true">
   </button>
   <button class="nav-btn" aria-label="Personal" data-i18n-aria-label="Personal" data-page="person" onclick="switchPage('person',this)">
-    <img class="nav-icon-regular" src="./assets/icons/person.svg?v=1.2.6" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/person-bold.svg?v=1.2.6" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/person.svg?v=1.2.7" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/person-bold.svg?v=1.2.7" width="24" height="24" alt="" aria-hidden="true">
   </button>
 </nav>
 
 <!-- Firebase SDK -->
-<script type="module" src="./js/app.js?v=1.2.6"></script>
-<script type="module" src="./js/earth-background.js?v=1.2.6"></script>
+<script type="module" src="./js/app.js?v=1.2.7"></script>
+<script type="module" src="./js/earth-background.js?v=1.2.7"></script>
 </body>
 </html>

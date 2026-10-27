@@ -6,6 +6,16 @@ export function optionalNumber(value,kind){
   if(!Number.isFinite(n)||n<0||n>(kind==='reps'?10000:2000)||(kind==='reps'&&!Number.isInteger(n)))throw Error('Enter valid weight and whole-number reps.');
   return n;
 }
+export function targetRepBounds(value){
+  if(value===null||value===undefined||String(value).trim()==='')return null;
+  const match=String(value).trim().match(/^(\d+)\s*(?:[-–—]\s*(\d+))?$/);
+  if(!match)throw Error('Enter a whole-number rep target or range.');
+  const min=Number(match[1]),max=Number(match[2]??match[1]);
+  if(min>max||max>10000)throw Error('Enter a valid rep range (minimum ≤ maximum).');
+  return {min,max};
+}
+export function targetReps(value){const bounds=targetRepBounds(value);return bounds?(bounds.min===bounds.max?bounds.min:`${bounds.min}-${bounds.max}`):null;}
+export function trackerRepDefault(value){return targetRepBounds(value)?.min??null;}
 export function newSet(){return {id:uid(),weight:null,reps:null};}
 export function exerciseInstance(exercise){return {id:uid(),exerciseId:exercise.id,name:exercise.name,category:exercise.category,restSeconds:90,sets:[newSet()]};}
 export function positions(workout){return workout.exercises.flatMap(exercise=>exercise.sets.map(set=>({exerciseId:exercise.id,setId:set.id})));}
@@ -47,13 +57,13 @@ export function selectSet(session,exerciseId,setId){
   if(!locate(session,{exerciseId,setId}))throw Error('This set no longer exists.');
   session.current={exerciseId,setId};session.restUntil=null;if(session.startedAt)session.phase='set';
 }
-export function validateWorkout(workout){
-  if(!workout.name?.trim())throw Error('Enter a workout name.');
-  if(!workout.exercises?.length||workout.exercises.length>50)throw Error('Add between 1 and 50 exercises.');
+export function validateWorkout(workout,{allowDraft=false}={}){
+  if(typeof workout.name!=='string'||workout.name.length>100)throw Error('Enter a workout name.');
+  if(!Array.isArray(workout.exercises)||(!allowDraft&&!workout.exercises.length)||workout.exercises.length>50)throw Error('Add between 1 and 50 exercises.');
   for(const exercise of workout.exercises){
     if(!exercise.sets?.length||exercise.sets.length>50)throw Error('Each exercise needs between 1 and 50 sets.');
     if(!Number.isInteger(Number(exercise.restSeconds))||exercise.restSeconds<0||exercise.restSeconds>3600)throw Error('Rest time must be 0–3600 seconds.');
-    for(const set of exercise.sets){set.weight=optionalNumber(set.weight,'weight');set.reps=optionalNumber(set.reps,'reps');}
+    for(const set of exercise.sets){set.weight=optionalNumber(set.weight,'weight');set.reps=targetReps(set.reps);}
   }
   return workout;
 }

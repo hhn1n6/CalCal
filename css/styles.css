@@ -604,3 +604,33 @@
 
   .workout-rest-wheel:focus { outline: none; }
   .workout-current-inputs input { font-size: 26px; }
+
+  #modal-target-reps { z-index: 120; }
+  .rep-range-selector { padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+  .rep-range-value { display: block; text-align: center; font-size: 36px; font-weight: 700; margin: 20px 0; }
+  .rep-range-sliders { position: relative; height: 44px; margin: 0 12px 20px; --range-left:16%; --range-right:24%; }
+  .rep-range-track { position: absolute; left: 0; right: 0; top: 20px; height: 4px; border-radius: 4px; background: linear-gradient(to right,#ddd var(--range-left),#000 var(--range-left),#000 var(--range-right),#ddd var(--range-right)); }
+  .rep-range-sliders input[type="range"] { appearance: none; -webkit-appearance: none; position: absolute; inset: 0; width: 100%; height: 44px; margin: 0; border: 0; padding: 0; background: transparent; pointer-events: none; outline: none; }
+  .rep-range-sliders input[type="range"]::-webkit-slider-runnable-track { background: transparent; height: 4px; }
+  .rep-range-sliders input[type="range"]::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 26px; height: 26px; border-radius: 50%; background: #fff; border: 2px solid #000; margin-top: -11px; cursor: grab; pointer-events: auto; box-shadow: 0 2px 6px #0002; }
+  .rep-range-sliders input[type="range"]::-moz-range-track { background: transparent; height: 4px; }
+  .rep-range-sliders input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #000; background: #fff; pointer-events: auto; cursor: grab; }
+  .rep-range-sliders input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px #0002; }
+  .rep-range-sliders.same .rep-range-min::-webkit-slider-thumb { transform: translateX(-8px); }
+  .rep-range-sliders.same .rep-range-max::-webkit-slider-thumb { transform: translateX(8px); }
+  .rep-range-sliders.same .rep-range-min::-moz-range-thumb { transform: translateX(-8px); }
+  .rep-range-sliders.same .rep-range-max::-moz-range-thumb { transform: translateX(8px); }
+  .rep-range-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 12px; }
+  .rep-range-inputs label { text-align: center; color: var(--text2); font-size: 13px; }
+  .rep-range-inputs input { display: block; width: 100%; border: 0; border-bottom: 1px solid var(--border); background: none; border-radius: 0; padding: 6px 0 2px; font-size: 28px; text-align: center; color: var(--text); appearance: textfield; -moz-appearance: textfield; }
+  .rep-range-inputs input::-webkit-inner-spin-button, .rep-range-inputs input::-webkit-outer-spin-button { -webkit-appearance: none; }
+  .rep-range-inputs input:focus { outline: none; border-bottom-color: #000; }
+  .rep-range-clear { display: block; margin: 14px auto 22px; border: 0; padding: 4px; background: none; text-decoration: underline; color: var(--text2); cursor: pointer; }
+  .rep-range-selector .workout-error:empty { display: none; }
+  .workout-current-target { display: block; font-size: 12px; color: var(--text2); margin-top: 5px; }
+  #workout-content input[data-action="target-reps"] { cursor: pointer; }
+
+  .workout-tracker-header > strong { margin-left: auto; }
+  .workout-tracker-end { display: flex; align-items: center; gap: 8px; }
+  .workout-tracker-end .btn-icon { width: 30px; height: 32px; justify-content: center; padding: 3px; }
+  .workout-exercise .btn-icon img { display: block; object-fit: contain; }

@@ -1,5 +1,11 @@
 // Interface copy only. Food names and other account content are never translated.
 export const chinese = {
+  "Unnamed workout":"未命名訓練",
+  "Minimum reps":"最低次數",
+  "Maximum reps":"最高次數",
+  "Clear target":"清除目標",
+  "Enter a whole-number rep target or range.":"請輸入整數目標次數或範圍。",
+  "Enter a valid rep range (minimum ≤ maximum).":"請輸入有效次數範圍（最低次數不大於最高次數）。",
   "Target kg":"目標 kg",
   "Target reps":"目標次數",
   "Workout Name":"訓練名稱",
