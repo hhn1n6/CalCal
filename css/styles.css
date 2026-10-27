@@ -536,9 +536,6 @@
   .workout-current-inputs input { font-size: 22px; text-align: center; }
   .workout-complete-set { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 10px; background: #000; cursor: pointer; }
   .workout-bests { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; margin-top: 10px; color: var(--text2); font-size: 11px; }
-  .workout-best-editor { margin-top: 8px; font-size: 12px; }
-  .workout-best-editor label { display: block; margin-top: 10px; }
-  .workout-best-editor .btn { margin-top: 10px; }
   .workout-rest { display: flex; align-items: center; gap: 14px; }
   .workout-rest-circle { position: relative; width: 90px; height: 90px; flex-shrink: 0; }
   .workout-rest-circle svg { width: 90px; height: 90px; transform: rotate(-90deg); }
