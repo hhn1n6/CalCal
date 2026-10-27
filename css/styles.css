@@ -497,6 +497,8 @@
   .workout-history-button { width: 30px; height: 30px; justify-content: center; }
   .workout-history-button img { display: block; width: 22px; height: 22px; object-fit: contain; }
   .workout-card, .workout-resume { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .workout-resume-icon { width: 40px; height: 40px; justify-content: center; flex-shrink: 0; }
+  .workout-resume-icon img { display: block; width: 24px; height: 24px; }
   .workout-open { flex: 1; min-width: 0; border: 0; background: none; text-align: left; color: var(--text); cursor: pointer; }
   .workout-open strong { display: block; font-size: 22px; overflow-wrap: anywhere; }
   .workout-open span { display: block; margin-top: 8px; color: var(--text2); font-size: 13px; }

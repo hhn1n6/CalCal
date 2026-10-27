@@ -1,5 +1,5 @@
-import {copy,uid,newSet,exerciseInstance,positions,locate,createSession,nextPosition,startSession,completeSet,advanceRest,extendRest,selectSet,validateWorkout,optionalNumber} from './workout-model.js?v=1.2.1';
-import {defaultExercises} from './workout-catalog.js?v=1.2.1';
+import {copy,uid,newSet,exerciseInstance,positions,locate,createSession,nextPosition,startSession,completeSet,advanceRest,extendRest,selectSet,validateWorkout,optionalNumber} from './workout-model.js?v=1.2.2';
+import {defaultExercises} from './workout-catalog.js?v=1.2.2';
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const time=seconds=>{seconds=Math.max(0,Math.floor(seconds));return String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');};
 export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> 'en-GB'}){
@@ -20,7 +20,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
     try{
       const [list,custom,records,active,logs]=await Promise.all([store.list(path('workoutTemplates')),store.read(path('settings','workoutCatalog')),store.list(path('workoutBests')),store.read(path('settings','workoutActive')),store.list(path('workoutSessions'))]);
       if(generation!==epoch)return;
-      templates=list.filter(item=>!item.archived);catalog=custom?.exercises||copy(defaultExercises);bests=Object.fromEntries(records.map(item=>[item.id,item]));session=active?.session||null;history=logs.sort((a,b)=>b.endedAt-a.endedAt);
+      templates=list.filter(item=>!item.archived);catalog=custom?.exercises||copy(defaultExercises);bests=Object.fromEntries(records.map(item=>[item.id,item]));session=active?.session?.startedAt?active.session:null;history=logs.sort((a,b)=>b.endedAt-a.endedAt);
       if(!custom)await commit([{path:path('settings','workoutCatalog'),value:{exercises:catalog}}]);
       if(generation!==epoch)return;
       loaded=true;view=session?'session':'library';lastSaved=Date.now();timer=setInterval(tick,1000);
@@ -38,7 +38,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
   }
   function sessionWrite(){return {path:path('settings','workoutActive'),value:{session,updatedAt:Date.now()}};}
   async function saveSession(templateToo=false){
-    const writes=[sessionWrite()];
+    const writes=session?.startedAt?[sessionWrite()]:[];
     if(templateToo){
       validateWorkout(session.workout);session.workout.updatedAt=Date.now();
       writes.push({path:path('workoutTemplates',session.templateId),value:session.workout});
@@ -48,7 +48,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
       }
       for(const id of new Set(Object.values(session.results).map(result=>result.exerciseId))){const best=bests[id];writes.push({path:path('workoutBests',id),value:best});}
     }
-    await commit(writes);
+    if(writes.length)await commit(writes);
     if(templateToo)templates=templates.map(item=>item.id===session.templateId?copy(session.workout):item);
   }
   function render(){
@@ -57,10 +57,10 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
     if(!loaded){root.innerHTML=`<p role="alert">${escape(error)}</p>${button('reload','Try again')}`;tracker.hidden=true;return;}
     const alert=error?`<p class="workout-error" role="alert">${escape(error)}</p>`:'';
     if(view==='library'){
-      root.innerHTML=alert+(session?`<div class="card workout-resume"><strong>${escape(session.workout.name)}</strong>${button('resume','Resume workout')}</div>`:'')+(templates.length?templates.map(workout=>`<div class="card workout-card"><button type="button" class="workout-open" data-action="open" data-id="${escape(workout.id)}"><strong>${escape(workout.name)}</strong><span>${workout.exercises.length} ${escape(tr('exercises'))} · ${positions(workout).length} ${escape(tr('sets'))}</span></button><button type="button" class="btn-icon" data-action="edit" data-id="${escape(workout.id)}" aria-label="${escape(tr('Edit workout'))}">✎</button></div>`).join(''):`<div class="empty">${escape(tr('No workouts yet. Tap + to create one.'))}</div>`);
+      root.innerHTML=alert+(session?.startedAt?`<div class="card workout-resume"><strong>${escape(session.workout.name)}</strong><button type="button" class="btn-icon workout-resume-icon" data-action="resume" aria-label="${escape(tr('Resume workout'))}" title="${escape(tr('Resume workout'))}"><img src="./assets/icons/resume.svg?v=1.2.2" width="24" height="24" alt=""></button></div>`:'')+(templates.length?templates.map(workout=>`<div class="card workout-card"><button type="button" class="workout-open" data-action="open" data-id="${escape(workout.id)}"><strong>${escape(workout.name)}</strong><span>${workout.exercises.length} ${escape(tr('exercises'))} · ${positions(workout).length} ${escape(tr('sets'))}</span></button></div>`).join(''):`<div class="empty">${escape(tr('No workouts yet. Tap + to create one.'))}</div>`);
     }else{
       const workout=currentWorkout(),running=view==='session';
-      root.innerHTML=button('library','Back to workouts')+alert+`<div class="workout-editor-header"><label>${escape(tr('Workout name'))}<input id="workout-name" type="text" maxlength="100" data-field="name" value="${escape(workout.name)}"></label>${button(running?'save-session':'save-template',running?'Save changes':'Save workout')}</div>`+workout.exercises.map((ex,exIndex)=>`<section class="card workout-exercise"><div class="workout-exercise-heading"><button type="button" class="workout-exercise-name" data-action="jump-exercise" data-id="${escape(ex.id)}">${exIndex+1}. ${escape(ex.name)}</button><button type="button" class="btn-icon" data-action="remove-exercise" data-id="${escape(ex.id)}" aria-label="${escape(tr('Remove exercise'))}">×</button></div><div class="workout-exercise-options"><label>${escape(tr('Sets'))}<input type="number" inputmode="decimal" min="1" max="50" step="1" data-field="count" data-ex="${ex.id}" value="${ex.sets.length}"></label><label>${escape(tr('Rest (seconds)'))}<input type="number" inputmode="decimal" min="0" max="3600" step="1" data-field="rest" data-ex="${ex.id}" value="${ex.restSeconds}"></label></div><div class="workout-set-head"><span>${escape(tr('Set'))}</span><span>kg</span><span>${escape(tr('Reps'))}</span><span></span></div><div data-set-list="${ex.id}">${setRows(ex,running)}</div>${button('add-set','Add set',`data-ex="${ex.id}"`)}</section>`).join('')+picker()+ (running?`<div class="workout-session-end">${button('finish','Finish workout')}${button('discard','Stop workout')}</div>`:'');
+      root.innerHTML=button('library','Back to workouts')+alert+`<div class="workout-editor-header"><label>${escape(tr('Workout name'))}<input id="workout-name" type="text" maxlength="100" data-field="name" value="${escape(workout.name)}"></label>${button(running?'save-session':'save-template',running?'Save changes':'Save workout')}</div>`+workout.exercises.map((ex,exIndex)=>`<section class="card workout-exercise"><div class="workout-exercise-heading"><button type="button" class="workout-exercise-name" data-action="jump-exercise" data-id="${escape(ex.id)}">${exIndex+1}. ${escape(ex.name)}</button><button type="button" class="btn-icon" data-action="remove-exercise" data-id="${escape(ex.id)}" aria-label="${escape(tr('Remove exercise'))}">×</button></div><div class="workout-exercise-options"><label>${escape(tr('Sets'))}<input type="number" inputmode="decimal" min="1" max="50" step="1" data-field="count" data-ex="${ex.id}" value="${ex.sets.length}"></label><label>${escape(tr('Rest (seconds)'))}<input type="number" inputmode="decimal" min="0" max="3600" step="1" data-field="rest" data-ex="${ex.id}" value="${ex.restSeconds}"></label></div><div class="workout-set-head"><span>${escape(tr('Set'))}</span><span>kg</span><span>${escape(tr('Reps'))}</span><span></span></div><div data-set-list="${ex.id}">${setRows(ex,running)}</div>${button('add-set','Add set',`data-ex="${ex.id}"`)}</section>`).join('')+picker()+ (running&&session.startedAt?`<div class="workout-session-end">${button('finish','Finish workout')}${button('discard','Stop workout')}</div>`:'');
     }
     tracker.hidden=!visible||view!=='session'||!session;
     if(!tracker.hidden)renderTracker();else tracker.innerHTML='';
@@ -108,7 +108,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
     }
   }
   function tick(){
-    if(!session||busy||owner!==getUid())return;
+    if(!session?.startedAt||busy||owner!==getUid())return;
     if(session.phase==='rest'&&Date.now()>=session.restUntil){perform(async()=>{advanceRest(session);await saveSession();});return;}
     tickText();
     if(dirty&&Date.now()-lastSaved>10000)perform(async()=>{await saveSession();},true);
@@ -159,12 +159,11 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
     const target=event.target.closest('[data-action]');if(!target||busy)return;
     const type=target.dataset.action,workout=currentWorkout();
     if(type==='reload'){loaded=false;await open();return;}
-    if(type==='library'){view='library';error='';render();return;}
+    if(type==='library'){if(session&&!session.startedAt){session=null;dirty=false;}view='library';error='';render();return;}
     if(type==='resume'){view='session';render();return;}
-    if(type==='edit'){draft=copy(templates.find(item=>item.id===target.dataset.id));view='editor';render();return;}
     if(type==='open'){
-      if(session){if(session.templateId!==target.dataset.id){error=tr('Finish or stop the current workout first.');render();return;}view='session';render();return;}
-      await perform(async()=>{session=createSession(templates.find(item=>item.id===target.dataset.id));view='session';await saveSession();});return;
+      if(session?.startedAt){if(session.templateId!==target.dataset.id){error=tr('Finish or stop the current workout first.');render();return;}view='session';render();return;}
+      session=createSession(templates.find(item=>item.id===target.dataset.id));view='session';dirty=false;error='';render();return;
     }
     if(type==='add-exercise'){const ex=catalog.find(item=>item.id===target.dataset.id);if(ex){workout.exercises.push(exerciseInstance(ex));repairCurrent();dirty=view==='session';render();}return;}
     if(type==='add-set'){const ex=workout.exercises.find(item=>item.id===target.dataset.ex);if(ex&&ex.sets.length<50){ex.sets.push(newSet());repairCurrent();dirty=view==='session';render();}return;}
@@ -180,7 +179,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
       if(type==='custom'){
         const name=root.querySelector('#workout-custom-name').value.trim();if(!name)throw Error('Enter an exercise name.');
         const ex={id:uid(),name,category:root.querySelector('#workout-custom-category').value};catalog.push(ex);workout.exercises.push(exerciseInstance(ex));repairCurrent();
-        await commit([{path:path('settings','workoutCatalog'),value:{exercises:catalog}},...(view==='session'?[sessionWrite()]:[])]);
+        await commit([{path:path('settings','workoutCatalog'),value:{exercises:catalog}},...(session?.startedAt?[sessionWrite()]:[])]);
       }else if(type==='save-template'){
         validateWorkout(draft);draft.updatedAt=Date.now();await commit([{path:path('workoutTemplates',draft.id),value:draft}]);
         const index=templates.findIndex(item=>item.id===draft.id);if(index<0)templates.push(copy(draft));else templates[index]=copy(draft);view='library';draft=null;
@@ -210,7 +209,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
   root.addEventListener('input',input);tracker.addEventListener('input',input);
   root.addEventListener('change',changed);
   document.addEventListener?.('visibilitychange',tick);
-  function create(){if(busy)return;if(!loaded){pendingCreate=true;open();return;}draft={id:uid(),name:'',exercises:[],createdAt:Date.now()};view='editor';error='';render();}
+  function create(){if(busy)return;if(!loaded){pendingCreate=true;open();return;}if(session&&!session.startedAt){session=null;dirty=false;}draft={id:uid(),name:'',exercises:[],createdAt:Date.now()};view='editor';error='';render();}
   function setVisible(value){visible=value;tracker.hidden=!value||view!=='session'||!session;}
   if(typeof ResizeObserver!=='undefined')new ResizeObserver(()=>root.style.setProperty('--workout-tracker-height',tracker.getBoundingClientRect().height+'px')).observe(tracker);
   return {open,create,reset,refresh,setVisible,historyHTML};
