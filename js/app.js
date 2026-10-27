@@ -1,13 +1,13 @@
-import { createWorkoutFeature } from './workout.js?v=1.2.4';
-import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.2.4';
-import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.2.4';
-import { ageFromBirthday, currentProfileWeight } from './profile-utils.js?v=1.2.4';
-import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.2.4';
-import { createNumberWheel } from './number-wheel.js?v=1.2.4';
-import { createOnboardingTransition } from './onboarding-transition.js?v=1.2.4';
+import { createWorkoutFeature } from './workout.js?v=1.2.5';
+import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.2.5';
+import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.2.5';
+import { ageFromBirthday, currentProfileWeight } from './profile-utils.js?v=1.2.5';
+import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.2.5';
+import { createNumberWheel } from './number-wheel.js?v=1.2.5';
+import { createOnboardingTransition } from './onboarding-transition.js?v=1.2.5';
 import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.1.14';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
-import { setupPageSwipes } from './page-swipe.js?v=1.2.4';
+import { setupPageSwipes } from './page-swipe.js?v=1.2.5';
 
 // ── STATE ────────────────────────────────────────────────
 let state = {

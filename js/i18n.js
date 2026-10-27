@@ -1,5 +1,8 @@
 // Interface copy only. Food names and other account content are never translated.
 export const chinese = {
+  "Workout Name":"訓練名稱",
+  "Average time":"平均時間",
+  "Delete this exercise?":"刪除此動作？",
   'Back muscles':'背部',
   "Workout":"訓練",
   "Create workout":"建立訓練",
