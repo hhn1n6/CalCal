@@ -1,8 +1,8 @@
-import {createRepRangeSelector} from './rep-range-selector.js?v=1.2.10';
-import {copy,uid,newSet,exerciseInstance,positions,locate,createSession,nextPosition,startSession,completeSet,advanceRest,extendRest,selectSet,validateWorkout,optionalNumber,targetReps,trackerRepDefault} from './workout-model.js?v=1.2.10';
-import {defaultExercises} from './workout-catalog.js?v=1.2.10';
-import {setupCompactReorder} from './compact-reorder.js?v=1.2.10';
-import {mountRestWheel} from './workout-rest-wheel.js?v=1.2.10';
+import {createRepRangeSelector} from './rep-range-selector.js?v=1.2.11';
+import {copy,uid,newSet,exerciseInstance,positions,locate,createSession,nextPosition,startSession,completeSet,advanceRest,extendRest,selectSet,validateWorkout,optionalNumber,targetReps,trackerRepDefault} from './workout-model.js?v=1.2.11';
+import {defaultExercises} from './workout-catalog.js?v=1.2.11';
+import {setupCompactReorder} from './compact-reorder.js?v=1.2.11';
+import {mountRestWheel} from './workout-rest-wheel.js?v=1.2.11';
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const time=seconds=>{seconds=Math.max(0,Math.floor(seconds));return String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');};
 export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> 'en-GB'}){
@@ -98,10 +98,10 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
     if(!loaded){root.innerHTML=`<p role="alert">${escape(error)}</p>${button('reload','Try again')}`;tracker.hidden=true;return;}
     const alert=error?`<p class="workout-error" role="alert">${escape(error)}</p>${editFailure?button('retry-edits','Try again'):''}`:'';
     if(view==='library'){
-      root.innerHTML=alert+(session?.startedAt?`<div class="card workout-resume"><strong>${escape(workoutName(session.workout))}</strong><button type="button" class="btn-icon workout-resume-icon" data-action="resume" aria-label="${escape(tr('Resume workout'))}" title="${escape(tr('Resume workout'))}"><img src="./assets/icons/resume.svg?v=1.2.10" width="24" height="24" alt=""></button></div>`:'')+(templates.length?templates.map(workout=>`<div class="card workout-card"><button type="button" class="workout-open" data-action="open" data-id="${escape(workout.id)}"><strong>${escape(workoutName(workout))}</strong><span>${workout.exercises.length} ${escape(tr('exercises'))}${averageTime(workout)?' · '+escape(tr('Average time'))+': '+averageTime(workout):''}</span></button></div>`).join(''):`<div class="empty">${escape(tr('No workouts yet. Tap + to create one.'))}</div>`);
+      root.innerHTML=alert+(session?.startedAt?`<div class="card workout-resume"><strong>${escape(workoutName(session.workout))}</strong><button type="button" class="btn-icon workout-resume-icon" data-action="resume" aria-label="${escape(tr('Resume workout'))}" title="${escape(tr('Resume workout'))}"><img src="./assets/icons/resume.svg?v=1.2.11" width="24" height="24" alt=""></button></div>`:'')+(templates.length?templates.map(workout=>`<div class="card workout-card"><button type="button" class="workout-open" data-action="open" data-id="${escape(workout.id)}"><strong>${escape(workoutName(workout))}</strong><span>${workout.exercises.length} ${escape(tr('exercises'))}${averageTime(workout)?' · '+escape(tr('Average time'))+': '+averageTime(workout):''}</span></button></div>`).join(''):`<div class="empty">${escape(tr('No workouts yet. Tap + to create one.'))}</div>`);
     }else{
       const workout=currentWorkout(),running=view==='session';
-      root.innerHTML=`<div class="workout-detail-header"><input id="workout-name" class="workout-name-input${workout.name.trim()?' named':''}" type="text" maxlength="100" data-field="name" value="${escape(workout.name)}" placeholder="${escape(tr('Workout Name'))}" aria-label="${escape(tr('Workout name'))}"><button type="button" class="btn-icon workout-quit" data-action="library" aria-label="${escape(tr('Back to workouts'))}"><img src="./assets/icons/quit.svg?v=1.2.10" width="24" height="28" alt=""></button></div>`+alert+`<div class="workout-exercise-list">${workout.exercises.map(ex=>exerciseCard(ex,running)).join('')}</div>`+picker();
+      root.innerHTML=`<div class="workout-detail-header"><input id="workout-name" class="workout-name-input${workout.name.trim()?' named':''}" type="text" maxlength="100" data-field="name" value="${escape(workout.name)}" placeholder="${escape(tr('Workout Name'))}" aria-label="${escape(tr('Workout name'))}"><button type="button" class="btn-icon workout-quit" data-action="library" aria-label="${escape(tr('Back to workouts'))}"><img src="./assets/icons/quit.svg?v=1.2.11" width="24" height="28" alt=""></button></div>`+alert+`<div class="workout-exercise-list">${workout.exercises.map(ex=>exerciseCard(ex,running)).join('')}</div>`+picker();
       for(const input of root.querySelectorAll('[data-field="rest"]')){const viewport=input.parentElement.querySelector('.workout-rest-wheel');if(viewport)mountRestWheel(input,viewport);}
     }
     tracker.hidden=!visible||view!=='session'||!session;
@@ -112,9 +112,9 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
   }
   function exerciseCard(ex,running){
     const isOpen=expanded.has(ex.id),locked=!!(running&&session.startedAt&&session.current?.exerciseId===ex.id);
-    return `<section class="card workout-exercise" data-reorder-id="${ex.id}"><div class="workout-exercise-heading"><button type="button" class="workout-exercise-name" data-action="toggle-exercise" data-id="${ex.id}" aria-expanded="${isOpen}">${escape(ex.name)}</button><button type="button" class="btn-icon workout-drag" aria-label="${escape(tr('Reorder'))} ${escape(ex.name)}">☰</button><button type="button" class="btn-icon" data-action="remove-exercise" data-id="${ex.id}" data-workout-locked="${locked}" ${locked?'disabled':''} title="${escape(tr(locked?'The current exercise cannot be deleted.':'Remove exercise'))}" aria-label="${escape(tr('Remove exercise'))}"><img src="./assets/icons/cross.svg?v=1.2.10" width="18" height="18" alt=""></button></div><div class="workout-exercise-body" ${isOpen?'':'hidden'}><div class="workout-exercise-options"><label class="workout-set-count"><input type="number" inputmode="decimal" min="1" max="50" step="1" data-field="count" data-ex="${ex.id}" value="${ex.sets.length}" aria-label="${escape(tr('Sets'))}"><span>${escape(tr('sets'))}</span></label><div class="workout-rest-setting"><span>${escape(tr('Rest'))}:</span><div class="workout-rest-control"><input hidden type="number" inputmode="decimal" min="0" max="3600" step="1" data-field="rest" data-ex="${ex.id}" value="${ex.restSeconds}" aria-label="${escape(tr('Rest (seconds)'))}"><div class="workout-rest-wheel" role="spinbutton" tabindex="0" aria-label="${escape(tr('Rest (seconds)'))}" aria-valuemin="0" aria-valuemax="3600"></div></div><span>s</span></div></div><div class="workout-set-head"><span>${escape(tr('Set'))}</span><span>${escape(tr('Target kg'))}</span><span>${escape(tr('Target reps'))}</span><span></span></div><div data-set-list="${ex.id}">${setRows(ex,running)}</div><button type="button" class="btn-icon workout-add-set" data-action="add-set" data-ex="${ex.id}" aria-label="${escape(tr('Add set'))}">+</button></div></section>`;
+    return `<section class="card workout-exercise" data-reorder-id="${ex.id}"><div class="workout-exercise-heading"><button type="button" class="workout-exercise-name" data-action="toggle-exercise" data-id="${ex.id}" aria-expanded="${isOpen}">${escape(ex.name)}</button><button type="button" class="btn-icon workout-drag" aria-label="${escape(tr('Reorder'))} ${escape(ex.name)}">☰</button><button type="button" class="btn-icon" data-action="remove-exercise" data-id="${ex.id}" data-workout-locked="${locked}" ${locked?'disabled':''} title="${escape(tr(locked?'The current exercise cannot be deleted.':'Remove exercise'))}" aria-label="${escape(tr('Remove exercise'))}"><img src="./assets/icons/cross.svg?v=1.2.11" width="18" height="18" alt=""></button></div><div class="workout-exercise-body" ${isOpen?'':'hidden'}><div class="workout-exercise-options"><label class="workout-set-count"><input type="number" inputmode="decimal" min="1" max="50" step="1" data-field="count" data-ex="${ex.id}" value="${ex.sets.length}" aria-label="${escape(tr('Sets'))}"><span>${escape(tr('sets'))}</span></label><div class="workout-rest-setting"><span>${escape(tr('Rest'))}:</span><div class="workout-rest-control"><input hidden type="number" inputmode="decimal" min="0" max="3600" step="1" data-field="rest" data-ex="${ex.id}" value="${ex.restSeconds}" aria-label="${escape(tr('Rest (seconds)'))}"><div class="workout-rest-wheel" role="spinbutton" tabindex="0" aria-label="${escape(tr('Rest (seconds)'))}" aria-valuemin="0" aria-valuemax="3600"></div></div><span>s</span></div></div><div class="workout-set-head"><span>${escape(tr('Set'))}</span><span>${escape(tr('Target kg'))}</span><span>${escape(tr('Target reps'))}</span><span></span></div><div data-set-list="${ex.id}">${setRows(ex,running)}</div><button type="button" class="btn-icon workout-add-set" data-action="add-set" data-ex="${ex.id}" aria-label="${escape(tr('Add set'))}">+</button></div></section>`;
   }
-  function setRows(ex,running){return ex.sets.map((set,index)=>{const result=running?session.results[set.id]:null,selected=running&&session.current?.setId===set.id;return `<div class="workout-set-row${selected?' current':''}${result?' completed':''}"><button type="button" data-action="jump" data-ex="${ex.id}" data-set="${set.id}" aria-label="${escape(tr('Select set'))} ${index+1}">${result?'✓':index+1}</button>${number(set.weight,'weight',`data-ex="${ex.id}" data-set="${set.id}" aria-label="${escape(ex.name+' '+tr('Set')+' '+(index+1)+' kg')}"`)}${targetRepInput(ex,set,index)}<button type="button" class="btn-icon" data-action="remove-set" data-ex="${ex.id}" data-set="${set.id}" aria-label="${escape(tr('Remove set'))} ${index+1}"><img src="./assets/icons/cross.svg?v=1.2.10" width="18" height="18" alt=""></button></div>`;}).join('');}
+  function setRows(ex,running){return ex.sets.map((set,index)=>{const result=running?session.results[set.id]:null,selected=running&&session.current?.setId===set.id;return `<div class="workout-set-row${selected?' current':''}${result?' completed':''}"><button type="button" data-action="jump" data-ex="${ex.id}" data-set="${set.id}" aria-label="${escape(tr('Select set'))} ${index+1}">${result?'✓':index+1}</button>${number(set.weight,'weight',`data-ex="${ex.id}" data-set="${set.id}" aria-label="${escape(ex.name+' '+tr('Set')+' '+(index+1)+' kg')}"`)}${targetRepInput(ex,set,index)}<button type="button" class="btn-icon" data-action="remove-set" data-ex="${ex.id}" data-set="${set.id}" aria-label="${escape(tr('Remove set'))} ${index+1}"><img src="./assets/icons/cross.svg?v=1.2.11" width="18" height="18" alt=""></button></div>`;}).join('');}
   function targetRepInput(ex,set,index){return `<input type="text" readonly inputmode="none" data-action="target-reps" data-field="reps" data-ex="${ex.id}" data-set="${set.id}" value="${escape(set.reps??'')}" aria-label="${escape(ex.name+' '+tr('Set')+' '+(index+1)+' '+tr('Target reps'))}" aria-haspopup="dialog">`;}
   function historyHTML(){
     if(!loaded)return '<div class="empty">'+escape(error||tr('Loading workouts…'))+'</div>';
@@ -131,22 +131,49 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
 
   }
   function catalogButtons(items){return items.map(ex=>`<button type="button" data-action="add-exercise" data-id="${escape(ex.id)}">${escape(ex.name)} <small>${escape(categoryText(ex.category))}</small></button>`).join('')||`<p>${escape(tr('No exercises found.'))}</p>`;}
+  let lastTrackerKey=null;
   function renderTracker(){
-    const current=locate(session),ex=current?.exercise,set=current?.set;
-    const elapsed=session.startedAt?time((Date.now()-session.startedAt)/1000):'00:00';
+    const current=locate(session),ex=current?.exercise,set=current?.set,ready=session.phase==='ready';
+    const previous=tracker.querySelector('.tracker-panel')?.cloneNode?.(true),oldHeight=tracker.getBoundingClientRect?.().height||0;
+    tracker.getAnimations?.().forEach(animation=>animation.cancel());tracker.style.overflow='';
+    const key=session.id+':'+session.phase+':'+(session.current?.setId||'');
+    const elapsed=session.startedAt?time((Date.now()-session.startedAt)/1000):'';
     let content='';
-    if(session.phase==='ready')content=`<button type="button" class="workout-start" data-action="start"><img src="./assets/icons/play.svg" width="28" height="28" alt="">${escape(tr('Start workout'))}</button>`;
-    else if(session.phase==='rest')content=`<div class="workout-rest"><div class="workout-rest-circle"><svg viewBox="0 0 90 90"><circle cx="45" cy="45" r="38" class="rest-track"/><circle id="workout-rest-progress" cx="45" cy="45" r="38" class="rest-progress"/></svg><span id="workout-rest-time"></span></div><div><strong>${escape(tr('Rest'))}</strong><div class="workout-rest-actions">${button('rest30','+30 sec')}${button('rest60','+1 min')}${button('skip','Skip rest')}</div><small>${escape(tr('Next'))}: ${escape(ex?.name||'')} · ${escape(tr('Set'))} ${(current?.index??0)+1}</small></div></div>`;
-    else if(session.phase==='complete')content=`<strong>${escape(tr('All sets completed'))}</strong>`;
-    else if(current){
-      const actual=session.results[set.id]||{weight:set.weight,reps:trackerRepDefault(set.reps)};
-      const weight=session.pending?.setId===set.id?session.pending.weight:actual.weight,reps=session.pending?.setId===set.id?session.pending.reps:actual.reps;
-      const best=bests[ex.exerciseId]||{byWeight:{}};
-      content=`<div class="workout-current-title"><strong>${escape(ex.name)}</strong><span>${escape(tr('Set'))} ${current.index+1}/${ex.sets.length}</span></div>${typeof set.reps==='string'?`<small class="workout-current-target">${escape(tr('Target reps'))}: ${escape(set.reps.replace('-','–'))}</small>`:''}<div class="workout-current-inputs"><label>${escape(tr('Weight (kg)'))}${number(weight,'current-weight','id="workout-current-weight"')}</label><label>${escape(tr('Reps'))}${number(reps,'current-reps','id="workout-current-reps"')}</label><button type="button" class="workout-complete-set" data-action="complete" aria-label="${escape(tr('Complete set'))}"><img src="./assets/icons/tick.svg" width="28" height="28" alt=""></button></div><div class="workout-bests"><span>${escape(tr('Best weight'))}: <b id="workout-best-weight">${best.bestWeight??'—'}</b> kg</span><span>${escape(tr('Best reps at this weight'))}: <b id="workout-best-reps">${weight===null||weight===''?'—':best.byWeight?.[String(Number(weight))]??'—'}</b></span></div>`;
+    if(ready){
+      content=`<div class="tracker-ready-title">${escape(tr('Workout tracker'))}</div><button type="button" class="workout-start" data-action="start" aria-label="${escape(tr('Start workout'))}" title="${escape(tr('Start workout'))}"><img src="./assets/icons/play.svg?v=1.2.11" width="36" height="36" alt=""></button>`;
+    }else{
+      content=`<div class="tracker-active-header"><div class="tracker-exercise"><strong>${escape(ex?.name||tr('All sets completed'))}</strong>${current?`<span>${escape(tr('Set'))} ${current.index+1}/${ex.sets.length}</span>`:''}</div><strong id="workout-elapsed">${elapsed}</strong></div>`;
+      if(session.phase==='rest'){
+        content+=`<div class="workout-rest"><div class="workout-rest-circle"><svg viewBox="0 0 90 90"><circle cx="45" cy="45" r="38" class="rest-track"/><circle id="workout-rest-progress" cx="45" cy="45" r="38" class="rest-progress"/></svg><span id="workout-rest-time"></span></div><div><strong>${escape(tr('Rest'))}</strong><div class="workout-rest-actions">${button('rest30','+30 sec')}${button('rest60','+1 min')}</div></div></div>`;
+      }else if(current){
+        const actual=session.results[set.id]||{weight:set.weight,reps:trackerRepDefault(set.reps)};
+        const weight=session.pending?.setId===set.id?session.pending.weight:actual.weight,reps=session.pending?.setId===set.id?session.pending.reps:actual.reps;
+        const best=bests[ex.exerciseId]||{},bestReps=weight===null||weight===''?null:best.byWeight?.[String(Number(weight))];
+        const hasReps=Number.isFinite(bestReps),hasWeight=Number.isFinite(best.bestWeight);
+        content+=`${typeof set.reps==='string'?`<small class="workout-current-target">${escape(tr('Target reps'))}: ${escape(set.reps.replace('-','–'))}</small>`:''}<div class="tracker-metrics"><div id="tracker-rep-metric" class="tracker-metric${hasReps?' has-best':''}"><label class="tracker-field">${escape(tr('Reps'))}${number(reps,'current-reps','id="workout-current-reps"')}</label><div id="tracker-rep-best" class="tracker-best" ${hasReps?'':'hidden'} title="${escape(tr('Best reps at this weight'))}"><img src="./assets/icons/crown.svg?v=1.2.11" width="22" height="22" alt="${escape(tr('Best reps at this weight'))}"><b id="workout-best-reps">${hasReps?bestReps:''}</b></div></div><div class="tracker-metric${hasWeight?' has-best':''}"><label class="tracker-field">${escape(tr('Weight (kg)'))}${number(weight,'current-weight','id="workout-current-weight"')}</label><div class="tracker-best" ${hasWeight?'':'hidden'} title="${escape(tr('Best weight'))}"><img src="./assets/icons/crown.svg?v=1.2.11" width="22" height="22" alt="${escape(tr('Best weight'))}"><b id="workout-best-weight">${hasWeight?best.bestWeight:''}</b></div></div></div>`;
+      }
+      const nextAction=session.phase==='rest'?'skip':'complete',nextLabel=session.phase==='rest'?'Skip rest':'Complete set',done=session.phase==='complete';
+      content+=`<div class="tracker-actions"><button type="button" class="btn-icon tracker-action" data-action="finish" aria-label="${escape(tr('Finish workout'))}" title="${escape(tr('Finish workout'))}"><img src="./assets/icons/cross.svg?v=1.2.11" width="46" height="46" alt=""></button><button type="button" class="btn-icon tracker-action" data-action="${nextAction}" ${done?'disabled data-workout-locked="true"':''} aria-label="${escape(tr(nextLabel))}" title="${escape(tr(nextLabel))}"><img src="./assets/icons/arrow-right.svg?v=1.2.11" width="46" height="46" alt=""></button></div>`;
     }
-    const endControls=session.startedAt?`<div class="workout-tracker-end"><button type="button" class="btn-icon" data-action="finish" aria-label="${escape(tr('Finish workout'))}" title="${escape(tr('Finish workout'))}"><img src="./assets/icons/cross.svg?v=1.2.10" width="24" height="24" alt=""></button></div>`:'';
-    tracker.innerHTML=(error?`<p class="workout-error" role="alert">${escape(error)}</p>`:'')+`<div class="workout-tracker-header"><span>${escape(tr('Workout tracker'))}</span><strong id="workout-elapsed">${elapsed}</strong>${endControls}</div>`+content;
+    tracker.classList.toggle('tracker-ready',ready);
+    tracker.innerHTML=`<div class="tracker-panel">${error?`<p class="workout-error" role="alert">${escape(error)}</p>`:''}${content}</div>`;
     tickText();
+    if(key!==lastTrackerKey&&previous&&tracker.animate&&!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches){
+      const newHeight=tracker.getBoundingClientRect().height;
+      tracker.style.overflow='hidden';
+      tracker.animate([{height:oldHeight+'px'},{height:newHeight+'px'}],{duration:420,easing:'cubic-bezier(.22,.8,.25,1)'}).finished.catch(()=>{}).finally(()=>{if(key===lastTrackerKey)tracker.style.overflow='';});
+      const panel=tracker.querySelector('.tracker-panel');panel.animate?.([{opacity:0},{opacity:1}],{duration:240,delay:100,fill:'backwards'});
+      previous.classList.add('tracker-transition-old');previous.setAttribute('aria-hidden','true');previous.inert=true;
+      for(const item of previous.querySelectorAll('[id]'))item.removeAttribute('id');tracker.appendChild(previous);
+      previous.animate?.([{opacity:1},{opacity:0}],{duration:140,fill:'forwards'}).finished.catch(()=>{}).finally(()=>previous.remove());
+    }
+    lastTrackerKey=key;
+  }
+  function updateBestReps(weight){
+    const current=locate(session);if(!current)return;
+    const value=weight===null||weight===''?null:bests[current.exercise.exerciseId]?.byWeight?.[String(Number(weight))],known=Number.isFinite(value);
+    const label=tracker.querySelector('#workout-best-reps'),record=tracker.querySelector('#tracker-rep-best'),group=tracker.querySelector('#tracker-rep-metric');
+    if(label)label.textContent=known?String(value):'';if(record)record.hidden=!known;group?.classList?.toggle('has-best',known);
   }
   function tickText(){
     const elapsed=tracker.querySelector('#workout-elapsed');if(elapsed)elapsed.textContent=session?.startedAt?time((Date.now()-session.startedAt)/1000):'00:00';
@@ -177,8 +204,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
       session.pending??={setId:current.set.id,weight:actual.weight,reps:actual.reps};
       session.pending[field==='current-weight'?'weight':'reps']=el.value;
       if(field==='current-weight'){
-        const best=bests[current.exercise.exerciseId],label=tracker.querySelector('#workout-best-reps');
-        if(label)label.textContent=el.value===''?'—':best?.byWeight?.[String(Number(el.value))]??'—';
+        updateBestReps(el.value);
       }
     }else{
       const exercise=workout.exercises.find(ex=>ex.id===el.dataset.ex);if(!exercise)return;
@@ -186,7 +212,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
       else if(field!=='count'){
         const set=exercise.sets.find(item=>item.id===el.dataset.set);if(!set)return;
         set[field]=field==='reps'?targetReps(el.value):el.value===''?null:Number(el.value);
-        if(view==='session'&&session.current?.setId===set.id&&!session.pending&&!session.results[set.id]){const currentInput=tracker.querySelector(field==='weight'?'#workout-current-weight':'#workout-current-reps');if(currentInput)currentInput.value=(field==='reps'?trackerRepDefault(set.reps):set.weight)??'';if(field==='weight'){const label=tracker.querySelector('#workout-best-reps');if(label)label.textContent=set.weight===null?'—':bests[exercise.exerciseId]?.byWeight?.[String(set.weight)]??'—';}}
+        if(view==='session'&&session.current?.setId===set.id&&!session.pending&&!session.results[set.id]){const currentInput=tracker.querySelector(field==='weight'?'#workout-current-weight':'#workout-current-reps');if(currentInput)currentInput.value=(field==='reps'?trackerRepDefault(set.reps):set.weight)??'';if(field==='weight')updateBestReps(set.weight);}
       }
     }
     saveEdit(field!=='current-weight'&&field!=='current-reps');

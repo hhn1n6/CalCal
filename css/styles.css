@@ -631,3 +631,28 @@
   .workout-tracker-end { display: flex; align-items: center; gap: 8px; }
   .workout-tracker-end .btn-icon { width: 30px; height: 32px; justify-content: center; padding: 3px; }
   .workout-exercise .btn-icon img { display: block; object-fit: contain; }
+
+  /* Compact ready tracker and expanded live workout controls. */
+  .workout-tracker { padding: 16px; overflow-x: hidden; }
+  .tracker-panel { min-width: 0; }
+  .tracker-ready-title { text-align: center; font-size: 14px; line-height: 20px; margin-bottom: 6px; }
+  .workout-tracker .workout-start { width: 44px; height: 44px; min-height: 44px; padding: 0; margin: 0 auto; border: 0; border-radius: 0; background: transparent; color: #000; }
+  .workout-tracker .workout-start img { display: block; filter: none; }
+  .tracker-active-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+  .tracker-exercise { flex: 1; min-width: 0; }
+  .tracker-exercise strong { display: block; font-size: 20px; line-height: 1.15; font-weight: 700; overflow-wrap: anywhere; }
+  .tracker-exercise span { display: block; margin-top: 4px; font-size: 12px; color: var(--text3); }
+  #workout-elapsed { flex-shrink: 0; font-size: 16px; font-weight: 600; line-height: 23px; }
+  .tracker-metrics { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 22px; margin-top: 14px; }
+  .tracker-metric { display: grid; grid-template-columns: minmax(0,1fr); align-items: end; gap: 8px; min-width: 0; }
+  .tracker-metric.has-best { grid-template-columns: minmax(0,1fr) 42px; }
+  .workout-tracker .tracker-field { display: block; min-width: 0; text-align: center; color: var(--text2); font-size: 13px; }
+  .workout-tracker .tracker-field input { display: block; width: 100%; min-width: 0; max-width: 88px; min-height: 42px; margin: 6px auto 0; padding: 0 2px 2px; font-size: 32px; text-align: center; }
+  .tracker-best { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; min-width: 0; padding-bottom: 4px; color: #ffd894; }
+  .tracker-best[hidden] { display: none !important; }
+  .tracker-best img { display: block; width: 22px; height: 22px; }
+  .tracker-best b { font-size: 16px; line-height: 18px; font-weight: 600; color: #ffd894; }
+  .tracker-actions { display: flex; align-items: center; justify-content: center; gap: 48px; margin-top: 16px; }
+  .tracker-actions .tracker-action { width: 60px; height: 60px; padding: 7px; justify-content: center; flex-shrink: 0; border: 0; border-radius: 0; background: transparent; }
+  .tracker-action img { display: block; width: 46px; height: 46px; filter: none; }
+  .tracker-transition-old { position: absolute; left: 16px; right: 16px; top: 16px; pointer-events: none; }
