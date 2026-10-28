@@ -719,5 +719,5 @@
   .tracker-finish-confirm .tracker-controls { gap: 10px; }
   .tracker-finish-confirm [data-action="confirm-finish"] { background: #000; color: #fff; }
 
-  .home-header .home-goals { justify-self: start; width: 44px; height: 44px; justify-content: center; padding: 10px; background: none; border: 0; box-shadow: none; }
-  .home-header > div:last-child { justify-self: end; text-align: right; }
+  .home-header .home-goals { justify-self: end; width: 44px; height: 44px; justify-content: center; padding: 10px; background: none; border: 0; box-shadow: none; }
+  .home-header > div:first-child { justify-self: start; text-align: left; }
