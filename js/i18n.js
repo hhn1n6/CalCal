@@ -84,7 +84,7 @@ export const chinese = {
   "Legs":"腿部",
   "Core":"核心",
   "Cardio":"帶氧",
-  'Edit water goal':'編輯飲水目標', 'Edit supplements':'編輯補充品', 'Re-evaluate':'重新評估',
+  'Edit water goal':'編輯飲水目標', 'Edit supplements':'編輯補充品', 're-evaluate':'重新評估',
   'No supplements yet. Tap the pencil to add them.':'尚未設定補充品，按鉛筆圖示新增。',
   'Add gender, birthday and height in Personal details, and record your weight first.':'請先在個人資料填寫性別、生日及身高，並記錄體重。',
   'Could not save goals. Please try again.':'無法儲存目標，請重試。',
