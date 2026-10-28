@@ -515,7 +515,8 @@
   .workout-set-head { color: var(--text2); font-size: 12px; text-align: center; }
   .workout-set-row > button:first-child { width: 30px; min-height: 36px; background: transparent; color: var(--text); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; }
   .workout-set-row.current { background: var(--surface2); border-radius: 8px; outline: 1px solid var(--text); outline-offset: 4px; }
-  .workout-set-row.completed > button:first-child { background: #eee; font-weight: 700; }
+  .workout-set-row.completed > button:first-child { background: transparent; }
+  .workout-set-tick { display: block; margin: auto; background: transparent; }
   .workout-set-row input { text-align: center; }
   .workout-picker > strong { display: block; margin-bottom: 12px; }
   .workout-picker > input, .workout-picker > label { margin-bottom: 12px; }
