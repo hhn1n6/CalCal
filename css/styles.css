@@ -790,3 +790,6 @@
   .tracker-upload .tracker-display strong { font-size: 18px; }
   .tracker-upload .tracker-display p { margin: 0; }
   .tracker-upload .tracker-controls { gap: 10px; }
+  .workout-detail-actions .workout-header-play:disabled { opacity: .4; }
+  .tracker-uploading { height: calc(var(--tracker-display-height) + 60px); display: flex; align-items: center; justify-content: center; }
+  .workout-upload-spinner { width: 32px; height: 32px; border: 3px solid #e5e5e5; border-top-color: #000; border-radius: 50%; animation: login-spin 800ms linear infinite; }
