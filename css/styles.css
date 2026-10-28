@@ -684,7 +684,7 @@
     backdrop-filter: blur(20px) saturate(160%);
     max-height: none;
     overflow: hidden;
-    --tracker-display-height: min(248px, calc(100dvh - 300px));
+    --tracker-display-height: min(172px, calc(100dvh - 260px));
   }
   .tracker-display { height: var(--tracker-display-height); min-height: 0; overflow-y: auto; }
   .tracker-controls { height: 60px; display: flex; align-items: center; justify-content: center; gap: 48px; margin: 0; }
@@ -696,6 +696,6 @@
   .tracker-finish-confirm .tracker-controls { gap: 16px; }
   .tracker-transition-old { top: auto; bottom: 16px; }
   .tracker-ready-title { display: none; }
-  .workout-tracker { height: calc(var(--tracker-display-height) + 94px); }
-  .workout-tracker.tracker-ready { height: 94px; }
-  .tracker-panel { position: absolute; bottom: 16px; left: 16px; right: 16px; }
+  .workout-tracker { padding: 12px; height: calc(var(--tracker-display-height) + 86px); }
+  .workout-tracker.tracker-ready { height: 86px; }
+  .tracker-panel { position: absolute; bottom: 12px; left: 12px; right: 12px; }
