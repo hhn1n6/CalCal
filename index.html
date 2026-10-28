@@ -7,19 +7,19 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CalCal">
 <meta name="theme-color" content="#ffffff">
-<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.2.32">
-<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.2.32">
-<link rel="manifest" href="./manifest.webmanifest?v=1.2.32">
+<link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png?v=1.2.33">
+<link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png?v=1.2.33">
+<link rel="manifest" href="./manifest.webmanifest?v=1.2.33">
 <title>CalCal Food Tracker</title>
-<link rel="stylesheet" href="./css/colors.css?v=1.2.32">
-<link rel="stylesheet" href="./css/fonts.css?v=1.2.32">
-<link rel="stylesheet" href="./css/styles.css?v=1.2.32">
+<link rel="stylesheet" href="./css/colors.css?v=1.2.33">
+<link rel="stylesheet" href="./css/fonts.css?v=1.2.33">
+<link rel="stylesheet" href="./css/styles.css?v=1.2.33">
 </head>
 <body class="signed-out">
 <main id="login-screen" class="login-screen">
   <div class="login-panel">
-    <img class="login-logo" src="./assets/logo_transparent.png?v=1.2.32" width="160" height="160" alt="CalCal">
-    <small class="login-version">v1.2.32</small>
+    <img class="login-logo" src="./assets/logo_transparent.png?v=1.2.33" width="160" height="160" alt="CalCal">
+    <small class="login-version">v1.2.33</small>
     <div class="login-actions">
     <div class="login-methods">
     <form id="email-login-form" class="email-login-form" onsubmit="signInEmail(event)">
@@ -50,8 +50,8 @@
       <div class="page-title"><span id="home-ddmm"></span></div>
       <div id="home-weekday" style="font-size:14px;color:var(--text3);margin-top:3px;"></div>
     </div>
-    <img class="home-header-logo" src="./assets/logo_transparent.png?v=1.2.32" width="48" height="48" alt="CalCal">
-    <button class="btn-icon home-goals" onclick="openGoalModal()" aria-label="Goals" data-i18n-aria-label="Goals"><img src="./assets/icons/goal.svg?v=1.2.32" width="24" height="24" alt=""></button>
+    <img class="home-header-logo" src="./assets/logo_transparent.png?v=1.2.33" width="48" height="48" alt="CalCal">
+    <button class="btn-icon home-goals" onclick="openGoalModal()" aria-label="Goals" data-i18n-aria-label="Goals"><img src="./assets/icons/goal.svg?v=1.2.33" width="24" height="24" alt=""></button>
   </div>
 
   <div class="card nutrition-card" style="text-align:center;">
@@ -127,7 +127,7 @@
 <div id="page-lists" class="page">
   <div class="page-header">
     <button class="page-title category-selector" onclick="openManageListsModal()" aria-label="Choose food category" data-i18n-aria-label="Choose food category" aria-haspopup="dialog"><span id="current-category-name" data-i18n="Categories">Categories</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
-    <button class="btn-icon glass-circle main-action-button" onclick="openAddFoodModal()" aria-label="Add food" data-i18n-aria-label="Add food"><img src="./assets/icons/add.svg?v=1.2.32" width="26" height="26" alt=""></button>
+    <button class="btn-icon glass-circle main-action-button" onclick="openAddFoodModal()" aria-label="Add food" data-i18n-aria-label="Add food"><img src="./assets/icons/add.svg?v=1.2.33" width="26" height="26" alt=""></button>
   </div>
   <div id="food-grid"></div>
 </div>
@@ -137,7 +137,7 @@
   <div class="page-header">
     <div class="workout-header-actions">
       <button class="btn-icon workout-history-button" onclick="openWorkoutHistory()" aria-label="Workout history" data-i18n-aria-label="Workout history" title="Workout history" data-i18n-title="Workout history"><img src="./assets/history.png" width="22" height="22" alt=""></button>
-      <button class="btn-icon glass-circle main-action-button" onclick="createWorkout()" aria-label="Add workout" data-i18n-aria-label="Add workout"><img src="./assets/icons/add.svg?v=1.2.32" width="26" height="26" alt=""></button>
+      <button class="btn-icon glass-circle main-action-button" onclick="createWorkout()" aria-label="Add workout" data-i18n-aria-label="Add workout"><img src="./assets/icons/add.svg?v=1.2.33" width="26" height="26" alt=""></button>
     </div>
   </div>
   <div id="workout-content"></div>
@@ -256,7 +256,7 @@
 </div>
 <div id="modal-goal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-goal-title">
   <div class="modal bottom-sheet nutrition-goal-editor">
-    <div class="bottom-sheet-header"><div id="modal-goal-title" class="modal-title" data-i18n="Daily goals">Daily goals</div><button type="button" class="btn-icon bottom-sheet-close" onclick="closeModal('modal-goal')" aria-label="Close" data-i18n-aria-label="Close"><img src="./assets/icons/close.svg?v=1.2.32" width="24" height="24" alt=""></button></div><div class="bottom-sheet-body">
+    <div class="bottom-sheet-header"><div id="modal-goal-title" class="modal-title" data-i18n="Daily goals">Daily goals</div><button type="button" class="btn-icon bottom-sheet-close" onclick="closeModal('modal-goal')" aria-label="Close" data-i18n-aria-label="Close"><img src="./assets/icons/close.svg?v=1.2.33" width="24" height="24" alt=""></button></div><div class="bottom-sheet-body">
     <form id="daily-goals-form" onsubmit="event.preventDefault();saveGoals()">
       <div class="goal-section goal-nutrition-targets">
       <div class="goal-calorie-heading"><label for="g-cal" data-i18n="Calories (kcal)">Calories (kcal)</label><button type="button" class="rounding-action" onclick="roundHomeGoals()" data-i18n="rounding">rounding</button></div>
@@ -286,13 +286,13 @@
     </form>
   </div></div>
 </div>
-<div id="modal-water-goal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-water-goal-title"><div class="modal bottom-sheet"><div class="bottom-sheet-header"><div id="modal-water-goal-title" class="modal-title" data-i18n="Water goal (ml)">Water goal (ml)</div><button type="button" class="btn-icon bottom-sheet-close" onclick="closeModal('modal-water-goal')" aria-label="Close" data-i18n-aria-label="Close"><img src="./assets/icons/close.svg?v=1.2.32" width="24" height="24" alt=""></button></div><div class="bottom-sheet-body"><form onsubmit="event.preventDefault();saveWaterGoal()"><div class="field"><label for="g-water-ml" data-i18n="Water goal (ml)">Water goal (ml)</label><input id="g-water-ml" type="number" inputmode="decimal" min="1" step="1" required></div><p id="water-goal-error" class="account-error" role="alert"></p><div class="btn-row"><button type="button" class="btn btn-secondary btn-full" onclick="closeModal('modal-water-goal')" data-i18n="Cancel">Cancel</button><button id="water-goal-save" type="submit" class="btn btn-primary btn-full" data-i18n="Save">Save</button></div></form></div></div></div>
-<div id="modal-supplement-goal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-supplement-goal-title"><div class="modal bottom-sheet"><div class="bottom-sheet-header"><div id="modal-supplement-goal-title" class="modal-title" data-i18n="Supplements">Supplements</div><button type="button" class="btn-icon bottom-sheet-close" onclick="closeModal('modal-supplement-goal')" aria-label="Close" data-i18n-aria-label="Close"><img src="./assets/icons/close.svg?v=1.2.32" width="24" height="24" alt=""></button></div><div class="bottom-sheet-body"><form onsubmit="event.preventDefault();saveSupplementGoal()"><div class="field"><label for="g-supps" data-i18n="Supplements (separate with commas)">Supplements (separate with commas)</label><input id="g-supps" type="text" placeholder="Fish oil, Vitamin D, Calcium" data-i18n-placeholder="Fish oil, Vitamin D, Calcium"></div><p id="supplement-goal-error" class="account-error" role="alert"></p><div class="btn-row"><button type="button" class="btn btn-secondary btn-full" onclick="closeModal('modal-supplement-goal')" data-i18n="Cancel">Cancel</button><button id="supplement-goal-save" type="submit" class="btn btn-primary btn-full" data-i18n="Save">Save</button></div></form></div></div></div>
+<div id="modal-water-goal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-water-goal-title"><div class="modal bottom-sheet"><div class="bottom-sheet-header"><div id="modal-water-goal-title" class="modal-title" data-i18n="Water goal (ml)">Water goal (ml)</div><button type="button" class="btn-icon bottom-sheet-close" onclick="closeModal('modal-water-goal')" aria-label="Close" data-i18n-aria-label="Close"><img src="./assets/icons/close.svg?v=1.2.33" width="24" height="24" alt=""></button></div><div class="bottom-sheet-body"><form onsubmit="event.preventDefault();saveWaterGoal()"><div class="field"><label for="g-water-ml" data-i18n="Water goal (ml)">Water goal (ml)</label><input id="g-water-ml" type="number" inputmode="decimal" min="1" step="1" required></div><p id="water-goal-error" class="account-error" role="alert"></p><div class="btn-row"><button type="button" class="btn btn-secondary btn-full" onclick="closeModal('modal-water-goal')" data-i18n="Cancel">Cancel</button><button id="water-goal-save" type="submit" class="btn btn-primary btn-full" data-i18n="Save">Save</button></div></form></div></div></div>
+<div id="modal-supplement-goal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-supplement-goal-title"><div class="modal bottom-sheet"><div class="bottom-sheet-header"><div id="modal-supplement-goal-title" class="modal-title" data-i18n="Supplements">Supplements</div><button type="button" class="btn-icon bottom-sheet-close" onclick="closeModal('modal-supplement-goal')" aria-label="Close" data-i18n-aria-label="Close"><img src="./assets/icons/close.svg?v=1.2.33" width="24" height="24" alt=""></button></div><div class="bottom-sheet-body"><form onsubmit="event.preventDefault();saveSupplementGoal()"><div class="field"><label for="g-supps" data-i18n="Supplements (separate with commas)">Supplements (separate with commas)</label><input id="g-supps" type="text" placeholder="Fish oil, Vitamin D, Calcium" data-i18n-placeholder="Fish oil, Vitamin D, Calcium"></div><p id="supplement-goal-error" class="account-error" role="alert"></p><div class="btn-row"><button type="button" class="btn btn-secondary btn-full" onclick="closeModal('modal-supplement-goal')" data-i18n="Cancel">Cancel</button><button id="supplement-goal-save" type="submit" class="btn btn-primary btn-full" data-i18n="Save">Save</button></div></form></div></div></div>
 
 <div id="modal-add-food" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="add-food-title">
   <div class="modal bottom-sheet">
 
-    <div class="bottom-sheet-header"><div class="modal-title" id="add-food-title">Add food</div><button type="button" class="btn-icon bottom-sheet-close" onclick="closeModal('modal-add-food')" aria-label="Close" data-i18n-aria-label="Close"><img src="./assets/icons/close.svg?v=1.2.32" width="24" height="24" alt=""></button></div><div class="bottom-sheet-body">
+    <div class="bottom-sheet-header"><div class="modal-title" id="add-food-title">Add food</div><button type="button" class="btn-icon bottom-sheet-close" onclick="closeModal('modal-add-food')" aria-label="Close" data-i18n-aria-label="Close"><img src="./assets/icons/close.svg?v=1.2.33" width="24" height="24" alt=""></button></div><div class="bottom-sheet-body">
     <div class="field"><label for="f-name" data-i18n="Food name">Food name</label><input type="text" id="f-name" placeholder="e.g. Chicken breast" data-i18n-placeholder="e.g. Chicken breast"></div>
     <div class="field"><label for="f-portion" data-i18n="Portion / unit (optional)">Portion / unit (optional)</label><input type="text" id="f-portion" placeholder="e.g. 100 g, 1 bowl, 1 piece" data-i18n-placeholder="e.g. 100 g, 1 bowl, 1 piece"></div>
     <div class="field"><label for="f-ingredients" data-i18n="Ingredients (optional)">Ingredients (optional)</label><input type="text" id="f-ingredients" placeholder="e.g. Chicken, rice, sauce" data-i18n-placeholder="e.g. Chicken, rice, sauce"></div>
@@ -315,7 +315,7 @@
 <div id="modal-manage-lists" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-manage-lists-title">
   <div class="modal bottom-sheet">
 
-    <div class="bottom-sheet-header"><div id="modal-manage-lists-title" class="modal-title" data-i18n="Food categories">Food categories</div><button type="button" class="btn-icon bottom-sheet-close" onclick="closeModal('modal-manage-lists')" aria-label="Close" data-i18n-aria-label="Close"><img src="./assets/icons/close.svg?v=1.2.32" width="24" height="24" alt=""></button></div><div class="bottom-sheet-body">
+    <div class="bottom-sheet-header"><div id="modal-manage-lists-title" class="modal-title" data-i18n="Food categories">Food categories</div><button type="button" class="btn-icon bottom-sheet-close" onclick="closeModal('modal-manage-lists')" aria-label="Close" data-i18n-aria-label="Close"><img src="./assets/icons/close.svg?v=1.2.33" width="24" height="24" alt=""></button></div><div class="bottom-sheet-body">
     <div class="field">
       <label data-i18n="New category name">New category name</label>
       <div style="display:flex;gap:8px;">
@@ -331,7 +331,7 @@
 <div id="modal-edit-category" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-edit-category-title">
   <div class="modal bottom-sheet">
 
-    <div class="bottom-sheet-header"><div id="modal-edit-category-title" class="modal-title" data-i18n="Edit category">Edit category</div><button type="button" class="btn-icon bottom-sheet-close" onclick="closeModal('modal-edit-category')" aria-label="Close" data-i18n-aria-label="Close"><img src="./assets/icons/close.svg?v=1.2.32" width="24" height="24" alt=""></button></div><div class="bottom-sheet-body">
+    <div class="bottom-sheet-header"><div id="modal-edit-category-title" class="modal-title" data-i18n="Edit category">Edit category</div><button type="button" class="btn-icon bottom-sheet-close" onclick="closeModal('modal-edit-category')" aria-label="Close" data-i18n-aria-label="Close"><img src="./assets/icons/close.svg?v=1.2.33" width="24" height="24" alt=""></button></div><div class="bottom-sheet-body">
     <div id="edit-category-field" class="field"></div>
     <div class="modal-actions">
       <button class="btn btn-secondary btn-full" onclick="closeModal('modal-edit-category')" data-i18n="Cancel">Cancel</button>
@@ -343,7 +343,7 @@
 <div id="modal-target-reps" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="rep-range-title">
   <div class="modal bottom-sheet rep-range-selector">
 
-    <div class="bottom-sheet-header"><div class="modal-title" id="rep-range-title" data-i18n="Target reps">Target reps</div><button type="button" class="btn-icon bottom-sheet-close" data-rep-action="cancel" aria-label="Close" data-i18n-aria-label="Close"><img src="./assets/icons/close.svg?v=1.2.32" width="24" height="24" alt=""></button></div><div class="bottom-sheet-body">
+    <div class="bottom-sheet-header"><div class="modal-title" id="rep-range-title" data-i18n="Target reps">Target reps</div><button type="button" class="btn-icon bottom-sheet-close" data-rep-action="cancel" aria-label="Close" data-i18n-aria-label="Close"><img src="./assets/icons/close.svg?v=1.2.33" width="24" height="24" alt=""></button></div><div class="bottom-sheet-body">
     <output id="rep-range-value" class="rep-range-value">8–12</output>
     <div class="rep-range-sliders">
       <div class="rep-range-track"></div>
@@ -363,7 +363,7 @@
 <div id="modal-workout-history" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="workout-history-title">
   <div class="modal bottom-sheet">
 
-    <div class="bottom-sheet-header"><div class="modal-title" id="workout-history-title" data-i18n="Workout history">Workout history</div><button type="button" class="btn-icon bottom-sheet-close" onclick="closeModal('modal-workout-history')" aria-label="Close" data-i18n-aria-label="Close"><img src="./assets/icons/close.svg?v=1.2.32" width="24" height="24" alt=""></button></div><div class="bottom-sheet-body">
+    <div class="bottom-sheet-header"><div class="modal-title" id="workout-history-title" data-i18n="Workout history">Workout history</div><button type="button" class="btn-icon bottom-sheet-close" onclick="closeModal('modal-workout-history')" aria-label="Close" data-i18n-aria-label="Close"><img src="./assets/icons/close.svg?v=1.2.33" width="24" height="24" alt=""></button></div><div class="bottom-sheet-body">
     <div id="workout-history-content"></div>
     <button class="btn btn-secondary btn-full" style="margin-top:16px;" onclick="closeModal('modal-workout-history')" data-i18n="Done">Done</button>
   </div></div>
@@ -372,7 +372,7 @@
 <div id="modal-diary" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-diary-title">
   <div class="modal bottom-sheet">
 
-    <div class="bottom-sheet-header"><div id="modal-diary-title" class="modal-title" data-i18n="Food diary">Food diary</div><button type="button" class="btn-icon bottom-sheet-close" onclick="closeModal('modal-diary')" aria-label="Close" data-i18n-aria-label="Close"><img src="./assets/icons/close.svg?v=1.2.32" width="24" height="24" alt=""></button></div><div class="bottom-sheet-body"><div class="diary-summary"><span id="log-total-badge"></span></div>
+    <div class="bottom-sheet-header"><div id="modal-diary-title" class="modal-title" data-i18n="Food diary">Food diary</div><button type="button" class="btn-icon bottom-sheet-close" onclick="closeModal('modal-diary')" aria-label="Close" data-i18n-aria-label="Close"><img src="./assets/icons/close.svg?v=1.2.33" width="24" height="24" alt=""></button></div><div class="bottom-sheet-body"><div class="diary-summary"><span id="log-total-badge"></span></div>
     <div id="log-list"></div>
     <div id="log-empty" class="empty" style="padding:24px 0;">
       <p data-i18n="Open Foods to log a meal.">Open Foods to log a meal.</p>
@@ -384,7 +384,7 @@
 <div id="modal-weight" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-weight-title">
   <div class="modal bottom-sheet">
 
-    <div class="bottom-sheet-header"><div id="modal-weight-title" class="modal-title" data-i18n="Record weight">Record weight</div><button type="button" class="btn-icon bottom-sheet-close" onclick="closeModal('modal-weight')" aria-label="Close" data-i18n-aria-label="Close"><img src="./assets/icons/close.svg?v=1.2.32" width="24" height="24" alt=""></button></div><div class="bottom-sheet-body">
+    <div class="bottom-sheet-header"><div id="modal-weight-title" class="modal-title" data-i18n="Record weight">Record weight</div><button type="button" class="btn-icon bottom-sheet-close" onclick="closeModal('modal-weight')" aria-label="Close" data-i18n-aria-label="Close"><img src="./assets/icons/close.svg?v=1.2.33" width="24" height="24" alt=""></button></div><div class="bottom-sheet-body">
     <div class="field"><label for="weight-date" data-i18n="Date">Date</label><input id="weight-date" type="date"></div>
     <div class="field"><label for="weight-value" data-i18n="Weight (kg)">Weight (kg)</label><input id="weight-value" type="number" min="0.1" step="0.1" inputmode="decimal" placeholder="e.g. 70.5" data-i18n-placeholder="e.g. 70.5"></div>
     <p class="weight-hint" data-i18n="One entry per date. Saving again updates that date’s weight.">One entry per date. Saving again updates that date’s weight.</p>
@@ -399,7 +399,7 @@
 <div id="modal-serve" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="serve-food-name">
   <div class="modal bottom-sheet">
 
-    <div class="bottom-sheet-header"><div class="modal-title" id="serve-food-name">Choose servings</div><button type="button" class="btn-icon bottom-sheet-close" onclick="closeModal('modal-serve')" aria-label="Close" data-i18n-aria-label="Close"><img src="./assets/icons/close.svg?v=1.2.32" width="24" height="24" alt=""></button></div><div class="bottom-sheet-body">
+    <div class="bottom-sheet-header"><div class="modal-title" id="serve-food-name">Choose servings</div><button type="button" class="btn-icon bottom-sheet-close" onclick="closeModal('modal-serve')" aria-label="Close" data-i18n-aria-label="Close"><img src="./assets/icons/close.svg?v=1.2.33" width="24" height="24" alt=""></button></div><div class="bottom-sheet-body">
     <div id="serve-food-info" style="font-size:13px;color:var(--text2);margin-bottom:20px;"></div>
     <div class="field">
       <label data-i18n="Servings (1 = the food’s stated portion / unit)">Servings (1 = the food’s stated portion / unit)</label>
@@ -417,11 +417,11 @@
 <div id="modal-exercise-picker" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="exercise-picker-title">
   <div class="modal bottom-sheet exercise-picker-sheet">
     <div class="bottom-sheet-header">
-      <button id="exercise-picker-title" type="button" class="modal-title exercise-picker-category" data-picker-action="categories" aria-expanded="false"><span class="exercise-picker-category-label" data-i18n="All categories">All categories</span><img src="./assets/icons/chevron-left.svg?v=1.2.32" width="16" height="16" alt=""></button>
-      <div class="exercise-picker-header-actions"><button type="button" class="btn-icon" data-picker-action="search" aria-label="Search exercises" data-i18n-aria-label="Search exercises"><img src="./assets/icons/search.svg?v=1.2.32" width="24" height="24" alt=""></button><button type="button" class="btn-icon" data-picker-action="cancel" aria-label="Close" data-i18n-aria-label="Close"><img src="./assets/icons/close.svg?v=1.2.32" width="24" height="24" alt=""></button></div>
+      <button id="exercise-picker-title" type="button" class="modal-title exercise-picker-category" data-picker-action="categories" aria-expanded="false"><span class="exercise-picker-category-label" data-i18n="All categories">All categories</span><img src="./assets/icons/chevron-left.svg?v=1.2.33" width="16" height="16" alt=""></button>
+      <div class="exercise-picker-header-actions"><button type="button" class="btn-icon" data-picker-action="search" aria-label="Search exercises" data-i18n-aria-label="Search exercises"><img src="./assets/icons/search.svg?v=1.2.33" width="24" height="24" alt=""></button><button type="button" class="btn-icon" data-picker-action="cancel" aria-label="Close" data-i18n-aria-label="Close"><img src="./assets/icons/close.svg?v=1.2.33" width="24" height="24" alt=""></button></div>
     </div>
     <div class="exercise-picker-menu" hidden></div>
-    <div class="exercise-picker-search" hidden><input type="search" placeholder="Search exercises" data-i18n-placeholder="Search exercises" aria-label="Search exercises" data-i18n-aria-label="Search exercises"><button type="button" class="btn-icon" data-picker-action="close-search" aria-label="Close search" data-i18n-aria-label="Close search"><img src="./assets/icons/close.svg?v=1.2.32" width="22" height="22" alt=""></button></div>
+    <div class="exercise-picker-search" hidden><input type="search" placeholder="Search exercises" data-i18n-placeholder="Search exercises" aria-label="Search exercises" data-i18n-aria-label="Search exercises"><button type="button" class="btn-icon" data-picker-action="close-search" aria-label="Close search" data-i18n-aria-label="Close search"><img src="./assets/icons/close.svg?v=1.2.33" width="22" height="22" alt=""></button></div>
     <div class="bottom-sheet-body"><div class="exercise-picker-grid"></div><details class="exercise-picker-custom"><summary data-i18n="Custom exercise">Custom exercise</summary><div class="field"><label for="picker-custom-name" data-i18n="Exercise name">Exercise name</label><input id="picker-custom-name" data-picker-custom-name maxlength="100"></div><div class="field"><label for="picker-custom-category" data-i18n="Category">Category</label><select id="picker-custom-category" data-picker-custom-category></select></div><button type="button" class="btn btn-secondary btn-full" data-picker-action="custom" data-i18n="Add custom exercise">Add custom exercise</button></details><p class="workout-error" role="alert"></p></div>
     <div class="exercise-picker-footer btn-row"><button type="button" class="btn btn-secondary btn-full" data-picker-action="cancel" data-i18n="Cancel">Cancel</button><button type="button" class="btn btn-primary btn-full" data-picker-action="add" data-i18n="Add">Add</button></div>
   </div>
@@ -430,25 +430,25 @@
 <div id="workout-tracker" class="workout-tracker" hidden></div>
 <nav class="nav">
   <button class="nav-btn active" aria-label="Today" data-i18n-aria-label="Today" data-page="home" onclick="switchPage('home',this)">
-    <img class="nav-icon-regular" src="./assets/icons/home.svg?v=1.2.32" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/home-bold.svg?v=1.2.32" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/home.svg?v=1.2.33" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/home-bold.svg?v=1.2.33" width="24" height="24" alt="" aria-hidden="true">
   </button>
   <button class="nav-btn" aria-label="Foods" data-i18n-aria-label="Foods" data-page="lists" onclick="switchPage('lists',this)">
-    <img class="nav-icon-regular" src="./assets/icons/menu.svg?v=1.2.32" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/menu-bold.svg?v=1.2.32" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/menu.svg?v=1.2.33" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/menu-bold.svg?v=1.2.33" width="24" height="24" alt="" aria-hidden="true">
   </button>
   <button class="nav-btn" aria-label="Workout" data-i18n-aria-label="Workout" data-page="workout" onclick="switchPage('workout',this)">
-    <img class="nav-icon-regular" src="./assets/icons/workout-outline.svg?v=1.2.32" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/workout-solid.svg?v=1.2.32" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/workout-outline.svg?v=1.2.33" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/workout-solid.svg?v=1.2.33" width="24" height="24" alt="" aria-hidden="true">
   </button>
   <button class="nav-btn" aria-label="Personal" data-i18n-aria-label="Personal" data-page="person" onclick="switchPage('person',this)">
-    <img class="nav-icon-regular" src="./assets/icons/person.svg?v=1.2.32" width="24" height="24" alt="" aria-hidden="true">
-    <img class="nav-icon-bold" src="./assets/icons/person-bold.svg?v=1.2.32" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-regular" src="./assets/icons/person.svg?v=1.2.33" width="24" height="24" alt="" aria-hidden="true">
+    <img class="nav-icon-bold" src="./assets/icons/person-bold.svg?v=1.2.33" width="24" height="24" alt="" aria-hidden="true">
   </button>
 </nav>
 
 <!-- Firebase SDK -->
-<script type="module" src="./js/app.js?v=1.2.32"></script>
-<script type="module" src="./js/earth-background.js?v=1.2.32"></script>
+<script type="module" src="./js/app.js?v=1.2.33"></script>
+<script type="module" src="./js/earth-background.js?v=1.2.33"></script>
 </body>
 </html>
