@@ -781,6 +781,18 @@
   .exercise-choice-name { display: block; padding: 12px 8px; width: 100%; font-size: 15px; line-height: 1.25; }
   .exercise-choice-check { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #000; color: #fff; }
   .exercise-choice-check img { display: block; filter: invert(1); }
+  .exercise-choice-wrap { position: relative; min-width: 0; display: flex; }
+  .exercise-choice-wrap > .exercise-choice { width: 100%; }
+  .exercise-choice-more { position: absolute; top: 3px; right: 34px; width: 32px; height: 34px; display: flex; align-items: center; justify-content: center; padding: 5px; border-radius: 8px; background: #fff; }
+  .exercise-custom-tile { min-height: 210px; align-items: center; justify-content: center; border: 2px dotted #aaa; background: transparent; }
+  .exercise-editor-overlay { position: absolute; inset: 0; z-index: 2; display: flex; align-items: center; justify-content: center; padding: 24px; background: #0005; }
+  .exercise-editor-overlay[hidden], [data-picker-delete-confirm][hidden], .exercise-editor-delete[hidden] { display: none; }
+  .exercise-editor-window { width: min(100%,400px); max-height: 85dvh; overflow-y: auto; border-radius: 12px; background: var(--surface); padding: 20px; box-shadow: 0 12px 40px #0002; }
+  .exercise-editor-heading { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .exercise-editor-heading h2 { flex: 1; margin: 0; font-size: 22px; }
+  .exercise-editor-heading .btn-icon { width: 36px; height: 36px; justify-content: center; }
+  .exercise-editor-delete { display: block; margin: 0 0 16px auto; border: 0; background: none; color: #620607; font: inherit; cursor: pointer; }
+  [data-picker-delete-confirm] { margin-bottom: 16px; }
   .exercise-picker-custom { margin-top: 20px; }
   .exercise-picker-custom summary { margin-bottom: 16px; cursor: pointer; }
   .exercise-picker-footer { padding: 16px 24px calc(16px + env(safe-area-inset-bottom,0px)); border-top: 1px solid var(--border); flex-shrink: 0; background: var(--surface); }
