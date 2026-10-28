@@ -337,7 +337,7 @@
   .modal-overlay.open { display: flex; }
   .modal { background: var(--surface); border-radius: 12px 12px 0 0; padding: 24px; padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); width: 100%; max-height: 90dvh; overflow-y: auto; animation: slideUp .25s ease; }
   @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-  .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 99px; margin: 0 auto 20px; }
+  .modal-handle { display: none; }
   .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
 
   /* FORM */
