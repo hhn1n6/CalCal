@@ -786,3 +786,7 @@
 
   /* Suppress browser tap overlays on all button controls. */
   button, [role="button"], input[type="button"], input[type="submit"], input[type="reset"], summary { -webkit-tap-highlight-color: transparent; }
+  .tracker-upload .tracker-display { display: flex; flex-direction: column; justify-content: center; text-align: center; gap: 12px; }
+  .tracker-upload .tracker-display strong { font-size: 18px; }
+  .tracker-upload .tracker-display p { margin: 0; }
+  .tracker-upload .tracker-controls { gap: 10px; }

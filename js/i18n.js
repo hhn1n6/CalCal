@@ -1,5 +1,12 @@
 // Interface copy only. Food names and other account content are never translated.
 export const chinese = {
+  "Retry upload":"重試上傳",
+  "Ready to retry upload":"可重試上傳",
+  "Uploading…":"正在上傳⋯",
+  "Workout saved on this device":"訓練已儲存在此裝置",
+  "Workout is saved on this device. Upload failed. Try again when connected.":"訓練已儲存在此裝置。上傳失敗，請連線後重試。",
+  "Could not read local workout storage. Try again.":"無法讀取本機訓練儲存空間，請重試。",
+  "Could not save workout on this device. Keep this page open and try again.":"無法在此裝置儲存訓練。請保持此頁面開啟並重試。",
   "Delete this workout record?":"刪除這筆訓練紀錄？",
   "Delete workout record":"刪除訓練紀錄",
   "Close search":"關閉搜尋",

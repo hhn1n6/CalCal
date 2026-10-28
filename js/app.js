@@ -1,13 +1,14 @@
-import { createWorkoutFeature } from './workout.js?v=1.2.33';
-import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.2.33';
-import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.2.33';
-import { ageFromBirthday, currentProfileWeight } from './profile-utils.js?v=1.2.33';
-import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.2.33';
-import { createNumberWheel } from './number-wheel.js?v=1.2.33';
-import { createOnboardingTransition } from './onboarding-transition.js?v=1.2.33';
-import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.1.14';
+import { finishWorkoutInCloud } from './workout-sync.js?v=1.2.34';
+import { createWorkoutFeature } from './workout.js?v=1.2.34';
+import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.2.34';
+import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.2.34';
+import { ageFromBirthday, currentProfileWeight } from './profile-utils.js?v=1.2.34';
+import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.2.34';
+import { createNumberWheel } from './number-wheel.js?v=1.2.34';
+import { createOnboardingTransition } from './onboarding-transition.js?v=1.2.34';
+import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, runTransaction, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.2.34';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
-import { setupPageSwipes } from './page-swipe.js?v=1.2.33';
+import { setupPageSwipes } from './page-swipe.js?v=1.2.34';
 
 // Shared feedback for all dark grey glass main action buttons.
 document.addEventListener('click',event=>{
@@ -45,7 +46,7 @@ let state = {
 };
 
 const workoutFeature=createWorkoutFeature({root:document.getElementById('workout-content'),tracker:document.getElementById('workout-tracker'),getUid:()=>accountReady?state.user?.uid:null,tr,locale,
-  store:{read:parts=>fbGet(doc(db,...parts)),list:async parts=>{const snapshot=await getDocs(collection(db,...parts)),items=[];snapshot.forEach(item=>items.push({...item.data(),id:item.id}));return items;},commit:async writes=>{const batch=writeBatch(db);for(const write of writes){if(write.remove)batch.delete(doc(db,...write.path));else batch.set(doc(db,...write.path),write.value,{merge:false});}await batch.commit();}}
+  store:{read:parts=>fbGet(doc(db,...parts)),list:async parts=>{const snapshot=await getDocs(collection(db,...parts)),items=[];snapshot.forEach(item=>items.push({...item.data(),id:item.id}));return items;},commit:async writes=>{const batch=writeBatch(db);for(const write of writes){if(write.remove)batch.delete(doc(db,...write.path));else batch.set(doc(db,...write.path),write.value,{merge:false});}await batch.commit();},finish:(uid,completion)=>runTransaction(db,transaction=>finishWorkoutInCloud({uid,completion,store:{read:async parts=>{const snapshot=await transaction.get(doc(db,...parts));return snapshot.exists()?snapshot.data():null;},commit:async writes=>{for(const write of writes)transaction.set(doc(db,...write.path),write.value);}}}))}
 });
 window.createWorkout=()=>workoutFeature.create();
 window.openWorkoutHistory=async()=>{
