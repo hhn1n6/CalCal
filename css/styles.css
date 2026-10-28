@@ -484,7 +484,8 @@
   .goal-calorie-heading label { grid-column: 2; color: var(--text2); font-size: 12px; line-height: 15px; text-align: center; }
   #modal-goal .goal-calorie-heading .rounding-action { grid-column: 3; justify-self: end; margin: 0; padding: 4px 0; }
 
-  #page-lists > .page-header { gap: 12px; }
+  #page-lists > .page-header { gap: 12px; margin-bottom: 8px; }
+  #page-lists > .page-header::after { height: 10px; }
   #page-lists > .page-header > .category-selector { flex: 1 1 0; overflow: hidden; }
   #page-lists > .page-header > .btn { flex: 0 0 auto; white-space: nowrap; min-width: max-content; }
   #current-category-name.is-overflowing { -webkit-mask-image: linear-gradient(to right,#000 calc(100% - 24px),transparent); mask-image: linear-gradient(to right,#000 calc(100% - 24px),transparent); }
