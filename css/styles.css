@@ -673,3 +673,29 @@
   .tracker-finish-confirm p { margin-bottom: 20px; font-size: 20px; font-weight: 700; }
   .tracker-finish-confirm .btn-row { justify-content: center; }
   .tracker-finish-confirm .btn { flex: 1; }
+
+  /* One glass tracker: fixed controls below a fixed-size live display. */
+  .workout-tracker {
+    background: rgba(204,204,204,.65);
+    border: 1px solid rgba(255,255,255,.8);
+    border-radius: 20px;
+    box-shadow: 0 8px 28px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.9);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: blur(20px) saturate(160%);
+    max-height: none;
+    overflow: hidden;
+    --tracker-display-height: min(248px, calc(100dvh - 300px));
+  }
+  .tracker-display { height: var(--tracker-display-height); min-height: 0; overflow-y: auto; }
+  .tracker-controls { height: 60px; display: flex; align-items: center; justify-content: center; gap: 48px; margin: 0; }
+  .tracker-controls .workout-start { width: 60px; height: 60px; }
+  .tracker-active-header { margin-bottom: 12px; }
+  .tracker-finish-confirm { padding: 0; }
+  .tracker-finish-confirm .tracker-display { display: flex; align-items: center; justify-content: center; }
+  .tracker-finish-confirm p { margin: 0; }
+  .tracker-finish-confirm .tracker-controls { gap: 16px; }
+  .tracker-transition-old { top: auto; bottom: 16px; }
+  .tracker-ready-title { display: none; }
+  .workout-tracker { height: calc(var(--tracker-display-height) + 94px); }
+  .workout-tracker.tracker-ready { height: 94px; }
+  .tracker-panel { position: absolute; bottom: 16px; left: 16px; right: 16px; }
