@@ -656,3 +656,20 @@
   .tracker-actions .tracker-action { width: 60px; height: 60px; padding: 7px; justify-content: center; flex-shrink: 0; border: 0; border-radius: 0; background: transparent; }
   .tracker-action img { display: block; width: 46px; height: 46px; filter: none; }
   .tracker-transition-old { position: absolute; left: 16px; right: 16px; top: 16px; pointer-events: none; }
+
+  /* Set / weight / reps row and centred rest timer. */
+  #workout-elapsed { font-weight: 400; }
+  .tracker-metrics { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; }
+  .tracker-set-number { display: block; width: 100%; max-width: 88px; min-height: 42px; margin: 6px auto 0; padding: 0 2px 2px; border-bottom: 1px solid var(--border); font-size: 32px; line-height: 39px; text-align: center; color: var(--text); }
+  .tracker-rest-body { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .tracker-rest-body .workout-rest-circle { width: 120px; height: 120px; margin: 0 auto; }
+  .tracker-rest-body .workout-rest-circle svg { width: 120px; height: 120px; }
+  .tracker-rest-body .workout-rest-circle > span { font-size: 26px; }
+  .tracker-rest-add { display: flex; align-items: center; justify-content: center; gap: 20px; }
+  .tracker-rest-add .btn-icon { width: 64px; height: 58px; justify-content: center; padding: 6px; }
+  .tracker-rest-add img { display: block; width: 46px; height: 46px; }
+  .tracker-rest-separator { width: 1px; height: 30px; background: linear-gradient(transparent,var(--border),transparent); }
+  .tracker-finish-confirm { padding: 8px 0; text-align: center; }
+  .tracker-finish-confirm p { margin-bottom: 20px; font-size: 20px; font-weight: 700; }
+  .tracker-finish-confirm .btn-row { justify-content: center; }
+  .tracker-finish-confirm .btn { flex: 1; }
