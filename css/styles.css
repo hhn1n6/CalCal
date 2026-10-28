@@ -589,8 +589,8 @@
   .workout-category-select svg { position: absolute; right: 0; pointer-events: none; }
   #workout-content #workout-search { flex: 1 1 50%; min-width: 0; width: 50%; min-height: 36px; margin: 0; padding: 4px 0; }
   .workout-save-row { display: flex; justify-content: center; margin: 20px 0; }
-  .reorder-placeholder { border: 1px dashed #bbb; border-radius: 16px; background: rgba(0,0,0,.025); margin-bottom: 16px; }
-  .compact-drag-preview { position: fixed; top: 0; left: 0; z-index: 1000; max-width: min(260px,70vw); padding: 12px 18px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--text); box-shadow: 0 6px 22px #0002; font-size: 16px; font-weight: 700; pointer-events: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .reorder-placeholder { border: 1px dashed #bbb; border-radius: 16px; background: rgba(0,0,0,.025); margin-bottom: 12px; }
+  .compact-drag-preview { box-sizing: border-box; position: fixed; top: 0; left: 0; z-index: 1000; max-width: min(260px,calc(100vw - 16px)); padding: 12px 18px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--text); box-shadow: 0 6px 22px #0002; font-size: 16px; font-weight: 700; pointer-events: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
   #workout-content .workout-rest-control input[hidden] { display: none !important; }
 

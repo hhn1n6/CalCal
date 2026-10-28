@@ -1,5 +1,9 @@
 // Shared drag standard: compact follower, live placeholder, animated neighbours.
-export function setupCompactReorder(root,{items,handle,getLabel,onDrop,canDrag=()=>true}){
+export function dragPreviewPosition(x,y,width,height,viewport){
+  const gap=8,left=viewport.left||0,top=viewport.top||0;
+  return {x:Math.max(left+gap,Math.min(x-width/2,left+viewport.width-width-gap)),y:Math.max(top+gap,Math.min(y-height-16,top+viewport.height-height-gap))};
+}
+export function setupCompactReorder(root,{items,handle,getLabel,onDrop,canDrag=()=>true,getCompactHeight}){
   let drag=null,suppressClick=false;
   const rows=()=>[...root.querySelectorAll(items)];
   function clean(cancelled){
@@ -21,7 +25,9 @@ export function setupCompactReorder(root,{items,handle,getLabel,onDrop,canDrag=(
   }
   function place(){
     const d=drag;if(!d?.active)return;
-    d.ghost.style.transform=`translate(${d.x+12}px,${d.y-24}px)`;
+    const box=d.ghost.getBoundingClientRect(),viewport=globalThis.visualViewport;
+    const position=dragPreviewPosition(d.x,d.y,box.width||0,box.height,{left:viewport?.offsetLeft||0,top:viewport?.offsetTop||0,width:viewport?.width||globalThis.innerWidth||document.documentElement?.clientWidth||320,height:viewport?.height||globalThis.innerHeight||document.documentElement?.clientHeight||640});
+    d.ghost.style.transform=`translate(${position.x}px,${position.y}px)`;
     const remaining=rows().filter(el=>el!==d.row);
     const next=remaining.find(el=>d.y<el.getBoundingClientRect().top+el.getBoundingClientRect().height/2);
     if((next&&d.placeholder.nextElementSibling!==next)||(!next&&d.placeholder!==d.parent.lastElementChild))animateMove(()=>d.parent.insertBefore(d.placeholder,next||null));
@@ -46,8 +52,8 @@ export function setupCompactReorder(root,{items,handle,getLabel,onDrop,canDrag=(
     if(!d.active&&Math.hypot(d.x-d.startX,d.y-d.startY)<6)return;
     event.preventDefault();
     if(!d.active){
-      d.active=true;const rect=d.row.getBoundingClientRect();
-      d.placeholder=document.createElement('div');d.placeholder.className='reorder-placeholder';d.placeholder.style.height=rect.height+'px';
+      d.active=true;const rect=d.row.getBoundingClientRect(),compactHeight=getCompactHeight?.(d.row)||rect.height;
+      d.placeholder=document.createElement('div');d.placeholder.className='reorder-placeholder';d.placeholder.style.height=compactHeight+'px';
       d.row.before(d.placeholder);d.row.style.display='none';
       d.ghost=document.createElement('div');d.ghost.className='compact-drag-preview';d.ghost.textContent=getLabel(d.row);document.body.appendChild(d.ghost);d.frame=requestAnimationFrame(frame);
     }
