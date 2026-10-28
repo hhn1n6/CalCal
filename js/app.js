@@ -1,13 +1,13 @@
-import { createWorkoutFeature } from './workout.js?v=1.2.26';
-import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.2.26';
-import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.2.26';
-import { ageFromBirthday, currentProfileWeight } from './profile-utils.js?v=1.2.26';
-import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.2.26';
-import { createNumberWheel } from './number-wheel.js?v=1.2.26';
-import { createOnboardingTransition } from './onboarding-transition.js?v=1.2.26';
+import { createWorkoutFeature } from './workout.js?v=1.2.27';
+import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.2.27';
+import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.2.27';
+import { ageFromBirthday, currentProfileWeight } from './profile-utils.js?v=1.2.27';
+import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.2.27';
+import { createNumberWheel } from './number-wheel.js?v=1.2.27';
+import { createOnboardingTransition } from './onboarding-transition.js?v=1.2.27';
 import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.1.14';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
-import { setupPageSwipes } from './page-swipe.js?v=1.2.26';
+import { setupPageSwipes } from './page-swipe.js?v=1.2.27';
 
 // Shared feedback for all dark grey glass main action buttons.
 document.addEventListener('click',event=>{
@@ -382,7 +382,7 @@ function startRowDrag(event,id,isCategory){
   if((isCategory?state._savingLists:state._savingFoods)||event.button!==0||event.isPrimary===false)return;
   event.stopPropagation();
   const handle=event.currentTarget, row=handle.closest('.food-item-wrap');
-  const grid=row.parentElement, page=grid.closest(isCategory?'.modal':'.page');
+  const grid=row.parentElement, page=grid.closest(isCategory?'.bottom-sheet-body':'.page');
   const rows=Array.from(grid.querySelectorAll('.food-item-wrap'));
   const others=rows.filter(item=>item!==row), listId=state.activeListId;
   let y=event.clientY, active=false, target=rows.indexOf(row), frame;

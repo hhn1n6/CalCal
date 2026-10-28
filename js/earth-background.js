@@ -1,4 +1,4 @@
-import { tr } from './i18n.js?v=1.2.26';
+import { tr } from './i18n.js?v=1.2.27';
 // Static textures, with sunlight calculated locally. No continuous animation loop.
 const canvas=document.getElementById('earth-background');
 const home=document.getElementById('page-home');

@@ -736,3 +736,13 @@
       35% { transform: none; background: rgba(205,205,205,.8); }
     }
   }
+
+  /* Bottom-sheet headers stay fixed; only the body scrolls. */
+  .modal.bottom-sheet { display: flex; flex-direction: column; padding: 0; overflow: hidden; }
+  .bottom-sheet-header { position: relative; flex: 0 0 auto; padding: 18px 64px; min-height: 68px; border-bottom: 1px solid var(--border); background: var(--surface); }
+  .bottom-sheet-header .modal-title { margin: 0; font-size: 26px; line-height: 1.2; font-weight: 700; text-align: center; overflow-wrap: anywhere; }
+  .bottom-sheet-close { position: absolute; top: 12px; right: 12px; width: 44px; height: 44px; padding: 10px; justify-content: center; }
+  .bottom-sheet-close img { display: block; width: 24px; height: 24px; }
+  .bottom-sheet-body { flex: 1 1 auto; min-height: 0; padding: 24px; padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); overflow-y: auto; overscroll-behavior-y: contain; }
+  .diary-summary:has(#log-total-badge:empty) { display: none; }
+  .diary-summary { margin-bottom: 16px; }

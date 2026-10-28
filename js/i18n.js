@@ -1,5 +1,6 @@
 // Interface copy only. Food names and other account content are never translated.
 export const chinese = {
+  "Close":"關閉",
   "Finish":"完成",
   "Add workout":"新增訓練",
   "Delete workout":"刪除訓練",
