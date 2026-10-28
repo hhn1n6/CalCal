@@ -721,3 +721,18 @@
 
   .home-header .home-goals { justify-self: end; width: 44px; height: 44px; justify-content: center; padding: 10px; background: none; border: 0; box-shadow: none; }
   .home-header > div:first-child { justify-self: start; text-align: left; }
+
+  /* Main action buttons animate their glass surface, keeping the icon still. */
+  .btn-icon.main-action-button { position: relative; isolation: isolate; background: transparent; border: 0; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .main-action-button::before { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; border: 1px solid rgba(255,255,255,.65); background: rgba(135,135,135,.6); box-shadow: 0 3px 12px #0001, inset 0 1px 0 #ffffff80; -webkit-backdrop-filter: blur(20px) saturate(160%); backdrop-filter: blur(20px) saturate(160%); pointer-events: none; }
+  .main-action-button.main-action-pulse::before { animation: main-action-pulse 360ms ease-out; }
+  @keyframes main-action-pulse {
+    0%, 100% { transform: scale(1); background: rgba(135,135,135,.6); }
+    35% { transform: scale(1.18); background: rgba(205,205,205,.8); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    @keyframes main-action-pulse {
+      0%, 100% { transform: none; background: rgba(135,135,135,.6); }
+      35% { transform: none; background: rgba(205,205,205,.8); }
+    }
+  }
