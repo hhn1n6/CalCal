@@ -767,12 +767,12 @@
   .exercise-picker-category img { flex: 0 0 16px; transform: rotate(-90deg); }
   .exercise-picker-header-actions { position: absolute; top: 50%; right: 8px; transform: translateY(-50%); display: flex; }
   .exercise-picker-header-actions .btn-icon { width: 44px; height: 44px; padding: 10px; justify-content: center; }
-  .exercise-picker-search { display: flex; align-items: center; gap: 8px; padding: 12px 24px; flex-shrink: 0; border-bottom: 1px solid var(--border); }
+  .exercise-picker-search { display: flex; align-items: center; gap: 8px; padding: 12px 24px; flex-shrink: 0; border-bottom: 1px solid var(--border); overflow: hidden; }
   .exercise-picker-search input { flex: 1; min-width: 0; padding: 8px 0; border: 0; border-bottom: 1px solid var(--border); background: none; color: var(--text); font-size: 16px; }
   .exercise-picker-search .btn-icon { width: 44px; height: 44px; justify-content: center; }
   .exercise-picker-menu { padding: 12px 24px; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; max-height: 220px; overflow-y: auto; flex-shrink: 0; border-bottom: 1px solid var(--border); }
   .exercise-picker-menu button { padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); font: inherit; cursor: pointer; }
-  .exercise-picker-menu button[aria-pressed="true"] { border-color: #000; font-weight: 700; }
+  .exercise-picker-menu button[aria-pressed="true"] { border-color: #000; background: #000; color: #fff; font-weight: 700; }
   .exercise-picker-search[hidden], .exercise-picker-menu[hidden] { display: none; }
   .exercise-picker-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(130px,1fr)); gap: 12px; }
   .exercise-choice { display: flex; flex-direction: column; position: relative; min-width: 0; overflow: hidden; padding: 2px; background: var(--surface); border: 1px solid #ddd; border-radius: 12px; color: var(--text2); font: inherit; text-align: center; cursor: pointer; }
@@ -780,6 +780,7 @@
   .exercise-picture-placeholder { display: flex; align-items: center; justify-content: center; width: 100%; aspect-ratio: 4 / 5; background: var(--surface2); border-bottom: 1px solid var(--border); color: var(--text3); font-size: 12px; font-weight: 400; }
   .exercise-choice-name { display: block; padding: 12px 8px; width: 100%; font-size: 15px; line-height: 1.25; }
   .exercise-choice-check { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #000; color: #fff; }
+  .exercise-choice-check img { display: block; filter: invert(1); }
   .exercise-picker-custom { margin-top: 20px; }
   .exercise-picker-custom summary { margin-bottom: 16px; cursor: pointer; }
   .exercise-picker-footer { padding: 16px 24px calc(16px + env(safe-area-inset-bottom,0px)); border-top: 1px solid var(--border); flex-shrink: 0; background: var(--surface); }

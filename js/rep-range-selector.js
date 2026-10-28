@@ -1,4 +1,4 @@
-import {targetRepBounds,targetReps} from './workout-model.js?v=1.2.35';
+import {targetRepBounds,targetReps} from './workout-model.js?v=1.2.36';
 export function createRepRangeSelector(element,{tr,onApply}){
   if(!element)return {open(){},close(){}};
   const low=element.querySelector('#rep-range-min'),high=element.querySelector('#rep-range-max'),min=element.querySelector('#rep-input-min'),max=element.querySelector('#rep-input-max'),output=element.querySelector('#rep-range-value'),error=element.querySelector('#rep-range-error'),sliders=element.querySelector('.rep-range-sliders');
