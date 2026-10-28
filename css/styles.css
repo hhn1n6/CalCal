@@ -783,3 +783,6 @@
   .exercise-picker-custom { margin-top: 20px; }
   .exercise-picker-custom summary { margin-bottom: 16px; cursor: pointer; }
   .exercise-picker-footer { padding: 16px 24px calc(16px + env(safe-area-inset-bottom,0px)); border-top: 1px solid var(--border); flex-shrink: 0; background: var(--surface); }
+
+  /* Suppress browser tap overlays on all button controls. */
+  button, [role="button"], input[type="button"], input[type="submit"], input[type="reset"], summary { -webkit-tap-highlight-color: transparent; }
