@@ -27,7 +27,7 @@ export function createExercisePicker(element,{tr,onAdd,onCatalogChange=async()=>
     menu.innerHTML=['',...categories].map(name=>`<button type="button" data-picker-category="${esc(name)}" aria-pressed="${name===filter}">${esc(name?categoryText(name):tr('All categories'))}</button>`).join('');
     const query=search.value.trim().toLocaleLowerCase();
     const items=catalog.filter(item=>(!filter||item.category===filter)&&(!query||(item.name+' '+categoryText(item.category)).toLocaleLowerCase().includes(query)));
-    grid.innerHTML=items.map(item=>`<div class="exercise-choice-wrap"><button type="button" class="exercise-choice${selected.has(item.id)?' selected':''}" data-picker-id="${esc(item.id)}" aria-pressed="${selected.has(item.id)}"><span class="exercise-picture-placeholder" role="img" aria-label="${esc(tr('Exercise image placeholder'))}"><span>${esc(tr('Image'))}</span></span><span class="exercise-choice-name">${esc(item.name)}</span>${selected.has(item.id)?'<span class="exercise-choice-check" aria-hidden="true"><img src="./assets/icons/tick.svg?v=1.2.37" width="16" height="16" alt=""></span>':''}</button>${selected.has(item.id)?`<button type="button" class="btn-icon exercise-choice-more" data-picker-action="edit" data-picker-edit="${esc(item.id)}" aria-label="${esc(tr('Edit exercise')+' '+item.name)}"><img src="./assets/icons/more-vertical.svg?v=1.2.37" width="22" height="22" alt=""></button>`:''}</div>`).join('')+`<button type="button" class="exercise-choice exercise-custom-tile" data-picker-action="new-custom" aria-label="${esc(tr('Add custom exercise'))}"><img src="./assets/icons/add.svg?v=1.2.37" width="32" height="32" alt=""></button>`;
+    grid.innerHTML=items.map(item=>`<div class="exercise-choice-wrap"><button type="button" class="exercise-choice${selected.has(item.id)?' selected':''}" data-picker-id="${esc(item.id)}" aria-pressed="${selected.has(item.id)}"><span class="exercise-picture-placeholder" role="img" aria-label="${esc(tr('Exercise image placeholder'))}"><span>${esc(tr('Image'))}</span></span><span class="exercise-choice-name">${esc(item.name)}</span>${selected.has(item.id)?'<span class="exercise-choice-check" aria-hidden="true"><img src="./assets/icons/tick.svg?v=1.2.38" width="16" height="16" alt=""></span>':''}</button>${!selected.has(item.id)?`<button type="button" class="btn-icon exercise-choice-more" data-picker-action="edit" data-picker-edit="${esc(item.id)}" aria-label="${esc(tr('Edit exercise')+' '+item.name)}"><img src="./assets/icons/more-vertical.svg?v=1.2.38" width="22" height="22" alt=""></button>`:''}</div>`).join('')+`<button type="button" class="exercise-choice exercise-custom-tile" data-picker-action="new-custom" aria-label="${esc(tr('Add custom exercise'))}"><img src="./assets/icons/add.svg?v=1.2.38" width="32" height="32" alt=""></button>`;
     const customCategory=element.querySelector('[data-picker-custom-category]'),previous=customCategory.value;
     customCategory.innerHTML=categories.map(name=>`<option value="${esc(name)}">${esc(categoryText(name))}</option>`).join('');if(categories.includes(previous))customCategory.value=previous;
     add.textContent=tr('Add')+(selected.size?' ('+selected.size+')':'');
@@ -37,7 +37,7 @@ export function createExercisePicker(element,{tr,onAdd,onCatalogChange=async()=>
   function close(){if(saving)return;editorVisible(false);element.classList.remove('open');selected.clear();returnFocus?.focus?.({preventScroll:true});returnFocus=null;}
   function open(items){generation++;catalog=items.map(item=>({...item}));selected.clear();filter='';search.value='';searching=false;saving=false;editorVisible(false);showPanel(menu,false,false);showPanel(searchRow,false,false);error.textContent='';element.querySelector('[data-picker-action="categories"]').setAttribute('aria-expanded','false');element.querySelector('[data-picker-custom-name]').value='';returnFocus=document.activeElement;render();element.querySelector('.bottom-sheet-body').scrollTop=0;element.classList.add('open');}
   function openEditor(id=null){
-    const item=id?catalog.find(item=>item.id===id):null;if(id&&(!item||!selected.has(id)))return;
+    const item=id?catalog.find(item=>item.id===id):null;if(id&&(!item||selected.has(id)))return;
     editing=id;deleteRequested=false;editorError.textContent='';
     element.querySelector('[data-picker-editor-title]').textContent=tr(item?'Edit exercise':'Custom exercise');
     element.querySelector('[data-picker-custom-name]').value=item?.name||'';
@@ -71,16 +71,16 @@ export function createExercisePicker(element,{tr,onAdd,onCatalogChange=async()=>
     else if(action==='close-editor')editorVisible(false);
     else if(action==='delete-custom'){deleteRequested=true;element.querySelector('[data-picker-delete-confirm]').hidden=false;}
     else if(action==='cancel-delete'){deleteRequested=false;element.querySelector('[data-picker-delete-confirm]').hidden=true;}
-    else if(action==='confirm-delete'){if(!deleteRequested||!editing||!selected.has(editing))return;const id=editing;await saveCatalog(catalog.filter(item=>item.id!==id),()=>{selected.delete(id);if(!catalog.some(item=>item.category===filter))filter='';});}
+    else if(action==='confirm-delete'){if(!deleteRequested||!editing||selected.has(editing))return;const id=editing;await saveCatalog(catalog.filter(item=>item.id!==id),()=>{selected.delete(id);if(!catalog.some(item=>item.category===filter))filter='';});}
     else if(action==='categories'){const show=menu.hidden||menu.inert;showPanel(menu,show);target.setAttribute('aria-expanded',String(show));}
     else if(action==='search'){searching=!searching;if(!searching)search.value='';render();showPanel(searchRow,searching);if(searching)search.focus();}
     else if(action==='close-search'){searching=false;search.value='';render();showPanel(searchRow,false);element.querySelector('[data-picker-action="search"]').focus();}
     else if(action==='custom'){
       const name=element.querySelector('[data-picker-custom-name]').value.trim();
-      if(!editorOpen)return;
+      if(!editorOpen||(editing&&selected.has(editing)))return;
       if(!name||name.length>100){editorError.textContent=tr('Enter an exercise name.');return;}
       const existing=catalog.find(item=>item.id===editing),item={...existing,id:editing||'custom-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),name,category:element.querySelector('[data-picker-custom-category]').value||'Other'};
-      await saveCatalog(existing?catalog.map(entry=>entry.id===editing?item:entry):[...catalog,item],()=>{selected.add(item.id);filter=item.category;search.value='';});
+      await saveCatalog(existing?catalog.map(entry=>entry.id===editing?item:entry):[...catalog,item],()=>{if(!existing)selected.add(item.id);filter=item.category;search.value='';});
     }else if(action==='add'){
       if(!selected.size)return;const ticket=generation;error.textContent='';setSaving(true);
       try{const success=await onAdd(catalog.filter(item=>selected.has(item.id)));if(ticket!==generation)return;setSaving(false);if(success)close();else error.textContent=tr('Could not save workout. Try again.');}

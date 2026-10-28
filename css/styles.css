@@ -783,7 +783,7 @@
   .exercise-choice-check img { display: block; filter: invert(1); }
   .exercise-choice-wrap { position: relative; min-width: 0; display: flex; }
   .exercise-choice-wrap > .exercise-choice { width: 100%; }
-  .exercise-choice-more { position: absolute; top: 3px; right: 34px; width: 32px; height: 34px; display: flex; align-items: center; justify-content: center; padding: 5px; border-radius: 8px; background: #fff; }
+  .exercise-choice-more { position: absolute; top: 3px; right: 4px; width: 32px; height: 34px; display: flex; align-items: center; justify-content: center; padding: 5px; border-radius: 8px; background: #fff; }
   .exercise-custom-tile { min-height: 210px; align-items: center; justify-content: center; border: 2px dotted #aaa; background: transparent; }
   .exercise-editor-overlay { position: absolute; inset: 0; z-index: 2; display: flex; align-items: center; justify-content: center; padding: 24px; background: #0005; }
   .exercise-editor-overlay[hidden], [data-picker-delete-confirm][hidden], .exercise-editor-delete[hidden] { display: none; }
