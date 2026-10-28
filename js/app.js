@@ -1,13 +1,13 @@
-import { createWorkoutFeature } from './workout.js?v=1.2.30';
-import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.2.30';
-import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.2.30';
-import { ageFromBirthday, currentProfileWeight } from './profile-utils.js?v=1.2.30';
-import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.2.30';
-import { createNumberWheel } from './number-wheel.js?v=1.2.30';
-import { createOnboardingTransition } from './onboarding-transition.js?v=1.2.30';
+import { createWorkoutFeature } from './workout.js?v=1.2.31';
+import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.2.31';
+import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.2.31';
+import { ageFromBirthday, currentProfileWeight } from './profile-utils.js?v=1.2.31';
+import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.2.31';
+import { createNumberWheel } from './number-wheel.js?v=1.2.31';
+import { createOnboardingTransition } from './onboarding-transition.js?v=1.2.31';
 import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.1.14';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
-import { setupPageSwipes } from './page-swipe.js?v=1.2.30';
+import { setupPageSwipes } from './page-swipe.js?v=1.2.31';
 
 // Shared feedback for all dark grey glass main action buttons.
 document.addEventListener('click',event=>{
@@ -55,6 +55,11 @@ window.openWorkoutHistory=async()=>{
   await workoutFeature.open();
   if(accountReady)content.innerHTML=workoutFeature.historyHTML();
 };
+document.getElementById('workout-history-content').addEventListener('click',async event=>{
+  const button=event.target.closest('[data-history-delete]');if(!button||button.disabled)return;
+  button.disabled=true;await workoutFeature.removeHistory(button.dataset.historyDelete);
+  document.getElementById('workout-history-content').innerHTML=workoutFeature.historyHTML();
+});
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 
 const TODAY = () => {
@@ -782,7 +787,7 @@ window.switchPage=(name,btn,direction)=>{
   if(name==='home') renderHome();
   if(name==='lists') renderFoodLists();
   workoutFeature.setVisible(name==='workout');
-  if(name==='workout')workoutFeature.open(!direction,previousPage==='page-workout');
+  if(name==='workout')workoutFeature.open(!direction&&previousPage==='page-workout',previousPage==='page-workout');
   if(!direction){document.querySelectorAll('.modal-overlay.open').forEach(modal=>window.closeModal(modal.id));document.getElementById('page-'+name).scrollTop=0;}
   const page=document.getElementById('page-'+name);
   page.classList.remove('page-enter-left','page-enter-right');
@@ -805,7 +810,7 @@ window.openModal=id=>{
 };
 window.closeModal=id=>{if(id==='modal-language'&&languageSetupPending)return;document.getElementById(id).classList.remove('open');};
 document.querySelectorAll('.modal-overlay').forEach(o=>{
-  o.addEventListener('click',e=>{ if(e.target===o) window.closeModal(o.id); });
+  o.addEventListener('click',e=>{ if(e.target===o&&o.id!=='modal-exercise-picker') window.closeModal(o.id); });
 });
 
 // Preferences live under this user's account, independently of their food data.

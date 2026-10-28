@@ -747,3 +747,39 @@
   .bottom-sheet-body { flex: 1 1 auto; min-height: 0; padding: 24px; padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); overflow-y: auto; overscroll-behavior-y: contain; }
   .diary-summary:has(#log-total-badge:empty) { display: none; }
   .diary-summary { margin-bottom: 16px; }
+  /* Shared fade-line treatment inside workout blocks. */
+  :root { --fade-line-horizontal: linear-gradient(to right,transparent,var(--border) 25%,var(--border) 75%,transparent); --fade-line-vertical: linear-gradient(to bottom,transparent,var(--border) 25%,var(--border) 75%,transparent); }
+  .workout-exercise-options::after { background: var(--fade-line-vertical); }
+  .workout-set-row + .workout-set-row::before { background: var(--fade-line-horizontal); }
+  .tracker-rest-separator { background: var(--fade-line-horizontal); }
+  .workout-exercise-body { box-sizing: border-box; }
+  .workout-set-row.current { border-radius: 8px; box-shadow: inset 0 0 0 1px #ddd; background: rgba(0,0,0,.025); }
+  .workout-set-row.current > button:first-child { font-weight: 400; }
+  .workout-card-drag { touch-action: none; cursor: grab; user-select: none; font-size: 20px; flex: 0 0 36px; justify-content: center; min-height: 44px; }
+  .workout-history-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .workout-history-heading .btn-icon { flex-shrink: 0; width: 44px; height: 44px; justify-content: center; }
+
+  /* Multi-select exercise library bottom sheet. */
+  .exercise-picker-sheet { height: min(760px,90dvh); }
+  .exercise-picker-sheet .bottom-sheet-header { padding-left: 100px; padding-right: 100px; }
+  .exercise-picker-category { display: flex; align-items: center; justify-content: center; gap: 6px; min-width: 0; max-width: 100%; background: none; border: 0; color: var(--text); cursor: pointer; }
+  .exercise-picker-category-label { min-width: 0; }
+  .exercise-picker-category img { flex: 0 0 16px; transform: rotate(-90deg); }
+  .exercise-picker-header-actions { position: absolute; top: 50%; right: 8px; transform: translateY(-50%); display: flex; }
+  .exercise-picker-header-actions .btn-icon { width: 44px; height: 44px; padding: 10px; justify-content: center; }
+  .exercise-picker-search { display: flex; align-items: center; gap: 8px; padding: 12px 24px; flex-shrink: 0; border-bottom: 1px solid var(--border); }
+  .exercise-picker-search input { flex: 1; min-width: 0; padding: 8px 0; border: 0; border-bottom: 1px solid var(--border); background: none; color: var(--text); font-size: 16px; }
+  .exercise-picker-search .btn-icon { width: 44px; height: 44px; justify-content: center; }
+  .exercise-picker-menu { padding: 12px 24px; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; max-height: 220px; overflow-y: auto; flex-shrink: 0; border-bottom: 1px solid var(--border); }
+  .exercise-picker-menu button { padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); font: inherit; cursor: pointer; }
+  .exercise-picker-menu button[aria-pressed="true"] { border-color: #000; font-weight: 700; }
+  .exercise-picker-search[hidden], .exercise-picker-menu[hidden] { display: none; }
+  .exercise-picker-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(130px,1fr)); gap: 12px; }
+  .exercise-choice { display: flex; flex-direction: column; position: relative; min-width: 0; overflow: hidden; padding: 2px; background: var(--surface); border: 1px solid #ddd; border-radius: 12px; color: var(--text2); font: inherit; text-align: center; cursor: pointer; }
+  .exercise-choice.selected { padding: 0; border: 3px solid #000; color: #000; font-weight: 700; }
+  .exercise-picture-placeholder { display: flex; align-items: center; justify-content: center; width: 100%; aspect-ratio: 4 / 5; background: var(--surface2); border-bottom: 1px solid var(--border); color: var(--text3); font-size: 12px; font-weight: 400; }
+  .exercise-choice-name { display: block; padding: 12px 8px; width: 100%; font-size: 15px; line-height: 1.25; }
+  .exercise-choice-check { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #000; color: #fff; }
+  .exercise-picker-custom { margin-top: 20px; }
+  .exercise-picker-custom summary { margin-bottom: 16px; cursor: pointer; }
+  .exercise-picker-footer { padding: 16px 24px calc(16px + env(safe-area-inset-bottom,0px)); border-top: 1px solid var(--border); flex-shrink: 0; background: var(--surface); }
