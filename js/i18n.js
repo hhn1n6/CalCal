@@ -1,5 +1,10 @@
 // Interface copy only. Food names and other account content are never translated.
 export const chinese = {
+  "Finish":"完成",
+  "Add workout":"新增訓練",
+  "Delete workout":"刪除訓練",
+  "Delete this workout?":"刪除這個訓練？",
+  "Delete this workout and end its current session?":"刪除這個訓練並結束目前的訓練紀錄？",
   "Finish this workout?":"結束這次訓練？",
   "The current exercise cannot be deleted.":"無法刪除目前組數所屬的動作。",
   "Unnamed workout":"未命名訓練",

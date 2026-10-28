@@ -705,3 +705,16 @@
   .workout-tracker.tracker-ready { background: #000; border-color: #000; box-shadow: 0 8px 28px rgba(0,0,0,.12); }
   .workout-tracker.tracker-ready .workout-start img { filter: invert(1); }
   .tracker-play-fill { position: absolute; z-index: 2; width: 36px; height: 36px; left: calc(50% - 18px); bottom: 24px; filter: invert(1); transform-origin: center; pointer-events: none; }
+
+  /* Shared circular header actions. */
+  .btn-icon.glass-circle { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 44px; width: 44px; height: 44px; padding: 10px; border-radius: 50%; border: 1px solid rgba(255,255,255,.65); background: rgba(135,135,135,.6); box-shadow: 0 3px 12px #0001, inset 0 1px 0 #ffffff80; -webkit-backdrop-filter: blur(20px) saturate(160%); backdrop-filter: blur(20px) saturate(160%); }
+  .glass-circle img { display: block; object-fit: contain; filter: none; }
+  #page-workout > .page-header { justify-content: flex-end; }
+  .workout-detail-header { gap: 10px; flex-wrap: wrap; }
+  .workout-name-row { display: flex; align-items: center; gap: 10px; flex: 1 1 180px; min-width: 0; }
+  .workout-detail-actions { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+  .workout-detail-actions .btn-icon { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 44px; padding: 7px; flex-shrink: 0; }
+  .workout-detail-actions img { display: block; filter: none; }
+  .workout-picker[hidden], .workout-tracker[hidden] { display: none !important; }
+  .tracker-finish-confirm .tracker-controls { gap: 10px; }
+  .tracker-finish-confirm [data-action="confirm-finish"] { background: #000; color: #fff; }

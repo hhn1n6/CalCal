@@ -1,13 +1,13 @@
-import { createWorkoutFeature } from './workout.js?v=1.2.17';
-import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.2.17';
-import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.2.17';
-import { ageFromBirthday, currentProfileWeight } from './profile-utils.js?v=1.2.17';
-import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.2.17';
-import { createNumberWheel } from './number-wheel.js?v=1.2.17';
-import { createOnboardingTransition } from './onboarding-transition.js?v=1.2.17';
+import { createWorkoutFeature } from './workout.js?v=1.2.18';
+import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.2.18';
+import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.2.18';
+import { ageFromBirthday, currentProfileWeight } from './profile-utils.js?v=1.2.18';
+import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.2.18';
+import { createNumberWheel } from './number-wheel.js?v=1.2.18';
+import { createOnboardingTransition } from './onboarding-transition.js?v=1.2.18';
 import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.1.14';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
-import { setupPageSwipes } from './page-swipe.js?v=1.2.17';
+import { setupPageSwipes } from './page-swipe.js?v=1.2.18';
 
 // ── STATE ────────────────────────────────────────────────
 let state = {
@@ -770,7 +770,8 @@ window.switchPage=(name,btn,direction)=>{
   if(name==='home') renderHome();
   if(name==='lists') renderFoodLists();
   workoutFeature.setVisible(name==='workout');
-  if(name==='workout')workoutFeature.open();
+  if(name==='workout')workoutFeature.open(!direction);
+  if(!direction){document.querySelectorAll('.modal-overlay.open').forEach(modal=>window.closeModal(modal.id));document.getElementById('page-'+name).scrollTop=0;}
   const page=document.getElementById('page-'+name);
   page.classList.remove('page-enter-left','page-enter-right');
   if(direction&&previousPage!==page.id){

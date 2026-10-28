@@ -1,8 +1,8 @@
-import {createRepRangeSelector} from './rep-range-selector.js?v=1.2.17';
-import {copy,uid,newSet,exerciseInstance,positions,locate,createSession,nextPosition,startSession,completeSet,advanceRest,extendRest,selectSet,validateWorkout,optionalNumber,targetReps,trackerRepDefault} from './workout-model.js?v=1.2.17';
-import {defaultExercises} from './workout-catalog.js?v=1.2.17';
-import {setupCompactReorder} from './compact-reorder.js?v=1.2.17';
-import {mountRestWheel} from './workout-rest-wheel.js?v=1.2.17';
+import {createRepRangeSelector} from './rep-range-selector.js?v=1.2.18';
+import {copy,uid,newSet,exerciseInstance,positions,locate,createSession,nextPosition,startSession,completeSet,advanceRest,extendRest,selectSet,validateWorkout,optionalNumber,targetReps,trackerRepDefault} from './workout-model.js?v=1.2.18';
+import {defaultExercises} from './workout-catalog.js?v=1.2.18';
+import {setupCompactReorder} from './compact-reorder.js?v=1.2.18';
+import {mountRestWheel} from './workout-rest-wheel.js?v=1.2.18';
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const time=seconds=>{seconds=Math.max(0,Math.floor(seconds));return String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');};
 export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> 'en-GB'}){
@@ -38,10 +38,10 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
   }
   async function flushEdits(){let pending;do{pending=editTail;await pending;}while(pending!==editTail);return !editFailure;}
   function reset(){finishRequested=false;editTail=Promise.resolve();editFailure=null;newWorkoutId=null;repsPicker?.close();reorder?.cancel();root.getAnimations?.().forEach(animation=>animation.cancel());transitioning=false;expanded.clear();pickerOpen=false;lastCurrent=null;lastView='library';root.closest('.page')?.classList?.remove?.('workout-detail');epoch++;if(timer)clearInterval(timer);timer=null;owner=null;loaded=false;loading=false;busy=false;visible=false;view='library';pendingCreate=false;templates=[];catalog=[];bests={};session=null;draft=null;history=[];error='';dirty=false;root.innerHTML='';tracker.innerHTML='';tracker.hidden=true;}
-  async function open(){
+  async function open(main=false){
     if(!getUid())return;
     visible=true;
-    if(loaded&&owner===getUid()){render();return;}
+    if(loaded&&owner===getUid()){if(main){if(!await flushEdits())return;await navigate('library',()=>{finishRequested=false;if(session&&!session.startedAt)session=null;newWorkoutId=null;error='';});}else render();return;}
     if(loading)return;
     owner=getUid();loading=true;error='';render();const generation=epoch;
     try{
@@ -50,7 +50,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
       templates=list.filter(item=>!item.archived);catalog=custom?.exercises||copy(defaultExercises);bests=Object.fromEntries(records.map(item=>[item.id,item]));session=active?.session?.startedAt?active.session:null;history=logs.sort((a,b)=>b.endedAt-a.endedAt);
       if(!custom)await commit([{path:path('settings','workoutCatalog'),value:{exercises:catalog}}]);
       if(generation!==epoch)return;
-      loaded=true;view=session?'session':'library';lastSaved=Date.now();timer=setInterval(tick,1000);
+      loaded=true;view=main?'library':session?'session':'library';lastSaved=Date.now();timer=setInterval(tick,1000);
     }catch(err){if(generation===epoch)error=tr('Could not load workouts. Try again.');}
     finally{if(generation===epoch){loading=false;if(loaded&&pendingCreate){pendingCreate=false;create();}else render();}}
   }
@@ -98,23 +98,25 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
     if(!loaded){root.innerHTML=`<p role="alert">${escape(error)}</p>${button('reload','Try again')}`;tracker.hidden=true;return;}
     const alert=error?`<p class="workout-error" role="alert">${escape(error)}</p>${editFailure?button('retry-edits','Try again'):''}`:'';
     if(view==='library'){
-      root.innerHTML=alert+(session?.startedAt?`<div class="card workout-resume"><strong>${escape(workoutName(session.workout))}</strong><button type="button" class="btn-icon workout-resume-icon" data-action="resume" aria-label="${escape(tr('Resume workout'))}" title="${escape(tr('Resume workout'))}"><img src="./assets/icons/resume.svg?v=1.2.17" width="24" height="24" alt=""></button></div>`:'')+(templates.length?templates.map(workout=>`<div class="card workout-card"><button type="button" class="workout-open" data-action="open" data-id="${escape(workout.id)}"><strong>${escape(workoutName(workout))}</strong><span>${workout.exercises.length} ${escape(tr('exercises'))}${averageTime(workout)?' · '+escape(tr('Average time'))+': '+averageTime(workout):''}</span></button></div>`).join(''):`<div class="empty">${escape(tr('No workouts yet. Tap + to create one.'))}</div>`);
+      root.innerHTML=alert+(session?.startedAt?`<div class="card workout-resume"><strong>${escape(workoutName(session.workout))}</strong><button type="button" class="btn-icon workout-resume-icon" data-action="resume" aria-label="${escape(tr('Resume workout'))}" title="${escape(tr('Resume workout'))}"><img src="./assets/icons/resume.svg?v=1.2.18" width="24" height="24" alt=""></button></div>`:'')+(templates.length?templates.map(workout=>`<div class="card workout-card"><button type="button" class="workout-open" data-action="open" data-id="${escape(workout.id)}"><strong>${escape(workoutName(workout))}</strong><span>${workout.exercises.length} ${escape(tr('exercises'))}${averageTime(workout)?' · '+escape(tr('Average time'))+': '+averageTime(workout):''}</span></button></div>`).join(''):`<div class="empty">${escape(tr('No workouts yet. Tap + to create one.'))}</div>`);
     }else{
       const workout=currentWorkout(),running=view==='session';
-      root.innerHTML=`<div class="workout-detail-header"><input id="workout-name" class="workout-name-input${workout.name.trim()?' named':''}" type="text" maxlength="100" data-field="name" value="${escape(workout.name)}" placeholder="${escape(tr('Workout Name'))}" aria-label="${escape(tr('Workout name'))}"><button type="button" class="btn-icon workout-quit" data-action="library" aria-label="${escape(tr('Back to workouts'))}"><img src="./assets/icons/quit.svg?v=1.2.17" width="24" height="28" alt=""></button></div>`+alert+`<div class="workout-exercise-list">${workout.exercises.map(ex=>exerciseCard(ex,running)).join('')}</div>`+picker();
+      const canStart=!(session?.startedAt);
+      root.innerHTML=`<div class="workout-detail-header"><div class="workout-name-row"><input id="workout-name" class="workout-name-input${workout.name.trim()?' named':''}" type="text" maxlength="100" data-field="name" value="${escape(workout.name)}" placeholder="${escape(tr('Workout Name'))}" aria-label="${escape(tr('Workout name'))}"><button type="button" class="btn-icon glass-circle workout-quit" data-action="library" aria-label="${escape(tr('Back to workouts'))}"><img src="./assets/icons/chevron-left.svg?v=1.2.18" width="24" height="24" alt=""></button></div><div class="workout-detail-actions"><button type="button" class="btn-icon" data-action="toggle-picker" aria-label="${escape(tr('Add exercise'))}" aria-expanded="${pickerOpen}"><img src="./assets/icons/add.svg?v=1.2.18" width="26" height="26" alt=""></button>${canStart?`<button type="button" class="btn-icon workout-header-play" data-action="start" aria-label="${escape(tr('Start workout'))}"><img src="./assets/icons/play.svg?v=1.2.18" width="26" height="26" alt=""></button>`:''}<button type="button" class="btn-icon" data-action="delete-workout" aria-label="${escape(tr('Delete workout'))}"><img src="./assets/icons/delete.svg?v=1.2.18" width="24" height="24" alt=""></button></div></div>`+alert+picker()+`<div class="workout-exercise-list">${workout.exercises.map(ex=>exerciseCard(ex,running)).join('')}</div>`;
+
       for(const input of root.querySelectorAll('[data-field="rest"]')){const viewport=input.parentElement.querySelector('.workout-rest-wheel');if(viewport)mountRestWheel(input,viewport);}
     }
-    tracker.hidden=!visible||view!=='session'||!session;
-    if(!tracker.hidden)renderTracker();else tracker.innerHTML='';
+    const reveal=tracker.hidden;tracker.hidden=!visible||view!=='session'||!session?.startedAt;
+    if(!tracker.hidden){renderTracker();if(reveal&&!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches)tracker.animate?.([{opacity:0},{opacity:1}],{duration:300});}else tracker.innerHTML='';
     root.classList.toggle('workout-has-tracker',!tracker.hidden);
     if(oldScroll!==undefined&&root.closest('.page'))root.closest('.page').scrollTop=oldScroll;
     disable(busy);
   }
   function exerciseCard(ex,running){
     const isOpen=expanded.has(ex.id),locked=!!(running&&session.startedAt&&session.current?.exerciseId===ex.id);
-    return `<section class="card workout-exercise" data-reorder-id="${ex.id}"><div class="workout-exercise-heading"><button type="button" class="workout-exercise-name" data-action="toggle-exercise" data-id="${ex.id}" aria-expanded="${isOpen}">${escape(ex.name)}</button><button type="button" class="btn-icon workout-drag" aria-label="${escape(tr('Reorder'))} ${escape(ex.name)}">☰</button><button type="button" class="btn-icon" data-action="remove-exercise" data-id="${ex.id}" data-workout-locked="${locked}" ${locked?'disabled':''} title="${escape(tr(locked?'The current exercise cannot be deleted.':'Remove exercise'))}" aria-label="${escape(tr('Remove exercise'))}"><img src="./assets/icons/cross.svg?v=1.2.17" width="18" height="18" alt=""></button></div><div class="workout-exercise-body" ${isOpen?'':'hidden'}><div class="workout-exercise-options"><label class="workout-set-count"><input type="number" inputmode="decimal" min="1" max="50" step="1" data-field="count" data-ex="${ex.id}" value="${ex.sets.length}" aria-label="${escape(tr('Sets'))}"><span>${escape(tr('sets'))}</span></label><div class="workout-rest-setting"><span>${escape(tr('Rest'))}:</span><div class="workout-rest-control"><input hidden type="number" inputmode="decimal" min="0" max="3600" step="1" data-field="rest" data-ex="${ex.id}" value="${ex.restSeconds}" aria-label="${escape(tr('Rest (seconds)'))}"><div class="workout-rest-wheel" role="spinbutton" tabindex="0" aria-label="${escape(tr('Rest (seconds)'))}" aria-valuemin="0" aria-valuemax="3600"></div></div><span>s</span></div></div><div class="workout-set-head"><span>${escape(tr('Set'))}</span><span>${escape(tr('Target kg'))}</span><span>${escape(tr('Target reps'))}</span><span></span></div><div data-set-list="${ex.id}">${setRows(ex,running)}</div><button type="button" class="btn-icon workout-add-set" data-action="add-set" data-ex="${ex.id}" aria-label="${escape(tr('Add set'))}">+</button></div></section>`;
+    return `<section class="card workout-exercise" data-reorder-id="${ex.id}"><div class="workout-exercise-heading"><button type="button" class="workout-exercise-name" data-action="toggle-exercise" data-id="${ex.id}" aria-expanded="${isOpen}">${escape(ex.name)}</button><button type="button" class="btn-icon workout-drag" aria-label="${escape(tr('Reorder'))} ${escape(ex.name)}">☰</button><button type="button" class="btn-icon" data-action="remove-exercise" data-id="${ex.id}" data-workout-locked="${locked}" ${locked?'disabled':''} title="${escape(tr(locked?'The current exercise cannot be deleted.':'Remove exercise'))}" aria-label="${escape(tr('Remove exercise'))}"><img src="./assets/icons/cross.svg?v=1.2.18" width="18" height="18" alt=""></button></div><div class="workout-exercise-body" ${isOpen?'':'hidden'}><div class="workout-exercise-options"><label class="workout-set-count"><input type="number" inputmode="decimal" min="1" max="50" step="1" data-field="count" data-ex="${ex.id}" value="${ex.sets.length}" aria-label="${escape(tr('Sets'))}"><span>${escape(tr('sets'))}</span></label><div class="workout-rest-setting"><span>${escape(tr('Rest'))}:</span><div class="workout-rest-control"><input hidden type="number" inputmode="decimal" min="0" max="3600" step="1" data-field="rest" data-ex="${ex.id}" value="${ex.restSeconds}" aria-label="${escape(tr('Rest (seconds)'))}"><div class="workout-rest-wheel" role="spinbutton" tabindex="0" aria-label="${escape(tr('Rest (seconds)'))}" aria-valuemin="0" aria-valuemax="3600"></div></div><span>s</span></div></div><div class="workout-set-head"><span>${escape(tr('Set'))}</span><span>${escape(tr('Target kg'))}</span><span>${escape(tr('Target reps'))}</span><span></span></div><div data-set-list="${ex.id}">${setRows(ex,running)}</div><button type="button" class="btn-icon workout-add-set" data-action="add-set" data-ex="${ex.id}" aria-label="${escape(tr('Add set'))}">+</button></div></section>`;
   }
-  function setRows(ex,running){return ex.sets.map((set,index)=>{const result=running?session.results[set.id]:null,selected=running&&session.current?.setId===set.id;return `<div class="workout-set-row${selected?' current':''}${result?' completed':''}"><button type="button" data-action="jump" data-ex="${ex.id}" data-set="${set.id}" aria-label="${escape(tr('Select set'))} ${index+1}">${result?'✓':index+1}</button>${number(set.weight,'weight',`data-ex="${ex.id}" data-set="${set.id}" aria-label="${escape(ex.name+' '+tr('Set')+' '+(index+1)+' kg')}"`)}${targetRepInput(ex,set,index)}<button type="button" class="btn-icon" data-action="remove-set" data-ex="${ex.id}" data-set="${set.id}" aria-label="${escape(tr('Remove set'))} ${index+1}"><img src="./assets/icons/cross.svg?v=1.2.17" width="18" height="18" alt=""></button></div>`;}).join('');}
+  function setRows(ex,running){return ex.sets.map((set,index)=>{const result=running?session.results[set.id]:null,selected=running&&session.current?.setId===set.id;return `<div class="workout-set-row${selected?' current':''}${result?' completed':''}"><button type="button" data-action="jump" data-ex="${ex.id}" data-set="${set.id}" aria-label="${escape(tr('Select set'))} ${index+1}">${result?'✓':index+1}</button>${number(set.weight,'weight',`data-ex="${ex.id}" data-set="${set.id}" aria-label="${escape(ex.name+' '+tr('Set')+' '+(index+1)+' kg')}"`)}${targetRepInput(ex,set,index)}<button type="button" class="btn-icon" data-action="remove-set" data-ex="${ex.id}" data-set="${set.id}" aria-label="${escape(tr('Remove set'))} ${index+1}"><img src="./assets/icons/cross.svg?v=1.2.18" width="18" height="18" alt=""></button></div>`;}).join('');}
   function targetRepInput(ex,set,index){return `<input type="text" readonly inputmode="none" data-action="target-reps" data-field="reps" data-ex="${ex.id}" data-set="${set.id}" value="${escape(set.reps??'')}" aria-label="${escape(ex.name+' '+tr('Set')+' '+(index+1)+' '+tr('Target reps'))}" aria-haspopup="dialog">`;}
   function historyHTML(){
     if(!loaded)return '<div class="empty">'+escape(error||tr('Loading workouts…'))+'</div>';
@@ -127,7 +129,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
   }
   function picker(){
     const categories=[...new Set(catalog.map(ex=>ex.category))];
-    return `<div class="card workout-picker"><button type="button" class="btn-icon workout-picker-toggle" data-action="toggle-picker" aria-label="${escape(tr('Add exercise'))}" aria-expanded="${pickerOpen}">${pickerOpen?'−':'+'}</button><div ${pickerOpen?'':'hidden'}><div class="workout-picker-toolbar"><div class="workout-category-select"><select id="workout-category" aria-label="${escape(tr('Category'))}"><option value="">${escape(tr('All categories'))}</option>${categories.map(c=>`<option value="${escape(c)}">${escape(categoryText(c))}</option>`).join('')}</select><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div><input id="workout-search" type="search" placeholder="${escape(tr('Search exercises'))}" aria-label="${escape(tr('Search exercises'))}"></div><div id="workout-exercise-options">${catalogButtons(catalog)}</div><details><summary>${escape(tr('Custom exercise'))}</summary><label>${escape(tr('Exercise name'))}<input id="workout-custom-name" type="text" maxlength="100"></label><label>${escape(tr('Category'))}<select id="workout-custom-category">${categories.map(c=>`<option value="${escape(c)}">${escape(categoryText(c))}</option>`).join('')}</select></label>${button('custom','Add custom exercise')}</details></div></div>`;
+    return `<div class="card workout-picker" ${pickerOpen?'':'hidden'}><div><div class="workout-picker-toolbar"><div class="workout-category-select"><select id="workout-category" aria-label="${escape(tr('Category'))}"><option value="">${escape(tr('All categories'))}</option>${categories.map(c=>`<option value="${escape(c)}">${escape(categoryText(c))}</option>`).join('')}</select><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div><input id="workout-search" type="search" placeholder="${escape(tr('Search exercises'))}" aria-label="${escape(tr('Search exercises'))}"></div><div id="workout-exercise-options">${catalogButtons(catalog)}</div><details><summary>${escape(tr('Custom exercise'))}</summary><label>${escape(tr('Exercise name'))}<input id="workout-custom-name" type="text" maxlength="100"></label><label>${escape(tr('Category'))}<select id="workout-custom-category">${categories.map(c=>`<option value="${escape(c)}">${escape(categoryText(c))}</option>`).join('')}</select></label>${button('custom','Add custom exercise')}</details></div></div>`;
 
   }
   function catalogButtons(items){return items.map(ex=>`<button type="button" data-action="add-exercise" data-id="${escape(ex.id)}">${escape(ex.name)} <small>${escape(categoryText(ex.category))}</small></button>`).join('')||`<p>${escape(tr('No exercises found.'))}</p>`;}
@@ -142,11 +144,11 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
     const elapsed=session.startedAt?time((Date.now()-session.startedAt)/1000):'';
     let content='';
     if(ready){
-      content=`<div class="tracker-controls"><button type="button" class="workout-start" data-action="start" aria-label="${escape(tr('Start workout'))}" title="${escape(tr('Start workout'))}"><img src="./assets/icons/play.svg?v=1.2.17" width="36" height="36" alt=""></button></div>`;
+      content=`<div class="tracker-controls"><button type="button" class="workout-start" data-action="start" aria-label="${escape(tr('Start workout'))}" title="${escape(tr('Start workout'))}"><img src="./assets/icons/play.svg?v=1.2.18" width="36" height="36" alt=""></button></div>`;
     }else{
       content=`<div class="tracker-display"><div class="tracker-active-header"><div class="tracker-exercise"><strong>${escape(session.phase==='rest'?tr('Rest'):ex?.name||tr('All sets completed'))}</strong></div><span id="workout-elapsed">${elapsed}</span></div>`;
       if(session.phase==='rest'){
-        content+=`<div class="tracker-rest-body"><div class="workout-rest-circle"><svg viewBox="0 0 90 90"><circle cx="45" cy="45" r="38" class="rest-track"/><circle id="workout-rest-progress" cx="45" cy="45" r="38" class="rest-progress"/></svg><span id="workout-rest-time"></span></div><div class="tracker-rest-add"><button type="button" class="btn-icon" data-action="rest30" aria-label="${escape(tr('+30 sec'))}" title="${escape(tr('+30 sec'))}"><img src="./assets/icons/plus-30sec.svg?v=1.2.17" width="46" height="46" alt=""></button><span class="tracker-rest-separator" aria-hidden="true"></span><button type="button" class="btn-icon" data-action="rest60" aria-label="${escape(tr('+1 min'))}" title="${escape(tr('+1 min'))}"><img src="./assets/icons/plus-1min.svg?v=1.2.17" width="46" height="46" alt=""></button></div></div>`;
+        content+=`<div class="tracker-rest-body"><div class="workout-rest-circle"><svg viewBox="0 0 90 90"><circle cx="45" cy="45" r="38" class="rest-track"/><circle id="workout-rest-progress" cx="45" cy="45" r="38" class="rest-progress"/></svg><span id="workout-rest-time"></span></div><div class="tracker-rest-add"><button type="button" class="btn-icon" data-action="rest30" aria-label="${escape(tr('+30 sec'))}" title="${escape(tr('+30 sec'))}"><img src="./assets/icons/plus-30sec.svg?v=1.2.18" width="46" height="46" alt=""></button><span class="tracker-rest-separator" aria-hidden="true"></span><button type="button" class="btn-icon" data-action="rest60" aria-label="${escape(tr('+1 min'))}" title="${escape(tr('+1 min'))}"><img src="./assets/icons/plus-1min.svg?v=1.2.18" width="46" height="46" alt=""></button></div></div>`;
       }else if(current){
         const actual=session.results[set.id]||{weight:set.weight,reps:trackerRepDefault(set.reps)};
         const weight=session.pending?.setId===set.id?session.pending.weight:actual.weight,reps=session.pending?.setId===set.id?session.pending.reps:actual.reps;
@@ -154,9 +156,9 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
 
       }
       const nextAction=session.phase==='rest'?'skip':'complete',nextLabel=session.phase==='rest'?'Skip rest':'Complete set',done=session.phase==='complete';
-      content+=`</div><div class="tracker-controls tracker-actions"><button type="button" class="btn-icon tracker-action" data-action="finish" aria-label="${escape(tr('Finish workout'))}" title="${escape(tr('Finish workout'))}"><img src="./assets/icons/cross.svg?v=1.2.17" width="46" height="46" alt=""></button><button type="button" class="btn-icon tracker-action" data-action="${nextAction}" ${done?'disabled data-workout-locked="true"':''} aria-label="${escape(tr(nextLabel))}" title="${escape(tr(nextLabel))}"><img src="./assets/icons/arrow-right.svg?v=1.2.17" width="46" height="46" alt=""></button></div>`;
+      content+=`</div><div class="tracker-controls tracker-actions"><button type="button" class="btn-icon tracker-action" data-action="finish" aria-label="${escape(tr('Finish workout'))}" title="${escape(tr('Finish workout'))}"><img src="./assets/icons/cross.svg?v=1.2.18" width="46" height="46" alt=""></button><button type="button" class="btn-icon tracker-action" data-action="${nextAction}" ${done?'disabled data-workout-locked="true"':''} aria-label="${escape(tr(nextLabel))}" title="${escape(tr(nextLabel))}"><img src="./assets/icons/arrow-right.svg?v=1.2.18" width="46" height="46" alt=""></button></div>`;
     }
-    if(finishRequested)content=`<div class="tracker-finish-confirm" role="alertdialog" aria-labelledby="tracker-finish-question"><div class="tracker-display"><p id="tracker-finish-question">${escape(tr('Finish this workout?'))}</p></div><div class="tracker-controls btn-row">${button('cancel-finish','Cancel')}${button('confirm-finish','Finish workout')}</div></div>`;
+    if(finishRequested)content=`<div class="tracker-finish-confirm" role="alertdialog" aria-labelledby="tracker-finish-question"><div class="tracker-display"><p id="tracker-finish-question">${escape(tr('Finish this workout?'))}</p></div><div class="tracker-controls btn-row"><button type="button" class="btn btn-secondary btn-full" data-action="cancel-finish">${escape(tr('Cancel'))}</button><button type="button" class="btn btn-primary btn-full" data-action="confirm-finish">${escape(tr('Finish'))}</button></div></div>`;
     tracker.classList.toggle('tracker-ready',ready);
     tracker.innerHTML=`<div class="tracker-panel">${error?`<p class="workout-error" role="alert">${escape(error)}</p>`:''}${content}</div>`;
     animateRestRing(priorRestOffset);tickText();
@@ -256,6 +258,17 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
     if(type==='target-reps'){const set=workout?.exercises.find(ex=>ex.id===target.dataset.ex)?.sets.find(item=>item.id===target.dataset.set);if(set)repsPicker.open(set.reps,{ex:target.dataset.ex,set:target.dataset.set,generation:epoch});return;}
     if(type==='toggle-exercise'){expanded.has(target.dataset.id)?expanded.delete(target.dataset.id):expanded.add(target.dataset.id);render();return;}
     if(type==='toggle-picker'){pickerOpen=!pickerOpen;render();return;}
+    if(type==='delete-workout'){
+      const active=session?.startedAt&&session.templateId===workout?.id;
+      if(!workout||!globalThis.confirm?.(tr(active?'Delete this workout and end its current session?':'Delete this workout?')))return;
+      await perform(async()=>{
+        const writes=[{path:path('workoutTemplates',workout.id),value:{...copy(workout),archived:true,updatedAt:Date.now()}}];
+        if(active)writes.push({path:path('settings','workoutActive'),value:{session:null,updatedAt:Date.now()}});
+        await commit(writes);templates=templates.filter(item=>item.id!==workout.id);
+        if(session?.templateId===workout.id)session=null;
+        draft=null;newWorkoutId=null;finishRequested=false;view='library';
+      });return;
+    }
     if(type==='reload'){loaded=false;await open();return;}
     if(type==='library'){if(!await flushEdits())return;await navigate('library',()=>{if(session&&!session.startedAt){session=null;dirty=false;}newWorkoutId=null;error='';});return;}
     if(type==='resume'){await navigate('session');return;}
@@ -278,7 +291,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
         const name=root.querySelector('#workout-custom-name').value.trim();if(!name)throw Error('Enter an exercise name.');
         const ex={id:uid(),name,category:root.querySelector('#workout-custom-category').value};catalog.push(ex);workout.exercises.push(exerciseInstance(ex));repairCurrent();
         await commit([{path:path('settings','workoutCatalog'),value:{exercises:catalog}},...(session?.startedAt?[sessionWrite()]:[])]);saveEdit();
-      }else if(type==='start'){validateWorkout(session.workout);startSession(session);session.pending=null;await saveSession();}
+      }else if(type==='start'){if(view==='editor'){if(session?.startedAt)throw Error('Finish the current workout first.');session=createSession(draft);view='session';}validateWorkout(session.workout);startSession(session);session.pending=null;await saveSession();}
       else if(type==='complete'){
         const current=locate(session),weight=tracker.querySelector('#workout-current-weight').value,reps=tracker.querySelector('#workout-current-reps').value;
         const record=completeSet(session,weight,reps,bests[current.exercise.exerciseId]);bests[record.exerciseId]=record.best;session.pending=null;
@@ -316,7 +329,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,locale=()=> '
   tracker.addEventListener('keydown',event=>{if(event.key==='Escape'&&finishRequested){event.preventDefault();finishRequested=false;renderTracker();}});
   document.addEventListener?.('visibilitychange',tick);
   function create(){if(busy)return;if(!loaded){pendingCreate=true;open();return;}if(session&&!session.startedAt){session=null;dirty=false;}return navigate('editor',()=>{draft={id:uid(),name:'',exercises:[],createdAt:Date.now()};newWorkoutId=draft.id;error='';});}
-  function setVisible(value){if(!value)finishRequested=false;visible=value;tracker.hidden=!value||view!=='session'||!session;}
+  function setVisible(value){if(!value)finishRequested=false;visible=value;tracker.hidden=!value||view!=='session'||!session?.startedAt;}
   if(typeof ResizeObserver!=='undefined')new ResizeObserver(()=>root.style.setProperty('--workout-tracker-height',tracker.getBoundingClientRect().height+'px')).observe(tracker);
   return {open,create,reset,refresh,setVisible,historyHTML,flushEdits};
 }
