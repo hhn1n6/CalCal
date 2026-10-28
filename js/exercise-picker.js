@@ -3,7 +3,7 @@ export function createExercisePicker(element,{tr,onAdd,onCatalogChange=async()=>
   if(!element)return {open(){},close(){},reset(){},refresh(){}};
   const grid=element.querySelector('.exercise-picker-grid'),category=element.querySelector('.exercise-picker-category-label'),menu=element.querySelector('.exercise-picker-menu'),searchRow=element.querySelector('.exercise-picker-search'),search=element.querySelector('input[type="search"]'),add=element.querySelector('[data-picker-action="add"]'),error=element.querySelector('[role="alert"]');
   let catalog=[],selected=new Set(),filter='',searching=false,saving=false,returnFocus=null,generation=0;
-  let editing=null,editorOpen=false,deleteRequested=false;
+  let editing=null,editorOpen=false,deleteRequested=false,moreId=null;
   const editor=element.querySelector('.exercise-editor-overlay'),editorError=element.querySelector('[data-picker-editor-error]');
   const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const categoryText=value=>value==='Back'?(tr('Back muscles')==='Back muscles'?'Back':tr('Back muscles')):tr(value);
@@ -27,24 +27,36 @@ export function createExercisePicker(element,{tr,onAdd,onCatalogChange=async()=>
     menu.innerHTML=['',...categories].map(name=>`<button type="button" data-picker-category="${esc(name)}" aria-pressed="${name===filter}">${esc(name?categoryText(name):tr('All categories'))}</button>`).join('');
     const query=search.value.trim().toLocaleLowerCase();
     const items=catalog.filter(item=>(!filter||item.category===filter)&&(!query||(item.name+' '+categoryText(item.category)).toLocaleLowerCase().includes(query)));
-    grid.innerHTML=items.map(item=>`<div class="exercise-choice-wrap"><button type="button" class="exercise-choice${selected.has(item.id)?' selected':''}" data-picker-id="${esc(item.id)}" aria-pressed="${selected.has(item.id)}"><span class="exercise-picture-placeholder" role="img" aria-label="${esc(tr('Exercise image placeholder'))}"><span>${esc(tr('Image'))}</span></span><span class="exercise-choice-name">${esc(item.name)}</span>${selected.has(item.id)?'<span class="exercise-choice-check" aria-hidden="true"><img src="./assets/icons/tick.svg?v=1.2.38" width="16" height="16" alt=""></span>':''}</button>${!selected.has(item.id)?`<button type="button" class="btn-icon exercise-choice-more" data-picker-action="edit" data-picker-edit="${esc(item.id)}" aria-label="${esc(tr('Edit exercise')+' '+item.name)}"><img src="./assets/icons/more-vertical.svg?v=1.2.38" width="22" height="22" alt=""></button>`:''}</div>`).join('')+`<button type="button" class="exercise-choice exercise-custom-tile" data-picker-action="new-custom" aria-label="${esc(tr('Add custom exercise'))}"><img src="./assets/icons/add.svg?v=1.2.38" width="32" height="32" alt=""></button>`;
+    grid.innerHTML=items.map(item=>`<div class="exercise-choice-wrap"><button type="button" class="exercise-choice${selected.has(item.id)?' selected':''}" data-picker-id="${esc(item.id)}" aria-pressed="${selected.has(item.id)}"><span class="exercise-picture-placeholder" role="img" aria-label="${esc(tr('Exercise image placeholder'))}"><span>${esc(tr('Image'))}</span></span><span class="exercise-choice-name">${esc(item.name)}</span>${selected.has(item.id)?'<span class="exercise-choice-check" aria-hidden="true"><img src="./assets/icons/tick.svg?v=1.2.39" width="16" height="16" alt=""></span>':''}</button>${!selected.has(item.id)?`<button type="button" class="btn-icon exercise-choice-more" data-picker-action="more" data-picker-edit="${esc(item.id)}" aria-label="${esc(tr('More options')+' '+item.name)}" aria-haspopup="menu" aria-expanded="${moreId===item.id}"><img src="./assets/icons/more-vertical.svg?v=1.2.39" width="22" height="22" alt=""></button>${moreId===item.id?`<div class="exercise-choice-menu" role="menu"><button type="button" role="menuitem" data-picker-action="edit" data-picker-edit="${esc(item.id)}">${esc(tr('Edit'))}</button><button type="button" role="menuitem" data-picker-action="delete-custom" data-picker-edit="${esc(item.id)}">${esc(tr('Delete'))}</button></div>`:''}`:''}</div>`).join('')+`<button type="button" class="exercise-choice exercise-custom-tile" data-picker-action="new-custom" aria-label="${esc(tr('Add custom exercise'))}"><img src="./assets/icons/add.svg?v=1.2.39" width="32" height="32" alt=""></button>`;
     const customCategory=element.querySelector('[data-picker-custom-category]'),previous=customCategory.value;
     customCategory.innerHTML=categories.map(name=>`<option value="${esc(name)}">${esc(categoryText(name))}</option>`).join('');if(categories.includes(previous))customCategory.value=previous;
     add.textContent=tr('Add')+(selected.size?' ('+selected.size+')':'');
     add.disabled=saving||!selected.size;
   }
   function editorVisible(show){editorOpen=show;editor.hidden=!show;if(show&&!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches)editor.animate?.([{opacity:0},{opacity:1}],{duration:220});element.querySelector('.exercise-picker-sheet').inert=show;}
-  function close(){if(saving)return;editorVisible(false);element.classList.remove('open');selected.clear();returnFocus?.focus?.({preventScroll:true});returnFocus=null;}
-  function open(items){generation++;catalog=items.map(item=>({...item}));selected.clear();filter='';search.value='';searching=false;saving=false;editorVisible(false);showPanel(menu,false,false);showPanel(searchRow,false,false);error.textContent='';element.querySelector('[data-picker-action="categories"]').setAttribute('aria-expanded','false');element.querySelector('[data-picker-custom-name]').value='';returnFocus=document.activeElement;render();element.querySelector('.bottom-sheet-body').scrollTop=0;element.classList.add('open');}
+  function close(){if(saving)return;moreId=null;editorVisible(false);element.classList.remove('open');selected.clear();returnFocus?.focus?.({preventScroll:true});returnFocus=null;}
+  function open(items){moreId=null;generation++;catalog=items.map(item=>({...item}));selected.clear();filter='';search.value='';searching=false;saving=false;editorVisible(false);showPanel(menu,false,false);showPanel(searchRow,false,false);error.textContent='';element.querySelector('[data-picker-action="categories"]').setAttribute('aria-expanded','false');element.querySelector('[data-picker-custom-name]').value='';returnFocus=document.activeElement;render();element.querySelector('.bottom-sheet-body').scrollTop=0;element.classList.add('open');}
   function openEditor(id=null){
     const item=id?catalog.find(item=>item.id===id):null;if(id&&(!item||selected.has(id)))return;
+    moreId=null;render();
     editing=id;deleteRequested=false;editorError.textContent='';
     element.querySelector('[data-picker-editor-title]').textContent=tr(item?'Edit exercise':'Custom exercise');
     element.querySelector('[data-picker-custom-name]').value=item?.name||'';
     element.querySelector('[data-picker-custom-category]').value=item?.category||filter||catalog[0]?.category||'Other';
-    element.querySelector('[data-picker-action="delete-custom"]').hidden=!item;
+    element.querySelector('[data-picker-editor-fields]').hidden=false;
+    element.querySelector('[data-picker-editor-actions]').hidden=false;
     element.querySelector('[data-picker-delete-confirm]').hidden=true;
     editorVisible(true);element.querySelector('[data-picker-custom-name]').focus?.({preventScroll:true});
+  }
+  function openDelete(id){
+    const item=catalog.find(item=>item.id===id);if(!item||selected.has(id))return;
+    moreId=null;render();editing=id;deleteRequested=true;editorError.textContent='';
+    element.querySelector('[data-picker-editor-title]').textContent=tr('Delete this exercise?');
+    element.querySelector('[data-picker-editor-fields]').hidden=true;
+    element.querySelector('[data-picker-editor-actions]').hidden=true;
+    element.querySelector('[data-picker-delete-name]').textContent=item.name;
+    element.querySelector('[data-picker-delete-confirm]').hidden=false;
+    editorVisible(true);element.querySelector('[data-picker-action="cancel-delete"]').focus?.({preventScroll:true});
   }
   async function saveCatalog(next,onSuccess){
     const ticket=generation;saving=true;editorError.textContent='';
@@ -60,20 +72,21 @@ export function createExercisePicker(element,{tr,onAdd,onCatalogChange=async()=>
     const target=event.target.closest('button');
     if(event.target===editor){editorVisible(false);return;}
     if(event.target===element){close();return;}
-    if(!target)return;
-    if(target.hasAttribute('data-picker-id')){const id=target.dataset.pickerId;selected.has(id)?selected.delete(id):selected.add(id);render();return;}
-    if(target.hasAttribute('data-picker-category')){filter=target.dataset.pickerCategory;element.querySelector('[data-picker-action="categories"]').setAttribute('aria-expanded','false');render();showPanel(menu,false);return;}
+    if(!target){if(moreId){moreId=null;render();}return;}
+    if(target.hasAttribute('data-picker-id')){moreId=null;const id=target.dataset.pickerId;selected.has(id)?selected.delete(id):selected.add(id);render();return;}
+    if(target.hasAttribute('data-picker-category')){moreId=null;filter=target.dataset.pickerCategory;element.querySelector('[data-picker-action="categories"]').setAttribute('aria-expanded','false');render();showPanel(menu,false);return;}
     const action=target.dataset.pickerAction;
     if(editorOpen&&!['custom','close-editor','delete-custom','confirm-delete','cancel-delete'].includes(action))return;
     if(action==='cancel')close();
+    else if(action==='more'){const id=target.dataset.pickerEdit;if(selected.has(id))return;moreId=moreId===id?null:id;render();}
     else if(action==='new-custom')openEditor();
     else if(action==='edit')openEditor(target.dataset.pickerEdit);
     else if(action==='close-editor')editorVisible(false);
-    else if(action==='delete-custom'){deleteRequested=true;element.querySelector('[data-picker-delete-confirm]').hidden=false;}
-    else if(action==='cancel-delete'){deleteRequested=false;element.querySelector('[data-picker-delete-confirm]').hidden=true;}
+    else if(action==='delete-custom')openDelete(target.dataset.pickerEdit);
+    else if(action==='cancel-delete'){deleteRequested=false;editorVisible(false);}
     else if(action==='confirm-delete'){if(!deleteRequested||!editing||selected.has(editing))return;const id=editing;await saveCatalog(catalog.filter(item=>item.id!==id),()=>{selected.delete(id);if(!catalog.some(item=>item.category===filter))filter='';});}
     else if(action==='categories'){const show=menu.hidden||menu.inert;showPanel(menu,show);target.setAttribute('aria-expanded',String(show));}
-    else if(action==='search'){searching=!searching;if(!searching)search.value='';render();showPanel(searchRow,searching);if(searching)search.focus();}
+    else if(action==='search'){moreId=null;searching=!searching;if(!searching)search.value='';render();showPanel(searchRow,searching);if(searching)search.focus();}
     else if(action==='close-search'){searching=false;search.value='';render();showPanel(searchRow,false);element.querySelector('[data-picker-action="search"]').focus();}
     else if(action==='custom'){
       const name=element.querySelector('[data-picker-custom-name]').value.trim();
@@ -88,6 +101,6 @@ export function createExercisePicker(element,{tr,onAdd,onCatalogChange=async()=>
     }
   });
   search.addEventListener('input',render);
-  element.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();if(editorOpen&&!saving)editorVisible(false);else close();}else if(event.key==='Enter'&&editorOpen&&!saving&&event.target===element.querySelector('[data-picker-custom-name]')){event.preventDefault();element.querySelector('[data-picker-action="custom"]').click();}});
+  element.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();if(moreId){moreId=null;render();}else if(editorOpen&&!saving)editorVisible(false);else close();}else if(event.key==='Enter'&&editorOpen&&!saving&&event.target===element.querySelector('[data-picker-custom-name]')){event.preventDefault();element.querySelector('[data-picker-action="custom"]').click();}});
   return {open,close,reset,refresh:render};
 }

@@ -1,14 +1,14 @@
-import { finishWorkoutInCloud } from './workout-sync.js?v=1.2.38';
-import { createWorkoutFeature } from './workout.js?v=1.2.38';
-import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.2.38';
-import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.2.38';
-import { ageFromBirthday, currentProfileWeight } from './profile-utils.js?v=1.2.38';
-import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.2.38';
-import { createNumberWheel } from './number-wheel.js?v=1.2.38';
-import { createOnboardingTransition } from './onboarding-transition.js?v=1.2.38';
-import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, runTransaction, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.2.38';
+import { finishWorkoutInCloud } from './workout-sync.js?v=1.2.39';
+import { createWorkoutFeature } from './workout.js?v=1.2.39';
+import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.2.39';
+import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.2.39';
+import { ageFromBirthday, currentProfileWeight } from './profile-utils.js?v=1.2.39';
+import { setupOnboardingSwipes } from './onboarding-swipe.js?v=1.2.39';
+import { createNumberWheel } from './number-wheel.js?v=1.2.39';
+import { createOnboardingTransition } from './onboarding-transition.js?v=1.2.39';
+import { db, doc, getDoc, setDoc, onSnapshot, writeBatch, runTransaction, collection, getDocs, auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase.js?v=1.2.39';
 import { scaleNutrient, formatNutrient, sumNutrition } from './nutrition.js?v=1.0.46';
-import { setupPageSwipes } from './page-swipe.js?v=1.2.38';
+import { setupPageSwipes } from './page-swipe.js?v=1.2.39';
 
 // Shared feedback for all dark grey glass main action buttons.
 document.addEventListener('click',event=>{

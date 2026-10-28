@@ -62,6 +62,8 @@ export const chinese = {
   "Custom exercise":"自訂動作",
   "Exercise name":"動作名稱",
   "Edit exercise":"編輯動作",
+  "More options":"更多選項",
+  "Edit":"編輯",
   "Add custom exercise":"新增自訂動作",
   "No exercises found.":"找不到動作。",
   "Finish workout":"完成訓練",

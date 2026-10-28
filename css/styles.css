@@ -783,10 +783,13 @@
   .exercise-choice-check img { display: block; filter: invert(1); }
   .exercise-choice-wrap { position: relative; min-width: 0; display: flex; }
   .exercise-choice-wrap > .exercise-choice { width: 100%; }
-  .exercise-choice-more { position: absolute; top: 3px; right: 4px; width: 32px; height: 34px; display: flex; align-items: center; justify-content: center; padding: 5px; border-radius: 8px; background: #fff; }
+  .exercise-choice-more { position: absolute; top: 3px; right: 4px; width: 32px; height: 34px; display: flex; align-items: center; justify-content: center; padding: 5px; border: 0; background: transparent; box-shadow: none; }
+  .exercise-choice-menu { position: absolute; top: 38px; right: 4px; z-index: 1; min-width: 110px; padding: 4px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); box-shadow: 0 4px 14px #0002; }
+  .exercise-choice-menu button { display: block; width: 100%; padding: 10px 12px; border: 0; border-radius: 4px; background: none; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+  .exercise-choice-menu button:hover, .exercise-choice-menu button:focus-visible { background: var(--surface2); }
   .exercise-custom-tile { min-height: 210px; align-items: center; justify-content: center; border: 2px dotted #aaa; background: transparent; }
   .exercise-editor-overlay { position: absolute; inset: 0; z-index: 2; display: flex; align-items: center; justify-content: center; padding: 24px; background: #0005; }
-  .exercise-editor-overlay[hidden], [data-picker-delete-confirm][hidden], .exercise-editor-delete[hidden] { display: none; }
+  .exercise-editor-overlay[hidden], [data-picker-delete-confirm][hidden], [data-picker-editor-fields][hidden], [data-picker-editor-actions][hidden] { display: none; }
   .exercise-editor-window { width: min(100%,400px); max-height: 85dvh; overflow-y: auto; border-radius: 12px; background: var(--surface); padding: 20px; box-shadow: 0 12px 40px #0002; }
   .exercise-editor-heading { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
   .exercise-editor-heading h2 { flex: 1; margin: 0; font-size: 22px; }
