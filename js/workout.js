@@ -136,7 +136,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
     if(busy||localBusy||!session?.startedAt||owner!==getUid())return;
     if(!await flushLocal()){render();return;}
     if(busy||localBusy||owner!==getUid())return;
-    const generation=epoch,account=owner;busy=true;error='';
+    const generation=epoch,account=owner,finishingView=view;busy=true;error='';
     try{
       if(!pendingCompletion){
         const endedAt=workoutCompleted()?(session.finishedAt||Date.now()):Date.now(),workout=copy(session.workout);validateWorkout(workout,{allowDraft:true});workout.updatedAt=endedAt;
@@ -161,7 +161,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
       if(result.log&&!result.log.deleted){const index=history.findIndex(item=>item.id===result.log.id);if(index<0)history.unshift(result.log);else history[index]=result.log;}
       if(completion.log){const index=templates.findIndex(item=>item.id===completion.workout.id);if(index<0)templates.push(copy(completion.workout));else templates[index]=copy(completion.workout);}
       await fadeTrackerOut(true);if(generation!==epoch)return;
-      pendingCompletion=null;editFailure=null;session=createSession(completion.workout);lastCurrent=null;view='session';
+      pendingCompletion=null;editFailure=null;session=createSession(completion.workout);lastCurrent=null;view=finishingView;
       await saveLocalRecord({session:null,completion:null,completedSessionId:completion.sessionId,updatedAt:Date.now()});
     }catch(err){if(generation===epoch)error=err.code==='workout-local-storage'?tr(err.message):tr('Workout is saved on this device. Upload failed. Try again when connected.');}
     finally{if(generation===epoch){busy=false;render();}}
@@ -204,7 +204,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
     if(!loaded){root.innerHTML=`<p role="alert">${escape(error)}</p>${button('reload','Try again')}`;tracker.hidden=true;return;}
     const alert=error?`<p class="workout-error" role="alert">${escape(error)}</p>${localFailure?button('retry-local','Try again'):editFailure?button('retry-edits','Try again'):''}`:'';
     if(view==='library'){
-      root.innerHTML=alert+(session?.startedAt?`<div class="card workout-resume"><strong>${escape(workoutName(session.workout))}</strong><button type="button" class="btn-icon workout-resume-icon" data-action="resume" aria-label="${escape(tr('Resume workout'))}" title="${escape(tr('Resume workout'))}"><img src="./assets/icons/resume.svg?v=1.2.43" width="24" height="24" alt=""></button></div>`:'')+(templates.length?templates.map(workout=>`<div class="card workout-card" data-reorder-id="${escape(workout.id)}"><button type="button" class="workout-open" data-action="open" data-id="${escape(workout.id)}"><strong>${escape(workoutName(workout))}</strong><span>${workout.exercises.length} ${escape(tr('exercises'))}${averageTime(workout)?' · '+escape(tr('Average time'))+': '+averageTime(workout):''}</span></button><button type="button" class="btn-icon workout-card-drag" aria-label="${escape(tr('Reorder'))} ${escape(workoutName(workout))}">☰</button></div>`).join(''):`<div class="empty">${escape(tr('No workouts yet. Tap + to create one.'))}</div>`);
+      root.innerHTML=alert+(templates.length?templates.map(workout=>`<div class="card workout-card" data-reorder-id="${escape(workout.id)}"><button type="button" class="workout-open" data-action="open" data-id="${escape(workout.id)}"><strong>${escape(workoutName(workout))}</strong><span>${workout.exercises.length} ${escape(tr('exercises'))}${averageTime(workout)?' · '+escape(tr('Average time'))+': '+averageTime(workout):''}</span></button><button type="button" class="btn-icon workout-card-drag" aria-label="${escape(tr('Reorder'))} ${escape(workoutName(workout))}">☰</button></div>`).join(''):`<div class="empty">${escape(tr('No workouts yet. Tap + to create one.'))}</div>`);
     }else{
       const workout=currentWorkout(),running=view==='session';
       const canStart=!(session?.startedAt);
@@ -213,7 +213,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
       for(const input of root.querySelectorAll('[data-field="rest"]')){const viewport=input.parentElement.querySelector('.workout-rest-wheel');if(viewport)mountRestWheel(input,viewport);}
       if(autoExpand)animateExerciseBody(root.querySelector(`[data-reorder-id="${autoExpand}"] .workout-exercise-body`),true,0);
     }
-    const reveal=tracker.hidden;tracker.hidden=!visible||view!=='session'||!session?.startedAt;
+    const reveal=tracker.hidden;tracker.hidden=!visible||!['session','library'].includes(view)||!session?.startedAt;
     if(!tracker.hidden){renderTracker();if(reveal&&!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches)tracker.animate?.([{opacity:0},{opacity:1}],{duration:300});}else tracker.innerHTML='';
     root.classList.toggle('workout-has-tracker',!tracker.hidden);
     if(oldScroll!==undefined&&root.closest('.page'))root.closest('.page').scrollTop=oldScroll;
@@ -249,18 +249,19 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
   }
   let lastTrackerKey=null,finishRequested=false;
   function trackerFooter(elapsed,nextAction){
-    const label=nextAction==='skip'?'Skip rest':'Complete set';
+    const label=nextAction==='resume'?'Resume workout':nextAction==='skip'?'Skip rest':'Complete set';
     return `<div class="tracker-live-footer"><button type="button" class="btn-icon tracker-action" data-action="finish" aria-label="${escape(tr('Finish workout'))}"><span class="tracker-control-circle"></span><img class="tracker-control-art tracker-finish-art" src="./assets/figma/tracker/finish.svg" width="49" height="57" alt=""></button><span id="workout-elapsed" aria-label="${escape(tr('Elapsed time'))}"><span class="tracker-clock-digits">${elapsed}</span></span><button type="button" class="btn-icon tracker-action" data-action="${nextAction}" aria-label="${escape(tr(label))}"><span class="tracker-control-circle"></span><img class="tracker-control-art tracker-next-art" src="./assets/figma/tracker/next.svg" width="60" height="60" alt=""></button></div>`;
   }
   function renderTracker(){
     const current=locate(session),ex=current?.exercise,set=current?.set,ready=session.phase==='ready';
+    const compact=view==='library'&&!!session.startedAt&&!workoutCompleted();
     const currentPanel=tracker.querySelector('.tracker-panel');
     const previous=currentPanel?.cloneNode?.(true),oldHeight=tracker.getBoundingClientRect?.().height||0;
     if(previous?.style&&globalThis.getComputedStyle)previous.style.background=getComputedStyle(currentPanel).background;
     const starting=!ready&&!!session.startedAt&&!!previous?.querySelector('.workout-start');
     const oldFill=tracker.querySelector('.tracker-rest-fill'),priorRestWidth=oldFill?.getBoundingClientRect?.().width;
     tracker.getAnimations?.().forEach(animation=>animation.cancel());tracker.style.overflow='';
-    const key=session.id+':'+session.phase+':'+(session.current?.setId||'')+':'+finishRequested+':'+!!pendingCompletion+':'+busy;
+    const key=session.id+':'+view+':'+session.phase+':'+(session.current?.setId||'')+':'+finishRequested+':'+!!pendingCompletion+':'+busy;
     const elapsed=session.startedAt?time(((pendingCompletion?.endedAt||Date.now())-session.startedAt)/1000):'';
     let content='';
     if(ready){
@@ -278,12 +279,13 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
       const nextAction=session.phase==='rest'?'skip':'complete',nextLabel=session.phase==='rest'?'Skip rest':'Complete set',done=session.phase==='complete';
       content+=`</div><div class="tracker-controls tracker-actions"><button type="button" class="btn-icon tracker-action" data-action="finish" aria-label="${escape(tr('Finish workout'))}" title="${escape(tr('Finish workout'))}"><img src="./assets/icons/close.svg?v=1.2.43" width="46" height="46" alt=""></button><button type="button" class="btn-icon tracker-action" data-action="${nextAction}" ${done?'disabled data-workout-locked="true"':''} aria-label="${escape(tr(nextLabel))}" title="${escape(tr(nextLabel))}"><img src="./assets/icons/arrow-right.svg?v=1.2.43" width="46" height="46" alt=""></button></div>`;
     }
-    if(finishRequested)content=`<div class="tracker-finish-confirm" role="alertdialog" aria-labelledby="tracker-finish-question"><div class="tracker-message-title"><strong id="tracker-finish-question">${escape(tr('Finish this workout?'))}</strong></div><div class="tracker-confirm-buttons"><button type="button" class="btn btn-secondary btn-full" data-action="cancel-finish">${escape(tr('Cancel'))}</button><button type="button" class="btn btn-primary btn-full" data-action="confirm-finish">${escape(tr('Finish'))}</button></div></div>`;
+    if(finishRequested)content=`<div class="tracker-finish-confirm" role="alertdialog" aria-labelledby="tracker-finish-question"><div class="tracker-message-title"><strong id="tracker-finish-question">${escape(tr(compact?'Finish Workout?':'Finish this workout?'))}</strong></div><div class="tracker-confirm-buttons"><button type="button" class="btn btn-secondary btn-full" data-action="cancel-finish">${escape(tr('Cancel'))}</button><button type="button" class="btn btn-primary btn-full" data-action="confirm-finish">${escape(tr('Finish'))}</button></div></div>`;
     if(workoutCompleted()&&!finishRequested&&!pendingCompletion)content=`<button type="button" class="tracker-finished" data-action="close-finished"><span class="tracker-message-title"><strong>${escape(tr('Workout Finished'))}</strong></span><span class="tracker-finished-hint">${escape(tr('Tap to close'))}</span></button>`;
     if(pendingCompletion&&busy)content=`<div class="tracker-upload tracker-uploading" role="status" aria-label="${escape(tr('Uploading…'))}"><span class="workout-upload-spinner" aria-hidden="true"></span></div>`;
     else if(pendingCompletion)content=`<div class="tracker-upload"><div class="tracker-display"><strong>${escape(tr('Workout saved on this device'))}</strong><p>${escape(tr(busy?'Uploading…':'Ready to retry upload'))}</p></div><div class="tracker-controls"><button type="button" class="btn btn-primary btn-full" data-action="${localFailure?'retry-local':'retry-upload'}">${escape(tr(busy?'Uploading…':localFailure?'Try again':'Retry upload'))}</button></div></div>`;
-    const live=session.phase==='set'&&!!current&&!finishRequested&&!pendingCompletion;
-    const resting=session.phase==='rest'&&!finishRequested&&!pendingCompletion;
+    const live=!compact&&session.phase==='set'&&!!current&&!finishRequested&&!pendingCompletion;
+    const resting=!compact&&session.phase==='rest'&&!finishRequested&&!pendingCompletion;
+    const continuing=compact&&!finishRequested&&!pendingCompletion;
     if(live){
       const actual=session.results[set.id]||{weight:set.weight,reps:trackerRepDefault(set.reps)};
       const weight=session.pending?.setId===set.id?session.pending.weight:actual.weight,reps=session.pending?.setId===set.id?session.pending.reps:actual.reps;
@@ -292,27 +294,31 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
     }
     if(resting)content=`<div class="tracker-rest-layer"><div class="tracker-rest-background"><div class="tracker-rest-fill" aria-hidden="true"></div></div><div class="tracker-rest-word">${escape(tr('Rest'))}</div><div class="tracker-rest-countdown" aria-label="${escape(tr('Rest'))}" role="timer"><span id="workout-rest-time" class="tracker-clock-digits"></span></div><div class="tracker-rest-extension"><button type="button" data-action="rest30" aria-label="${escape(tr('+30 sec'))}"><span class="tracker-rest-add-icon" style="--rest-add-icon:url('../assets/icons/plus-30sec.svg')" aria-hidden="true"></span></button><button type="button" data-action="rest60" aria-label="${escape(tr('+1 min'))}"><span class="tracker-rest-add-icon" style="--rest-add-icon:url('../assets/icons/plus-1min.svg')" aria-hidden="true"></span></button></div></div>${trackerFooter(elapsed,'skip')}`;
     if(live){const footerStart=content.indexOf('<div class="tracker-live-footer">');content='<div class="tracker-phase-content">'+content.slice(0,footerStart)+'</div>'+content.slice(footerStart);}
+    if(continuing)content=`<div class="tracker-phase-content"><div class="tracker-message-title"><strong>${escape(tr('Continue Workout?'))}</strong></div></div>${trackerFooter(elapsed,'resume')}`;
     if(error&&!busy)content=content.replace('<div class="tracker-display">',`<div class="tracker-display"><p class="workout-error" role="alert">${escape(error)}</p>`);
     tracker.classList.toggle('tracker-ready',ready);
     tracker.classList.toggle('tracker-live',!ready);
     tracker.classList.toggle('tracker-rest',resting);
+    tracker.classList.toggle('tracker-compact',compact);
     tracker.classList.toggle('tracker-message',!ready&&!live&&!resting);
-    tracker.classList.toggle('tracker-translucent-message',finishRequested||(workoutCompleted()&&!pendingCompletion)||!!(pendingCompletion&&busy));
-    const sharedPhase=!!currentPanel?.classList?.contains?.('tracker-live-panel')&&(live||resting);
+    tracker.classList.toggle('tracker-translucent-message',!compact&&(finishRequested||(workoutCompleted()&&!pendingCompletion)||!!(pendingCompletion&&busy)));
+    const sharedPhase=!!currentPanel?.classList?.contains?.('tracker-live-panel')&&(live||resting||continuing);
     if(sharedPhase){
       // Keep the connected footer and its foreground nodes throughout phase changes.
       const footer=currentPanel.querySelector('.tracker-live-footer');
       for(const child of [...currentPanel.children])if(child!==footer)child.remove();
       currentPanel.insertAdjacentHTML('afterbegin',content.slice(0,content.indexOf('<div class="tracker-live-footer">')));
-      const next=footer.querySelector('[data-action="skip"], [data-action="complete"]');
-      next.dataset.action=resting?'skip':'complete';
-      next.setAttribute('aria-label',tr(resting?'Skip rest':'Complete set'));
+      const next=footer.querySelector('[data-action="skip"], [data-action="complete"], [data-action="resume"]');
+      next.dataset.action=continuing?'resume':resting?'skip':'complete';
+      next.setAttribute('aria-label',tr(continuing?'Resume workout':resting?'Skip rest':'Complete set'));
       tracker.querySelectorAll('.tracker-transition-old').forEach(panel=>panel.remove());
-    }else tracker.innerHTML=`<div class="tracker-panel${live||resting?' tracker-live-panel':''}">${content}</div>`;
+    }else tracker.innerHTML=`<div class="tracker-panel${live||resting||continuing?' tracker-live-panel':''}">${content}</div>`;
     if(!ready)fitLiveTracker();
     animateRestFill(priorRestWidth);tickText();
     if(sharedPhase&&key!==lastTrackerKey){
       if(!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches){
+        const newHeight=tracker.getBoundingClientRect().height;
+        if(Math.abs(newHeight-oldHeight)>.5)tracker.animate?.([{height:oldHeight+'px'},{height:newHeight+'px'}],{duration:420,easing:'cubic-bezier(.22,.8,.25,1)'});
         const body=tracker.querySelector(resting?'.tracker-rest-layer':'.tracker-phase-content');body?.animate?.([{opacity:0},{opacity:1}],{duration:240});
         previous.querySelector('.tracker-live-footer')?.remove();
         const fill=previous.querySelector('.tracker-rest-fill');if(fill&&Number.isFinite(priorRestWidth))fill.style.width=priorRestWidth+'px';
@@ -525,7 +531,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
   tracker.addEventListener('keydown',event=>{if(event.key==='Escape'&&finishRequested){event.preventDefault();finishRequested=false;renderTracker();}});
   document.addEventListener?.('visibilitychange',tick);
   function create(){if(busy)return;if(!loaded){pendingCreate=true;open();return;}if(session&&!session.startedAt){session=null;dirty=false;}return navigate('editor',()=>{draft={id:uid(),name:'',exercises:[],createdAt:Date.now()};newWorkoutId=draft.id;error='';});}
-  function setVisible(value){if(!value){finishRequested=false;lastFollowTarget=null;}visible=value;tracker.hidden=!value||view!=='session'||!session?.startedAt;followCurrentSet();}
+  function setVisible(value){if(!value){finishRequested=false;lastFollowTarget=null;}visible=value;tracker.hidden=!value||!['session','library'].includes(view)||!session?.startedAt;followCurrentSet();}
   globalThis.visualViewport?.addEventListener('resize',followCurrentSet);
   if(typeof ResizeObserver!=='undefined')new ResizeObserver(()=>root.style.setProperty('--workout-tracker-height',tracker.getBoundingClientRect().height+'px')).observe(tracker);
   return {open,create,reset,refresh,setVisible,historyHTML,removeHistory,flushEdits};

@@ -39,6 +39,8 @@ export const chinese = {
   "+ Add workout": "+ 新增訓練",
   "Workout history":"訓練紀錄",
   "Resume workout":"繼續訓練",
+  "Continue Workout?":"繼續訓練？",
+  "Finish Workout?":"結束訓練？",
   "exercises":"項動作",
   "sets":"組",
   "Edit workout":"編輯訓練",

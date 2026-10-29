@@ -813,7 +813,7 @@
   .workout-upload-spinner { width: 32px; height: 32px; border: 3px solid #e5e5e5; border-top-color: #000; border-radius: 50%; animation: login-spin 800ms linear infinite; }
 
   /* Ongoing set: Figma YT3N2xGGM3yxnotnIaAEdZ, 644 × 387 design coordinates. */
-  .workout-tracker.tracker-live { container-type: inline-size; height: auto; aspect-ratio: 644 / 387; padding: 0; border: 0; border-radius: calc(20px * var(--tracker-scale,.745)); background: linear-gradient(179.6249346deg,#000 .53683%,#1a1a1a 25.268%,#474747 99.463%); color: #fff; box-shadow: none; }
+  .workout-tracker.tracker-live { container-type: inline-size; width: calc(100% - 32px); height: auto; aspect-ratio: 644 / 387; padding: 0; border: 0; border-radius: calc(20px * var(--tracker-scale,.745)); background: linear-gradient(179.6249346deg,#000 .53683%,#1a1a1a 25.268%,#474747 99.463%); color: #fff; box-shadow: none; }
   .tracker-live .tracker-panel { inset: 0; display: block; border-radius: inherit; }
   .tracker-live-panel { background: linear-gradient(179.6249346deg,#000 .53683%,#1a1a1a 25.268%,#474747 99.463%); }
   .tracker-live-title { position: absolute; top: 1.708075cqw; left: 0; right: 0; height: 13.509317cqw; min-width: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
@@ -833,10 +833,10 @@
   .tracker-live .tracker-input-line { position: absolute; top: 19.409938cqw; left: calc(50% - .07764cqw); transform: translateX(-50%) scale(var(--tracker-scale,.745)); transform-origin: top center; pointer-events: none; }
   .tracker-live-weight .tracker-input-line { width: 153px; height: 1px; }
   .tracker-live-reps .tracker-input-line { width: 107px; height: 1px; }
-  .tracker-live-footer { position: absolute; z-index: 2; top: 36.490683cqw; left: 0; right: 0; height: 23.602484cqw; display: block; padding: 0; min-width: 0; }
+  .tracker-live-footer { position: absolute; z-index: 2; bottom: 0; left: 0; right: 0; height: 23.602484cqw; display: block; padding: 0; min-width: 0; }
   .tracker-live-footer .tracker-action { position: relative; display: block; width: 14.596273cqw; height: 14.596273cqw; min-width: 44px; min-height: 44px; margin-top: 4.503106cqw; padding: 0; border: 0; border-radius: 50%; background: transparent; box-shadow: none; }
   .tracker-live-footer .tracker-action[data-action="finish"] { position: absolute; left: 9.782609cqw; }
-  .tracker-live-footer .tracker-action[data-action="complete"], .tracker-live-footer .tracker-action[data-action="skip"] { position: absolute; right: 9.006211cqw; }
+  .tracker-live-footer .tracker-action[data-action="complete"], .tracker-live-footer .tracker-action[data-action="skip"], .tracker-live-footer .tracker-action[data-action="resume"] { position: absolute; right: 9.006211cqw; }
   .tracker-live-footer .tracker-action img { position: absolute; display: block; max-width: none; filter: none; transform: scale(var(--tracker-scale,.745)); transform-origin: top left; pointer-events: none; }
   .tracker-live-footer .tracker-control-circle { position: absolute; display: block; top: 0; left: 0; width: 94px; height: 94px; border-radius: 50%; background: rgba(217,217,217,.3); transition: background-color 240ms; transform: scale(var(--tracker-scale,.745)); transform-origin: top left; pointer-events: none; }
   .tracker-live-footer .tracker-finish-art { top: 2.795031cqw; left: 4.347826cqw; width: 49px; height: 57px; }
@@ -877,3 +877,10 @@
   .tracker-message .tracker-upload { position: absolute; inset: 0; height: auto; }
   .tracker-message .tracker-upload:not(.tracker-uploading) { display: flex; flex-direction: column; padding: 16px; gap: 12px; }
   .tracker-message .tracker-upload:not(.tracker-uploading) .tracker-display { flex: 1; height: auto; }
+
+  /* Ongoing-workout prompt: same fixed bottom edge and footer as the full tracker. */
+  .workout-tracker.tracker-compact { aspect-ratio: 644 / 302; background: linear-gradient(179.38deg,#000 .54%,#1a1a1a 25.27%,#474747 98.93%); }
+  .tracker-compact > .tracker-panel { background: linear-gradient(179.38deg,#000 .54%,#1a1a1a 25.27%,#474747 98.93%); color: #fff; }
+  .tracker-compact .tracker-message-title { top: 5.745342cqw; color: #fff; }
+  .tracker-compact .tracker-confirm-buttons { top: 25.776398cqw; }
+  .tracker-compact .workout-upload-spinner { border-color: rgba(255,255,255,.25); border-top-color: #fff; }
