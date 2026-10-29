@@ -1,6 +1,7 @@
 import {createRepRangeSelector} from './rep-range-selector.js?v=1.2.43';
 import {alignTrackerClock} from './tracker-clock.js?v=1.2.47';
 import {captureSetLayout,animateSetLayout} from './workout-set-motion.js?v=1.2.54';
+import {currentSetScrollTop} from './workout-set-follow.js?v=1.2.55';
 import {copy,uid,newSet,exerciseInstance,positions,locate,createSession,nextPosition,startSession,completeSet,advanceRest,extendRest,restProgress,selectSet,validateWorkout,optionalNumber,targetReps,trackerRepDefault} from './workout-model.js?v=1.2.49';
 import {defaultExercises} from './workout-catalog.js?v=1.2.43';
 import {setupCompactReorder} from './compact-reorder.js?v=1.2.43';
@@ -12,7 +13,7 @@ const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&
 const time=seconds=>{seconds=Math.max(0,Math.floor(seconds));return String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');};
 export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=createWorkoutLocalStore(),locale=()=> 'en-GB',uploadTimeoutMs=15000}){
   let owner=null,epoch=0,loaded=false,loading=false,busy=false,visible=false,view='library',templates=[],catalog=[],bests={},session=null,draft=null,history=[],error='',timer=null,dirty=false,lastSaved=0,revision=0,pendingCreate=false;
-  let expanded=new Set(),pickerOpen=false,lastCurrent=null,lastView='library',transitioning=false;
+  let expanded=new Set(),pickerOpen=false,lastCurrent=null,lastCurrentSet=null,lastView='library',transitioning=false,followRevision=0;
   let editTail=Promise.resolve(),editFailure=null,newWorkoutId=null;
   let localTail=Promise.resolve(),localFailure=null,localBusy=false,pendingCompletion=null;
   function fitLiveTracker(){
@@ -175,11 +176,26 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
     const page=root.closest('.page');if(page)page.scrollTop=0;
   }
   function averageTime(workout){const logs=history.filter(log=>log.templateId===workout.id&&log.status==='finished'&&Number.isFinite(log.elapsedSeconds)&&log.elapsedSeconds>=0);return logs.length?time(logs.reduce((sum,log)=>sum+log.elapsedSeconds,0)/logs.length):'';}
+  function followCurrentSet(){
+    const revision=++followRevision,generation=epoch;
+    if(!visible||view!=='session'||!session?.startedAt||session.phase!=='set'||!globalThis.requestAnimationFrame)return;
+    const setId=session.current?.setId;
+    requestAnimationFrame(async()=>{
+      const row=root.querySelector('[data-set-id="'+setId+'"]'),page=root.closest('.page');
+      if(!row?.getBoundingClientRect||!page?.scrollTo)return;
+      // Expansion and set-row animations must settle before measuring the target.
+      const animations=row.closest('.workout-exercise-body')?.getAnimations?.({subtree:true})||[];
+      await Promise.all(animations.filter(a=>a.effect?.getComputedTiming().endTime<1000).map(a=>a.finished.catch(()=>{})));
+      if(revision!==followRevision||generation!==epoch||!visible||view!=='session'||session?.phase!=='set'||session.current?.setId!==setId||!row.isConnected||row.closest('.workout-exercise-body')?.hidden)return;
+      const viewport=globalThis.visualViewport||{height:globalThis.innerHeight,offsetTop:0};
+      page.scrollTo({top:currentSetScrollTop(row.getBoundingClientRect(),page,viewport),behavior:globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+    });
+  }
   function render(){
     let autoExpand=null;
     root.closest('.page')?.classList?.toggle('workout-detail',view!=='library');
     if(view!==lastView){lastView=view;root.animate?.([{opacity:0},{opacity:1}],{duration:220});}
-    if(session?.startedAt&&session.phase==='set'&&session.current?.exerciseId!==lastCurrent){lastCurrent=session.current?.exerciseId;if(lastCurrent){if(!expanded.has(lastCurrent))autoExpand=lastCurrent;expanded.add(lastCurrent);}}
+    if(session?.startedAt&&session.phase==='set'&&(session.current?.exerciseId!==lastCurrent||session.current?.setId!==lastCurrentSet)){lastCurrent=session.current?.exerciseId;lastCurrentSet=session.current?.setId;if(lastCurrent){if(!expanded.has(lastCurrent))autoExpand=lastCurrent;expanded.add(lastCurrent);}}
     const oldScroll=root.closest('.page')?.scrollTop;
     if(loading){root.innerHTML=`<div class="empty" role="status">${escape(tr('Loading workouts…'))}</div>`;tracker.hidden=true;return;}
     if(!loaded){root.innerHTML=`<p role="alert">${escape(error)}</p>${button('reload','Try again')}`;tracker.hidden=true;return;}
@@ -199,6 +215,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
     root.classList.toggle('workout-has-tracker',!tracker.hidden);
     if(oldScroll!==undefined&&root.closest('.page'))root.closest('.page').scrollTop=oldScroll;
     disable(busy);
+    followCurrentSet();
   }
   function animateExerciseBody(body,opening,startHeight){
     if(!body?.animate||globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
@@ -383,7 +400,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
     while(exercise.sets.length<count)exercise.sets.push(newSet());
     if(exercise.sets.length>count)exercise.sets.length=count;
     repairCurrent();saveEdit();
-    const list=root.querySelector('[data-set-list="'+exercise.id+'"]');if(list){list.innerHTML=setRows(exercise,view==='session');animateSetLayout(list,before);}if(view==='session'&&visible)renderTracker();
+    const list=root.querySelector('[data-set-list="'+exercise.id+'"]');if(list){list.innerHTML=setRows(exercise,view==='session');animateSetLayout(list,before);}if(view==='session'&&visible)renderTracker();followCurrentSet();
   }
   function repairCurrent(){
     if(!session)return;
@@ -503,7 +520,8 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
   tracker.addEventListener('keydown',event=>{if(event.key==='Escape'&&finishRequested){event.preventDefault();finishRequested=false;renderTracker();}});
   document.addEventListener?.('visibilitychange',tick);
   function create(){if(busy)return;if(!loaded){pendingCreate=true;open();return;}if(session&&!session.startedAt){session=null;dirty=false;}return navigate('editor',()=>{draft={id:uid(),name:'',exercises:[],createdAt:Date.now()};newWorkoutId=draft.id;error='';});}
-  function setVisible(value){if(!value)finishRequested=false;visible=value;tracker.hidden=!value||view!=='session'||!session?.startedAt;}
+  function setVisible(value){if(!value)finishRequested=false;visible=value;tracker.hidden=!value||view!=='session'||!session?.startedAt;followCurrentSet();}
+  globalThis.visualViewport?.addEventListener('resize',followCurrentSet);
   if(typeof ResizeObserver!=='undefined')new ResizeObserver(()=>root.style.setProperty('--workout-tracker-height',tracker.getBoundingClientRect().height+'px')).observe(tracker);
   return {open,create,reset,refresh,setVisible,historyHTML,removeHistory,flushEdits};
 }

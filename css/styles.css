@@ -526,7 +526,7 @@
   .workout-picker details { margin-top: 14px; }
   .workout-picker details label { display: block; margin: 12px 0; }
   .workout-session-end { display: flex; justify-content: space-between; gap: 12px; margin: 20px 0; }
-  .workout-has-tracker { padding-bottom: calc(var(--workout-tracker-height, 320px) + 24px); }
+  .workout-has-tracker { padding-bottom: max(calc(var(--workout-tracker-height, 320px) + 24px),75dvh); }
   .workout-tracker { position: fixed; z-index: 60; bottom: calc(var(--nav-base-height) + var(--nav-bottom-gap) + 12px); left: 16px; right: 16px; max-width: 480px; margin: auto; padding: 14px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); box-shadow: 0 4px 22px rgba(0,0,0,.12); max-height: calc(100dvh - 190px); overflow-y: auto; }
   .workout-tracker-header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 12px; font-size: 12px; }
   .workout-tracker-header strong { font-size: 18px; }
@@ -754,7 +754,7 @@
   .workout-set-row + .workout-set-row::before { background: var(--fade-line-horizontal); }
   .tracker-rest-separator { background: var(--fade-line-horizontal); }
   .workout-exercise-body { box-sizing: border-box; }
-  .workout-set-row.current { margin-inline: -8px; padding-inline: 8px; border: 0; border-radius: 8px; outline: none; box-shadow: none; background: rgba(0,0,0,.025); }
+  .workout-set-row.current { margin-inline: -8px; padding-inline: 8px; border: 0; border-radius: 8px; outline: none; box-shadow: none; background: rgba(0,0,0,.08); }
   .workout-set-row.current > button:first-child { font-weight: 400; }
   .workout-card-drag { touch-action: none; cursor: grab; user-select: none; font-size: 20px; flex: 0 0 36px; justify-content: center; min-height: 44px; }
   .workout-history-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
