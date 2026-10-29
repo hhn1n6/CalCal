@@ -862,6 +862,8 @@
   /* Confirmation, completion and upload share the 644 × 387 tracker frame. */
   .workout-tracker.tracker-message { background: #fff; }
   .tracker-message > .tracker-panel { background: #fff; color: #000; }
+  .workout-tracker.tracker-translucent-message { background: transparent; }
+  .tracker-translucent-message > .tracker-panel { background: rgba(255,255,255,.75); }
   .tracker-message .tracker-finish-confirm, .tracker-message .tracker-finished { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; margin: 0; border: 0; border-radius: inherit; background: transparent; color: #000; }
   .tracker-message-title { position: absolute; top: 18.322981cqw; left: 7.298137cqw; right: 7.298137cqw; height: 15.062112cqw; display: flex; align-items: center; justify-content: center; }
   .tracker-message-title strong { display: block; flex-shrink: 0; width: max-content; font-family: 'Times New Roman MT Condensed','Times New Roman',Times,serif; font-size: 10.869565cqw; line-height: 12.732919cqw; font-weight: 700; letter-spacing: -.03em; white-space: nowrap; transform: scaleX(var(--tracker-message-title-scale,.838)); transform-origin: center; }
