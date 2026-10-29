@@ -275,7 +275,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
     tracker.classList.toggle('tracker-live',!ready);
     tracker.classList.toggle('tracker-rest',resting);
     tracker.classList.toggle('tracker-message',!ready&&!live&&!resting);
-    tracker.classList.toggle('tracker-translucent-message',finishRequested||(allSetsCompleted()&&!pendingCompletion));
+    tracker.classList.toggle('tracker-translucent-message',finishRequested||(allSetsCompleted()&&!pendingCompletion)||!!(pendingCompletion&&busy));
     const sharedPhase=!!currentPanel?.classList?.contains?.('tracker-live-panel')&&(live||resting);
     if(sharedPhase){
       // Keep the connected footer and its foreground nodes throughout phase changes.
