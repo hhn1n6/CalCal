@@ -1,6 +1,6 @@
 import {createRepRangeSelector} from './rep-range-selector.js?v=1.2.43';
 import {alignTrackerClock} from './tracker-clock.js?v=1.2.47';
-import {copy,uid,newSet,exerciseInstance,positions,locate,createSession,nextPosition,startSession,completeSet,advanceRest,extendRest,selectSet,validateWorkout,optionalNumber,targetReps,trackerRepDefault} from './workout-model.js?v=1.2.43';
+import {copy,uid,newSet,exerciseInstance,positions,locate,createSession,nextPosition,startSession,completeSet,advanceRest,extendRest,restProgress,selectSet,validateWorkout,optionalNumber,targetReps,trackerRepDefault} from './workout-model.js?v=1.2.49';
 import {defaultExercises} from './workout-catalog.js?v=1.2.43';
 import {setupCompactReorder} from './compact-reorder.js?v=1.2.43';
 import {mountRestWheel} from './workout-rest-wheel.js?v=1.2.43';
@@ -20,9 +20,9 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
     const title=tracker.querySelector('.tracker-live-title'),text=title?.querySelector?.('strong');
     if(title?.clientWidth&&text?.scrollWidth)text.style.setProperty('--tracker-title-scale',Math.min(.838,title.clientWidth/text.scrollWidth));
     for(const input of tracker.querySelectorAll('input[data-field^="current-"]'))input.style.setProperty?.('--tracker-number-scale',String(Math.min(1,3/Math.max(3,String(input.value).length))));
-    alignTrackerClock(tracker.querySelector('.tracker-clock-digits'));
+    for(const clock of tracker.querySelectorAll('.tracker-clock-digits'))alignTrackerClock(clock);
   }
-  if(globalThis.ResizeObserver){const observer=new ResizeObserver(fitLiveTracker);observer.observe(tracker);}
+  if(globalThis.ResizeObserver){const observer=new ResizeObserver(()=>{fitLiveTracker();if(session?.phase==='rest')animateRestFill();});observer.observe(tracker);}
   const workoutName=workout=>workout.name?.trim()||tr('Workout');
   const path=(...parts)=>['users',owner,...parts];
   async function commit(writes){const generation=epoch;await store.commit(writes);if(generation!==epoch)throw Error('Account changed.');}
@@ -224,11 +224,15 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
     return [...groups.values()].map(results=>'<div><b>'+escape(results[0].name)+'</b><p>'+results.map(result=>(result.weight??'—')+' kg × '+(result.reps??'—')).join(' · ')+'</p></div>').join('');
   }
   let lastTrackerKey=null,finishRequested=false;
+  function trackerFooter(elapsed,nextAction){
+    const label=nextAction==='skip'?'Skip rest':'Complete set';
+    return `<div class="tracker-live-footer"><button type="button" class="btn-icon tracker-action" data-action="finish" aria-label="${escape(tr('Finish workout'))}"><span class="tracker-control-circle"></span><img class="tracker-control-art tracker-finish-art" src="./assets/figma/tracker/finish.svg" width="49" height="57" alt=""></button><span id="workout-elapsed" aria-label="${escape(tr('Elapsed time'))}"><span class="tracker-clock-digits">${elapsed}</span></span><button type="button" class="btn-icon tracker-action" data-action="${nextAction}" aria-label="${escape(tr(label))}"><span class="tracker-control-circle"></span><img class="tracker-control-art tracker-next-art" src="./assets/figma/tracker/next.svg" width="60" height="60" alt=""></button></div>`;
+  }
   function renderTracker(){
     const current=locate(session),ex=current?.exercise,set=current?.set,ready=session.phase==='ready';
     const previous=tracker.querySelector('.tracker-panel')?.cloneNode?.(true),oldHeight=tracker.getBoundingClientRect?.().height||0;
     const starting=!ready&&!!session.startedAt&&!!previous?.querySelector('.workout-start');
-    const oldRing=tracker.querySelector('#workout-rest-progress'),priorRestOffset=oldRing?parseFloat(globalThis.getComputedStyle?.(oldRing).strokeDashoffset||oldRing.style?.strokeDashoffset):NaN;
+    const oldFill=tracker.querySelector('.tracker-rest-fill'),priorRestWidth=oldFill?.getBoundingClientRect?.().width;
     tracker.getAnimations?.().forEach(animation=>animation.cancel());tracker.style.overflow='';
     const key=session.id+':'+session.phase+':'+(session.current?.setId||'')+':'+finishRequested+':'+!!pendingCompletion+':'+busy;
     const elapsed=session.startedAt?time(((pendingCompletion?.endedAt||Date.now())-session.startedAt)/1000):'';
@@ -252,19 +256,34 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
     if(pendingCompletion&&busy)content=`<div class="tracker-upload tracker-uploading" role="status" aria-label="${escape(tr('Uploading…'))}"><span class="workout-upload-spinner" aria-hidden="true"></span></div>`;
     else if(pendingCompletion)content=`<div class="tracker-upload"><div class="tracker-display"><strong>${escape(tr('Workout saved on this device'))}</strong><p>${escape(tr(busy?'Uploading…':'Ready to retry upload'))}</p></div><div class="tracker-controls"><button type="button" class="btn btn-primary btn-full" data-action="${localFailure?'retry-local':'retry-upload'}">${escape(tr(busy?'Uploading…':localFailure?'Try again':'Retry upload'))}</button></div></div>`;
     const live=session.phase==='set'&&!!current&&!finishRequested&&!pendingCompletion;
+    const resting=session.phase==='rest'&&!finishRequested&&!pendingCompletion;
     if(live){
       const actual=session.results[set.id]||{weight:set.weight,reps:trackerRepDefault(set.reps)};
       const weight=session.pending?.setId===set.id?session.pending.weight:actual.weight,reps=session.pending?.setId===set.id?session.pending.reps:actual.reps;
       const target=typeof set.reps==='string'?tr('Target reps')+': '+set.reps.replace('-','–'):'';
-      const circle='<img class="tracker-control-circle" src="./assets/figma/tracker/control-circle.svg" width="94" height="94" alt="">';
-      content=`<div class="tracker-live-title"><strong>${escape(ex.name)}</strong></div><div class="tracker-live-metrics"><div class="tracker-live-metric"><span>${escape(tr('Set')==='Set'?'SETs':tr('Set'))}</span><output class="tracker-set-number" aria-label="${escape(tr('Set'))} ${current.index+1}">${current.index+1}</output></div><label class="tracker-live-metric tracker-live-weight"><span>${escape(tr('Weight (kg)')==='Weight (kg)'?'WEIGHT(kg)':tr('Weight (kg)'))}</span>${number(weight,'current-weight','id="workout-current-weight" aria-label="'+escape(tr('Weight (kg)'))+'"')}<img class="tracker-input-line" src="./assets/figma/tracker/weight-line.svg" width="153" height="1" alt=""></label><label class="tracker-live-metric tracker-live-reps"><span>${escape(tr('Reps')==='Reps'?'REPs':tr('Reps'))}</span>${number(reps,'current-reps','id="workout-current-reps" aria-label="'+escape(tr('Reps'))+'" title="'+escape(target)+'"')}<img class="tracker-input-line" src="./assets/figma/tracker/reps-line.svg" width="107" height="1" alt=""></label></div><div class="tracker-live-footer"><button type="button" class="btn-icon tracker-action" data-action="finish" aria-label="${escape(tr('Finish workout'))}">${circle}<img class="tracker-control-art tracker-finish-art" src="./assets/figma/tracker/finish.svg" width="49" height="57" alt=""></button><span id="workout-elapsed" aria-label="${escape(tr('Elapsed time'))}"><span class="tracker-clock-digits">${elapsed}</span></span><button type="button" class="btn-icon tracker-action" data-action="complete" aria-label="${escape(tr('Complete set'))}">${circle}<img class="tracker-control-art tracker-next-art" src="./assets/figma/tracker/next.svg" width="60" height="60" alt=""></button></div>`;
+      content=`<div class="tracker-live-title"><strong>${escape(ex.name)}</strong></div><div class="tracker-live-metrics"><div class="tracker-live-metric"><span>${escape(tr('Set')==='Set'?'SETs':tr('Set'))}</span><output class="tracker-set-number" aria-label="${escape(tr('Set'))} ${current.index+1}">${current.index+1}</output></div><label class="tracker-live-metric tracker-live-weight"><span>${escape(tr('Weight (kg)')==='Weight (kg)'?'WEIGHT(kg)':tr('Weight (kg)'))}</span>${number(weight,'current-weight','id="workout-current-weight" aria-label="'+escape(tr('Weight (kg)'))+'"')}<img class="tracker-input-line" src="./assets/figma/tracker/weight-line.svg" width="153" height="1" alt=""></label><label class="tracker-live-metric tracker-live-reps"><span>${escape(tr('Reps')==='Reps'?'REPs':tr('Reps'))}</span>${number(reps,'current-reps','id="workout-current-reps" aria-label="'+escape(tr('Reps'))+'" title="'+escape(target)+'"')}<img class="tracker-input-line" src="./assets/figma/tracker/reps-line.svg" width="107" height="1" alt=""></label></div>${trackerFooter(elapsed,'complete')}`;
     }
+    if(resting)content=`<div class="tracker-rest-layer"><div class="tracker-rest-background"><div class="tracker-rest-fill" aria-hidden="true"></div></div><div class="tracker-rest-word">${escape(tr('Rest'))}</div><div class="tracker-rest-countdown" aria-label="${escape(tr('Rest'))}" role="timer"><span id="workout-rest-time" class="tracker-clock-digits"></span></div><div class="tracker-rest-extension"><button type="button" data-action="rest30" aria-label="${escape(tr('+30 sec'))}"><span class="tracker-rest-add-icon" style="--rest-add-icon:url('../assets/icons/plus-30sec.svg')" aria-hidden="true"></span></button><button type="button" data-action="rest60" aria-label="${escape(tr('+1 min'))}"><span class="tracker-rest-add-icon" style="--rest-add-icon:url('../assets/icons/plus-1min.svg')" aria-hidden="true"></span></button></div></div>${trackerFooter(elapsed,'skip')}`;
+    if(live){const footerStart=content.indexOf('<div class="tracker-live-footer">');content='<div class="tracker-phase-content">'+content.slice(0,footerStart)+'</div>'+content.slice(footerStart);}
     if(error&&!busy)content=content.replace('<div class="tracker-display">',`<div class="tracker-display"><p class="workout-error" role="alert">${escape(error)}</p>`);
     tracker.classList.toggle('tracker-ready',ready);
-    tracker.classList.toggle('tracker-live',live);
-    tracker.innerHTML=`<div class="tracker-panel${live?' tracker-live-panel':''}">${content}</div>`;
-    if(live)fitLiveTracker();
-    animateRestRing(priorRestOffset);tickText();
+    tracker.classList.toggle('tracker-live',live||resting);
+    tracker.classList.toggle('tracker-rest',resting);
+    tracker.innerHTML=`<div class="tracker-panel${live||resting?' tracker-live-panel':''}">${content}</div>`;
+    if(live||resting)fitLiveTracker();
+    animateRestFill(priorRestWidth);tickText();
+    const sharedPhase=!!previous?.classList?.contains('tracker-live-panel')&&(live||resting);
+    if(sharedPhase&&key!==lastTrackerKey){
+      if(!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches){
+        const body=tracker.querySelector(resting?'.tracker-rest-layer':'.tracker-phase-content');body?.animate?.([{opacity:0},{opacity:1}],{duration:240});
+        previous.querySelector('.tracker-live-footer')?.remove();
+        const fill=previous.querySelector('.tracker-rest-fill');if(fill&&Number.isFinite(priorRestWidth))fill.style.width=priorRestWidth+'px';
+        previous.classList.add('tracker-transition-old');previous.inert=true;previous.setAttribute('aria-hidden','true');
+        for(const item of previous.querySelectorAll('[id]'))item.removeAttribute('id');tracker.appendChild(previous);
+        previous.animate?.([{opacity:1},{opacity:0}],{duration:240}).finished.catch(()=>{}).finally(()=>previous.remove());
+      }
+      lastTrackerKey=key;return;
+    }
     if(key!==lastTrackerKey&&previous&&tracker.animate&&!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches){
       const newHeight=tracker.getBoundingClientRect().height;
       tracker.style.overflow='hidden';
@@ -280,7 +299,6 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
         const scale=Math.ceil(Math.hypot(tracker.getBoundingClientRect().width,newHeight)/8);
         fill.animate([{transform:'scale(1)'},{transform:`scale(${scale})`}],{duration:900,easing:'cubic-bezier(.45,0,.2,1)',fill:'forwards'}).finished.catch(()=>{}).finally(()=>fill.remove());
       }else if(!(pendingCompletion&&busy)){
-      const oldProgress=previous.querySelector('#workout-rest-progress');if(oldProgress&&Number.isFinite(priorRestOffset))oldProgress.style.strokeDashoffset=String(priorRestOffset);
       previous.classList.add('tracker-transition-old');previous.classList.toggle('tracker-was-ready',previous.querySelector('.workout-start')!==null);previous.setAttribute('aria-hidden','true');previous.inert=true;
       for(const item of previous.querySelectorAll('[id]'))item.removeAttribute('id');tracker.appendChild(previous);
       previous.animate?.([{opacity:1},{opacity:0}],{duration:140,fill:'forwards'}).finished.catch(()=>{}).finally(()=>previous.remove());
@@ -288,25 +306,28 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
     }
     lastTrackerKey=key;
   }
-  function animateRestRing(priorOffset){
+  function animateRestFill(priorWidth){
     if(session.phase!=='rest')return;
-    const ring=tracker.querySelector('#workout-rest-progress');if(!ring?.animate||globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
-    const length=2*Math.PI*38,remaining=Math.max(0,session.restUntil-Date.now()),total=Math.max(1000,session.restTotal*1000),offset=length*(1-Math.min(1,remaining/total));
-    ring.dataset.animated='true';ring.style.strokeDasharray=String(length);
-    if(Number.isFinite(priorOffset)&&Math.abs(priorOffset-offset)>0.25&&remaining>300){
-      const target=length*(1-Math.min(1,(remaining-300)/total));ring.style.strokeDashoffset=String(priorOffset);
-      ring.animate([{strokeDashoffset:priorOffset},{strokeDashoffset:target}],{duration:300,easing:'ease-out',fill:'forwards'});
-      ring.animate([{strokeDashoffset:target},{strokeDashoffset:length}],{delay:300,duration:remaining-300,easing:'linear',fill:'forwards'});
-    }else{ring.style.strokeDashoffset=String(offset);ring.animate([{strokeDashoffset:offset},{strokeDashoffset:length}],{duration:Math.max(1,remaining),easing:'linear',fill:'forwards'});}
+    const fill=tracker.querySelector('.tracker-rest-fill');if(!fill)return;
+    const {remainingMs,fraction}=restProgress(session),width=tracker.getBoundingClientRect?.().width||tracker.clientWidth||0;
+    fill.style.width=(fraction*100)+'%';
+    if(!fill.animate||!width||globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches){if(fill.dataset)fill.dataset.animated='false';return;}
+    if(fill.dataset)fill.dataset.animated='true';
+    const target=width*fraction;
+    if(Number.isFinite(priorWidth)&&Math.abs(priorWidth-target)>.5&&remainingMs>300){
+      const next=width*restProgress(session,Date.now()+300).fraction;
+      fill.animate([{width:priorWidth+'px'},{width:next+'px'}],{duration:300,easing:'ease-out',fill:'forwards'});
+      fill.animate([{width:next+'px'},{width:'0px'}],{delay:300,duration:Math.max(1,remainingMs-300),easing:'linear',fill:'forwards'});
+    }else fill.animate([{width:target+'px'},{width:'0px'}],{duration:Math.max(1,remainingMs),easing:'linear',fill:'forwards'});
   }
   function tickText(){
     const elapsed=tracker.querySelector('#workout-elapsed'),digits=elapsed?.querySelector?.('.tracker-clock-digits');
     if(elapsed){(digits||elapsed).textContent=session?.startedAt?time(((pendingCompletion?.endedAt||Date.now())-session.startedAt)/1000):'00:00';if(digits)alignTrackerClock(digits);}
     if(session?.phase==='rest'){
       const seconds=Math.max(0,Math.ceil((session.restUntil-Date.now())/1000));
-      const label=tracker.querySelector('#workout-rest-time'),ring=tracker.querySelector('#workout-rest-progress');
-      if(label)label.textContent=time(seconds);
-      if(ring&&ring.dataset?.animated!=='true'){ring.style.strokeDasharray=String(2*Math.PI*38);ring.style.strokeDashoffset=String(2*Math.PI*38*(1-Math.min(1,seconds/Math.max(1,session.restTotal))));}
+      const label=tracker.querySelector('#workout-rest-time'),fill=tracker.querySelector('.tracker-rest-fill');
+      if(label){label.textContent=time(seconds);alignTrackerClock(label);}
+      if(fill&&fill.dataset?.animated!=='true')fill.style.width=(restProgress(session).fraction*100)+'%';
     }
   }
   function tick(){

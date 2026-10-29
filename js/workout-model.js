@@ -53,6 +53,10 @@ export function advanceRest(session,now=Date.now()){
   session.phase=nextPosition(session)?'set':'complete';session.current=nextPosition(session);session.restUntil=null;return true;
 }
 export function extendRest(session,seconds){if(session.phase==='rest'){session.restUntil+=seconds*1000;session.restTotal+=seconds;}}
+export function restProgress(session,now=Date.now()){
+  const remainingMs=Math.max(0,(session.restUntil||0)-now);
+  return {remainingMs,fraction:Math.max(0,Math.min(1,remainingMs/Math.max(1000,session.restTotal*1000)))};
+}
 export function selectSet(session,exerciseId,setId){
   if(!locate(session,{exerciseId,setId}))throw Error('This set no longer exists.');
   session.current={exerciseId,setId};session.restUntil=null;if(session.startedAt)session.phase='set';
