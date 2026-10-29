@@ -2,7 +2,7 @@ import {createRepRangeSelector} from './rep-range-selector.js?v=1.2.43';
 import {alignTrackerClock} from './tracker-clock.js?v=1.2.47';
 import {captureSetLayout,animateSetLayout} from './workout-set-motion.js?v=1.2.54';
 import {currentSetScrollTop} from './workout-set-follow.js?v=1.2.56';
-import {copy,uid,newSet,exerciseInstance,positions,locate,createSession,nextPosition,startSession,completeSet,advanceRest,extendRest,restProgress,selectSet,validateWorkout,optionalNumber,targetReps,trackerRepDefault} from './workout-model.js?v=1.2.49';
+import {copy,uid,newSet,exerciseInstance,positions,locate,createSession,nextPosition,startSession,completeSet,advanceRest,extendRest,restProgress,selectSet,validateWorkout,optionalNumber,targetReps,trackerRepDefault} from './workout-model.js?v=1.2.57';
 import {defaultExercises} from './workout-catalog.js?v=1.2.43';
 import {setupCompactReorder} from './compact-reorder.js?v=1.2.43';
 import {mountRestWheel} from './workout-rest-wheel.js?v=1.2.43';
@@ -76,7 +76,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
     catch(err){if(generation===epoch){if(err.code!=='workout-local-storage')({session,bests,draft,view}=snapshot);error=tr(err.message);}}
     finally{if(generation===epoch){localBusy=false;render();}}
   }
-  function allSetsCompleted(){const sets=session?.startedAt?positions(session.workout):[];return session?.phase==='complete'&&sets.length>0&&sets.every(set=>session.results[set.setId]);}
+  function workoutCompleted(){return !!session?.startedAt&&session.phase==='complete';}
   async function fadeTrackerOut(whole=false){
     if(!tracker.animate||globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
     const panel=whole?tracker:tracker.querySelector('.tracker-finished, .tracker-finish-confirm, .tracker-upload')||tracker.querySelector('.tracker-panel');
@@ -124,7 +124,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
   }
   async function saveSession(){
     if(!session?.startedAt)return;
-    if(allSetsCompleted())session.finishedAt??=Date.now();else delete session.finishedAt;
+    if(workoutCompleted())session.finishedAt??=Date.now();else delete session.finishedAt;
     await saveLocalRecord({session:copy(session),completion:pendingCompletion,updatedAt:Date.now()});
   }
   async function boundedUpload(work){
@@ -139,7 +139,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
     const generation=epoch,account=owner;busy=true;error='';
     try{
       if(!pendingCompletion){
-        const endedAt=allSetsCompleted()?(session.finishedAt||Date.now()):Date.now(),workout=copy(session.workout);validateWorkout(workout,{allowDraft:true});workout.updatedAt=endedAt;
+        const endedAt=workoutCompleted()?(session.finishedAt||Date.now()):Date.now(),workout=copy(session.workout);validateWorkout(workout,{allowDraft:true});workout.updatedAt=endedAt;
         const log=Object.keys(session.results).length?{...copy(session),workout,endedAt,elapsedSeconds:Math.floor((endedAt-session.startedAt)/1000),status:'finished'}:null;
         pendingCompletion={sessionId:session.id,workout,endedAt,log};
         await saveLocalRecord({session:copy(session),completion:pendingCompletion,updatedAt:endedAt});
@@ -279,7 +279,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
       content+=`</div><div class="tracker-controls tracker-actions"><button type="button" class="btn-icon tracker-action" data-action="finish" aria-label="${escape(tr('Finish workout'))}" title="${escape(tr('Finish workout'))}"><img src="./assets/icons/close.svg?v=1.2.43" width="46" height="46" alt=""></button><button type="button" class="btn-icon tracker-action" data-action="${nextAction}" ${done?'disabled data-workout-locked="true"':''} aria-label="${escape(tr(nextLabel))}" title="${escape(tr(nextLabel))}"><img src="./assets/icons/arrow-right.svg?v=1.2.43" width="46" height="46" alt=""></button></div>`;
     }
     if(finishRequested)content=`<div class="tracker-finish-confirm" role="alertdialog" aria-labelledby="tracker-finish-question"><div class="tracker-message-title"><strong id="tracker-finish-question">${escape(tr('Finish this workout?'))}</strong></div><div class="tracker-confirm-buttons"><button type="button" class="btn btn-secondary btn-full" data-action="cancel-finish">${escape(tr('Cancel'))}</button><button type="button" class="btn btn-primary btn-full" data-action="confirm-finish">${escape(tr('Finish'))}</button></div></div>`;
-    if(allSetsCompleted()&&!finishRequested&&!pendingCompletion)content=`<button type="button" class="tracker-finished" data-action="close-finished"><span class="tracker-message-title"><strong>${escape(tr('Workout Finished'))}</strong></span><span class="tracker-finished-hint">${escape(tr('Tap to close'))}</span></button>`;
+    if(workoutCompleted()&&!finishRequested&&!pendingCompletion)content=`<button type="button" class="tracker-finished" data-action="close-finished"><span class="tracker-message-title"><strong>${escape(tr('Workout Finished'))}</strong></span><span class="tracker-finished-hint">${escape(tr('Tap to close'))}</span></button>`;
     if(pendingCompletion&&busy)content=`<div class="tracker-upload tracker-uploading" role="status" aria-label="${escape(tr('Uploading…'))}"><span class="workout-upload-spinner" aria-hidden="true"></span></div>`;
     else if(pendingCompletion)content=`<div class="tracker-upload"><div class="tracker-display"><strong>${escape(tr('Workout saved on this device'))}</strong><p>${escape(tr(busy?'Uploading…':'Ready to retry upload'))}</p></div><div class="tracker-controls"><button type="button" class="btn btn-primary btn-full" data-action="${localFailure?'retry-local':'retry-upload'}">${escape(tr(busy?'Uploading…':localFailure?'Try again':'Retry upload'))}</button></div></div>`;
     const live=session.phase==='set'&&!!current&&!finishRequested&&!pendingCompletion;
@@ -297,7 +297,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
     tracker.classList.toggle('tracker-live',!ready);
     tracker.classList.toggle('tracker-rest',resting);
     tracker.classList.toggle('tracker-message',!ready&&!live&&!resting);
-    tracker.classList.toggle('tracker-translucent-message',finishRequested||(allSetsCompleted()&&!pendingCompletion)||!!(pendingCompletion&&busy));
+    tracker.classList.toggle('tracker-translucent-message',finishRequested||(workoutCompleted()&&!pendingCompletion)||!!(pendingCompletion&&busy));
     const sharedPhase=!!currentPanel?.classList?.contains?.('tracker-live-panel')&&(live||resting);
     if(sharedPhase){
       // Keep the connected footer and its foreground nodes throughout phase changes.
@@ -370,7 +370,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
   }
   function tick(){
     if(!session?.startedAt||busy||localBusy||pendingCompletion||owner!==getUid())return;
-    if(allSetsCompleted())return;
+    if(workoutCompleted())return;
     if(session.phase==='rest'&&Date.now()>=session.restUntil){performLocal(async()=>{advanceRest(session);await saveSession();});return;}
     tickText();
   }
@@ -409,6 +409,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
   function repairCurrent(){
     if(!session)return;
     if(!locate(session)){session.current=nextPosition(session);session.pending=null;if(session.startedAt){session.phase=session.current?'set':'complete';session.restUntil=null;}}
+    session.cursorIndex=session.current?positions(session.workout).findIndex(p=>p.setId===session.current.setId):positions(session.workout).length;
   }
   async function action(event){
     const target=event.target.closest('[data-action]');if(!target||busy||localBusy)return;
@@ -422,7 +423,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
     if(type==='finish'){if(!session?.startedAt)return;finishRequested=true;renderTracker();disable(busy);tracker.querySelector('[data-action="cancel-finish"]')?.focus?.({preventScroll:true});return;}
     if(type==='cancel-finish'){finishRequested=false;renderTracker();disable(busy);return;}
     if(type==='confirm-finish'){if(!finishRequested)return;finishRequested=false;await finishWorkout();return;}
-    if(type==='close-finished'){if(allSetsCompleted())await finishWorkout();return;}
+    if(type==='close-finished'){if(workoutCompleted())await finishWorkout();return;}
     if(type==='retry-upload'){await finishWorkout();return;}
     if(type==='retry-local'){const failed=localFailure;if(failed){try{await saveLocalRecord(failed.record);}catch{}render();}return;}
     if(type==='retry-edits'){const job=editFailure;if(job){editTail=editTail.then(()=>saveEditSnapshot(job));await editTail;}return;}

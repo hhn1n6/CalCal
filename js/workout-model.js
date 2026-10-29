@@ -27,10 +27,16 @@ export function locate(session,position=session.current){
 export function createSession(template,now=Date.now()){
   return {id:uid(),templateId:template.id,workout:copy(template),createdAt:now,startedAt:null,phase:'ready',current:positions(template)[0]||null,restUntil:null,restTotal:0,results:{}};
 }
-export function nextPosition(session){return positions(session.workout).find(p=>!session.results[p.setId])||null;}
+export function nextPosition(session){
+  const sets=positions(session.workout);
+  const currentIndex=sets.findIndex(p=>p.exerciseId===session.current?.exerciseId&&p.setId===session.current?.setId);
+  const start=currentIndex>=0?currentIndex:Number.isInteger(session.cursorIndex)?session.cursorIndex:session.phase==='complete'?sets.length:0;
+  return sets.slice(start).find(p=>!session.results[p.setId])||null;
+}
 export function startSession(session,now=Date.now()){
   if(!positions(session.workout).length)throw Error('Add at least one exercise and set.');
   session.startedAt??=now;session.phase='set';session.current=nextPosition(session)||positions(session.workout)[0];session.restUntil=null;
+  session.cursorIndex=positions(session.workout).findIndex(p=>p.setId===session.current.setId);
 }
 export function completeSet(session,weight,reps,best={},now=Date.now()){
   const current=locate(session);
@@ -43,6 +49,7 @@ export function completeSet(session,weight,reps,best={},now=Date.now()){
     updated.byWeight[String(weight)]=Math.max(updated.byWeight[String(weight)]??0,reps);
   }
   const next=nextPosition(session);session.current=next;
+  session.cursorIndex=next?positions(session.workout).findIndex(p=>p.setId===next.setId):positions(session.workout).length;
   const rest=Number(current.exercise.restSeconds)||0;
   session.phase=!next?'complete':rest>0?'rest':'set';
   session.restTotal=rest;session.restUntil=session.phase==='rest'?now+rest*1000:null;
@@ -50,7 +57,9 @@ export function completeSet(session,weight,reps,best={},now=Date.now()){
 }
 export function advanceRest(session,now=Date.now()){
   if(session.phase!=='rest'||now<session.restUntil)return false;
-  session.phase=nextPosition(session)?'set':'complete';session.current=nextPosition(session);session.restUntil=null;return true;
+  const next=nextPosition(session);session.phase=next?'set':'complete';session.current=next;
+  session.cursorIndex=next?positions(session.workout).findIndex(p=>p.setId===next.setId):positions(session.workout).length;
+  session.restUntil=null;return true;
 }
 export function extendRest(session,seconds){if(session.phase==='rest'){session.restUntil+=seconds*1000;session.restTotal+=seconds;}}
 export function restProgress(session,now=Date.now()){
@@ -60,6 +69,7 @@ export function restProgress(session,now=Date.now()){
 export function selectSet(session,exerciseId,setId){
   if(!locate(session,{exerciseId,setId}))throw Error('This set no longer exists.');
   session.current={exerciseId,setId};session.restUntil=null;if(session.startedAt)session.phase='set';
+  session.cursorIndex=positions(session.workout).findIndex(p=>p.setId===setId);
 }
 export function validateWorkout(workout,{allowDraft=false}={}){
   if(typeof workout.name!=='string'||workout.name.length>100)throw Error('Enter a workout name.');
