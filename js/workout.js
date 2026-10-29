@@ -1,4 +1,5 @@
 import {createRepRangeSelector} from './rep-range-selector.js?v=1.2.43';
+import {alignTrackerClock} from './tracker-clock.js?v=1.2.47';
 import {copy,uid,newSet,exerciseInstance,positions,locate,createSession,nextPosition,startSession,completeSet,advanceRest,extendRest,selectSet,validateWorkout,optionalNumber,targetReps,trackerRepDefault} from './workout-model.js?v=1.2.43';
 import {defaultExercises} from './workout-catalog.js?v=1.2.43';
 import {setupCompactReorder} from './compact-reorder.js?v=1.2.43';
@@ -19,6 +20,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
     const title=tracker.querySelector('.tracker-live-title'),text=title?.querySelector?.('strong');
     if(title?.clientWidth&&text?.scrollWidth)text.style.setProperty('--tracker-title-scale',Math.min(.838,title.clientWidth/text.scrollWidth));
     for(const input of tracker.querySelectorAll('input[data-field^="current-"]'))input.style.setProperty?.('--tracker-number-scale',String(Math.min(1,3/Math.max(3,String(input.value).length))));
+    alignTrackerClock(tracker.querySelector('.tracker-clock-digits'));
   }
   if(globalThis.ResizeObserver){const observer=new ResizeObserver(fitLiveTracker);observer.observe(tracker);}
   const workoutName=workout=>workout.name?.trim()||tr('Workout');
@@ -255,7 +257,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
       const weight=session.pending?.setId===set.id?session.pending.weight:actual.weight,reps=session.pending?.setId===set.id?session.pending.reps:actual.reps;
       const target=typeof set.reps==='string'?tr('Target reps')+': '+set.reps.replace('-','–'):'';
       const circle='<img class="tracker-control-circle" src="./assets/figma/tracker/control-circle.svg" width="94" height="94" alt="">';
-      content=`<div class="tracker-live-title"><strong>${escape(ex.name)}</strong></div><div class="tracker-live-metrics"><div class="tracker-live-metric"><span>${escape(tr('Set')==='Set'?'SETs':tr('Set'))}</span><output class="tracker-set-number" aria-label="${escape(tr('Set'))} ${current.index+1}">${current.index+1}</output></div><label class="tracker-live-metric tracker-live-weight"><span>${escape(tr('Weight (kg)')==='Weight (kg)'?'WEIGHT(kg)':tr('Weight (kg)'))}</span>${number(weight,'current-weight','id="workout-current-weight" aria-label="'+escape(tr('Weight (kg)'))+'"')}<img class="tracker-input-line" src="./assets/figma/tracker/weight-line.svg" width="153" height="1" alt=""></label><label class="tracker-live-metric tracker-live-reps"><span>${escape(tr('Reps')==='Reps'?'REPs':tr('Reps'))}</span>${number(reps,'current-reps','id="workout-current-reps" aria-label="'+escape(tr('Reps'))+'" title="'+escape(target)+'"')}<img class="tracker-input-line" src="./assets/figma/tracker/reps-line.svg" width="107" height="1" alt=""></label></div><div class="tracker-live-footer"><button type="button" class="btn-icon tracker-action" data-action="finish" aria-label="${escape(tr('Finish workout'))}">${circle}<img class="tracker-control-art tracker-finish-art" src="./assets/figma/tracker/finish.svg" width="49" height="57" alt=""></button><span id="workout-elapsed" aria-label="${escape(tr('Elapsed time'))}">${elapsed}</span><button type="button" class="btn-icon tracker-action" data-action="complete" aria-label="${escape(tr('Complete set'))}">${circle}<img class="tracker-control-art tracker-next-art" src="./assets/figma/tracker/next.svg" width="60" height="60" alt=""></button></div>`;
+      content=`<div class="tracker-live-title"><strong>${escape(ex.name)}</strong></div><div class="tracker-live-metrics"><div class="tracker-live-metric"><span>${escape(tr('Set')==='Set'?'SETs':tr('Set'))}</span><output class="tracker-set-number" aria-label="${escape(tr('Set'))} ${current.index+1}">${current.index+1}</output></div><label class="tracker-live-metric tracker-live-weight"><span>${escape(tr('Weight (kg)')==='Weight (kg)'?'WEIGHT(kg)':tr('Weight (kg)'))}</span>${number(weight,'current-weight','id="workout-current-weight" aria-label="'+escape(tr('Weight (kg)'))+'"')}<img class="tracker-input-line" src="./assets/figma/tracker/weight-line.svg" width="153" height="1" alt=""></label><label class="tracker-live-metric tracker-live-reps"><span>${escape(tr('Reps')==='Reps'?'REPs':tr('Reps'))}</span>${number(reps,'current-reps','id="workout-current-reps" aria-label="'+escape(tr('Reps'))+'" title="'+escape(target)+'"')}<img class="tracker-input-line" src="./assets/figma/tracker/reps-line.svg" width="107" height="1" alt=""></label></div><div class="tracker-live-footer"><button type="button" class="btn-icon tracker-action" data-action="finish" aria-label="${escape(tr('Finish workout'))}">${circle}<img class="tracker-control-art tracker-finish-art" src="./assets/figma/tracker/finish.svg" width="49" height="57" alt=""></button><span id="workout-elapsed" aria-label="${escape(tr('Elapsed time'))}"><span class="tracker-clock-digits">${elapsed}</span></span><button type="button" class="btn-icon tracker-action" data-action="complete" aria-label="${escape(tr('Complete set'))}">${circle}<img class="tracker-control-art tracker-next-art" src="./assets/figma/tracker/next.svg" width="60" height="60" alt=""></button></div>`;
     }
     if(error&&!busy)content=content.replace('<div class="tracker-display">',`<div class="tracker-display"><p class="workout-error" role="alert">${escape(error)}</p>`);
     tracker.classList.toggle('tracker-ready',ready);
@@ -298,7 +300,8 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
     }else{ring.style.strokeDashoffset=String(offset);ring.animate([{strokeDashoffset:offset},{strokeDashoffset:length}],{duration:Math.max(1,remaining),easing:'linear',fill:'forwards'});}
   }
   function tickText(){
-    const elapsed=tracker.querySelector('#workout-elapsed');if(elapsed)elapsed.textContent=session?.startedAt?time(((pendingCompletion?.endedAt||Date.now())-session.startedAt)/1000):'00:00';
+    const elapsed=tracker.querySelector('#workout-elapsed'),digits=elapsed?.querySelector?.('.tracker-clock-digits');
+    if(elapsed){(digits||elapsed).textContent=session?.startedAt?time(((pendingCompletion?.endedAt||Date.now())-session.startedAt)/1000):'00:00';if(digits)alignTrackerClock(digits);}
     if(session?.phase==='rest'){
       const seconds=Math.max(0,Math.ceil((session.restUntil-Date.now())/1000));
       const label=tracker.querySelector('#workout-rest-time'),ring=tracker.querySelector('#workout-rest-progress');
