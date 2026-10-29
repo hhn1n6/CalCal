@@ -840,4 +840,4 @@
   .tracker-live-footer .tracker-control-circle { top: 0; left: 0; width: 94px; height: 94px; }
   .tracker-live-footer .tracker-finish-art { top: 2.795031cqw; left: 4.347826cqw; width: 49px; height: 57px; }
   .tracker-live-footer .tracker-next-art { top: 2.639752cqw; left: 2.639752cqw; width: 60px; height: 60px; }
-  .tracker-live #workout-elapsed { position: absolute; left: 32.608696cqw; width: 34.782609cqw; display: block; min-width: 0; color: #fff; font-family: 'Times New Roman MT Condensed','Times New Roman',Times,serif; font-size: 20.186335cqw; line-height: 23.602484cqw; font-weight: 700; letter-spacing: -.08em; white-space: nowrap; text-align: center; transform: translate(-.621118cqw,-.341615cqw) scaleX(.84); }
+  .tracker-live #workout-elapsed { position: absolute; left: 50%; width: 34.782609cqw; padding-right: .08em; display: block; min-width: 0; color: #fff; font-family: 'Times New Roman MT Condensed','Times New Roman',Times,serif; font-size: 20.186335cqw; line-height: 23.602484cqw; font-weight: 700; letter-spacing: -.08em; white-space: nowrap; text-align: center; transform: translate(-50%,-.341615cqw) scaleX(.84); }
