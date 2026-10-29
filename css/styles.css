@@ -67,7 +67,7 @@
   .login-panel p { color: var(--text2); line-height: 1.5; margin-bottom: 20px; }
   .login-panel p:empty { display: none; }
   .login-version { position: absolute; top: calc(50% - 66px); width: 100%; display: block; color: var(--text3); font-size: 11px; line-height: 1.5; animation: login-reveal 600ms ease 1350ms both; }
-  .login-actions { position: absolute; top: calc(50% - 28px); left: 50%; transform: translateX(-50%); width: min(300px, calc(100% - 48px)); padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); animation: login-reveal 600ms ease 1350ms both; }
+  .login-actions { position: absolute; top: calc(50% - 28px); left: calc(50% - .07764cqw); transform: translateX(-50%); width: min(300px, calc(100% - 48px)); padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); animation: login-reveal 600ms ease 1350ms both; }
   .email-login-form { display: grid; gap: 8px; }
   .login-field { position: relative; min-width: 0; text-align: left; }
   .login-field label { position: absolute; top: 7px; left: 13px; z-index: 1; color: #777; font-size: 11px; line-height: 14px; cursor: text; }
@@ -812,18 +812,28 @@
   .tracker-uploading { height: calc(var(--tracker-display-height) + 60px); display: flex; align-items: center; justify-content: center; }
   .workout-upload-spinner { width: 32px; height: 32px; border: 3px solid #e5e5e5; border-top-color: #000; border-radius: 50%; animation: login-spin 800ms linear infinite; }
 
-  /* Ongoing set: proportions and type scale from the 667 × 387 reference. */
-  .workout-tracker.tracker-live { container-type: inline-size; height: auto; aspect-ratio: 667 / 387; padding: 0; border: 0; border-radius: 16px; background: linear-gradient(180deg,#000 0%,#363636 48%,#858585 100%); color: #fff; box-shadow: 0 3px 8px #0006; }
-  .tracker-live .tracker-live-panel { inset: 4% 4% 3%; display: grid; grid-template-rows: 24% 43% 33%; }
-  .tracker-live-title { min-width: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-  .tracker-live-title strong { flex-shrink: 0; display: block; width: max-content; font-family: 'Times New Roman MT Condensed','Times New Roman',Times,serif; font-size: 8.67cqw; line-height: 1.05; font-weight: 700; letter-spacing: -.02em; white-space: nowrap; transform: scaleX(var(--tracker-title-scale,.82)); transform-origin: center; }
-  .tracker-live-metrics { display: grid; grid-template-columns: 1fr 1.45fr 1fr; align-items: start; gap: 5cqw; min-height: 0; padding: 0 3cqw; }
-  .tracker-live .tracker-live-metric { display: flex; flex-direction: column; align-items: center; min-width: 0; margin: 0; font-family: 'Times New Roman',Times,serif; }
-  .tracker-live-metric > span { width: 100%; color: #d9d9d9; font-size: 3.25cqw; line-height: 1.2; font-weight: 400; white-space: nowrap; text-align: center; }
-  .tracker-live .tracker-live-metric input, .tracker-live .tracker-set-number { display: block; width: 100%; max-width: none; min-height: 0; height: 15cqw; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; color: #fff; -webkit-text-fill-color: #fff; font-family: 'Times New Roman',Times,serif; font-size: 13cqw; line-height: 1.1; font-weight: 400; text-align: center; }
-  .tracker-live .tracker-live-metric input { border-bottom: 1px solid #d9d9d9; caret-color: #fff; }
-  .tracker-live .tracker-live-metric input:focus { border-bottom-color: #fff; outline: none; }
-  .tracker-live-footer { display: grid; grid-template-columns: 13.94cqw minmax(0,1fr) 13.94cqw; align-items: center; justify-content: center; gap: 1cqw; padding: 0 12cqw; min-width: 0; }
-  .tracker-live-footer .tracker-action { display: flex; align-items: center; justify-content: center; width: 13.94cqw; height: 13.94cqw; min-width: 44px; min-height: 44px; padding: 2cqw; border: 0; border-radius: 50%; background: rgba(217,217,217,.3); box-shadow: none; }
-  .tracker-live-footer .tracker-action img { display: block; width: 100%; height: 100%; filter: invert(1); }
-  .tracker-live #workout-elapsed { display: block; min-width: 0; color: #fff; font-family: 'Times New Roman MT Condensed','Times New Roman',Times,serif; font-size: 14.56cqw; line-height: 1; font-weight: 400; letter-spacing: -.07em; white-space: nowrap; text-align: center; transform: scaleX(.8); }
+  /* Ongoing set: Figma YT3N2xGGM3yxnotnIaAEdZ, 644 × 387 design coordinates. */
+  .workout-tracker.tracker-live { container-type: inline-size; height: auto; aspect-ratio: 644 / 387; padding: 0; border: 0; border-radius: calc(20px * var(--tracker-scale,.745)); background: linear-gradient(179.6249346deg,#000 .53683%,#1a1a1a 25.268%,#474747 99.463%); color: #fff; box-shadow: none; }
+  .tracker-live .tracker-live-panel { inset: 0; display: block; }
+  .tracker-live-title { position: absolute; top: 1.708075cqw; left: 0; right: 0; height: 13.509317cqw; min-width: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .tracker-live-title strong { flex-shrink: 0; display: block; width: max-content; font-family: 'Times New Roman MT Condensed','Times New Roman',Times,serif; font-size: 10.869565cqw; line-height: 13.509317cqw; font-weight: 700; letter-spacing: -.02em; white-space: nowrap; transform: translate(-.18cqw,-.48cqw) scaleX(var(--tracker-title-scale,.838)); transform-origin: center; }
+  .tracker-live-metrics { position: absolute; top: 15.217391cqw; left: 9.31677%; right: 8.695652%; height: 22.049689cqw; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 0; padding: 0; }
+  .tracker-live .tracker-live-metric { position: relative; display: block; min-width: 0; height: 100%; margin: 0; font-family: 'Times New Roman',Times,serif; }
+  .tracker-live-metric > span { display: block; width: 100%; height: 5.745342cqw; color: #d9d9d9; font-family: 'Times New Roman MT Condensed','Times New Roman',Times,serif; font-size: 4.968944cqw; line-height: 5.745342cqw; letter-spacing: -.02em; font-weight: 400; white-space: nowrap; text-align: center; transform: translate(-.07764cqw,0) scaleX(.87); }
+  .tracker-live .tracker-live-metric input, .tracker-live .tracker-set-number { position: absolute; top: 3.26087cqw; left: 0; display: block; width: 100%; max-width: none; min-height: 0; height: 18.78882cqw; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; color: #fff; -webkit-text-fill-color: #fff; font-family: 'Times New Roman',Times,serif; font-size: 16.304348cqw; line-height: 18.78882cqw; letter-spacing: -.02em; font-weight: 400; text-align: center; }
+  .tracker-live .tracker-live-metric input { caret-color: #fff; font-size: calc(16.304348cqw * var(--tracker-number-scale,1)); }
+  .tracker-live .tracker-set-number { left: -.232919cqw; }
+  .tracker-live .tracker-live-weight input { left: -.372671cqw; }
+  .tracker-live .tracker-live-reps input { left: -.590062cqw; }
+  .tracker-live .tracker-live-reps > span { transform: translateX(-.310559cqw) scaleX(.87); }
+  .tracker-live .tracker-live-metric input:focus { border: 0; outline: none; }
+  .tracker-live .tracker-input-line { position: absolute; top: 19.409938cqw; left: calc(50% - .07764cqw); transform: translateX(-50%) scale(var(--tracker-scale,.745)); transform-origin: top center; pointer-events: none; }
+  .tracker-live-weight .tracker-input-line { width: 153px; height: 1px; }
+  .tracker-live-reps .tracker-input-line { width: 107px; height: 1px; }
+  .tracker-live-footer { position: absolute; top: 36.490683cqw; left: 15.372671%; right: 15.372671%; height: 23.602484cqw; display: grid; grid-template-columns: 14.596273cqw minmax(0,1fr) 14.596273cqw; align-items: start; gap: 0; padding: 0; min-width: 0; }
+  .tracker-live-footer .tracker-action { position: relative; display: block; width: 14.596273cqw; height: 14.596273cqw; min-width: 44px; min-height: 44px; margin-top: 4.503106cqw; padding: 0; border: 0; border-radius: 50%; background: transparent; box-shadow: none; }
+  .tracker-live-footer .tracker-action img { position: absolute; display: block; max-width: none; filter: none; transform: scale(var(--tracker-scale,.745)); transform-origin: top left; pointer-events: none; }
+  .tracker-live-footer .tracker-control-circle { top: 0; left: 0; width: 94px; height: 94px; }
+  .tracker-live-footer .tracker-finish-art { top: 2.795031cqw; left: 4.347826cqw; width: 49px; height: 57px; }
+  .tracker-live-footer .tracker-next-art { top: 2.639752cqw; left: 2.639752cqw; width: 60px; height: 60px; }
+  .tracker-live #workout-elapsed { display: block; min-width: 0; color: #fff; font-family: 'Times New Roman MT Condensed','Times New Roman',Times,serif; font-size: 20.186335cqw; line-height: 23.602484cqw; font-weight: 700; letter-spacing: -.08em; white-space: nowrap; text-align: center; transform: translate(-.621118cqw,-.341615cqw) scaleX(.84); }
