@@ -796,7 +796,8 @@
   .exercise-editor-heading h2 { flex: 1; margin: 0; font-size: 22px; }
   .exercise-editor-heading .btn-icon { width: 36px; height: 36px; justify-content: center; }
   .exercise-editor-delete { display: block; margin: 0 0 16px auto; border: 0; background: none; color: #620607; font: inherit; cursor: pointer; }
-  [data-picker-delete-confirm] { margin-bottom: 16px; }
+  [data-picker-delete-confirm] { margin: 0; }
+  .exercise-editor-window .workout-error:empty { display: none; }
   .exercise-picker-custom { margin-top: 20px; }
   .exercise-picker-custom summary { margin-bottom: 16px; cursor: pointer; }
   .exercise-picker-footer { padding: 16px 24px calc(16px + env(safe-area-inset-bottom,0px)); border-top: 1px solid var(--border); flex-shrink: 0; background: var(--surface); }
