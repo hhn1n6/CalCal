@@ -258,6 +258,10 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
     const currentPanel=tracker.querySelector('.tracker-panel');
     const previous=currentPanel?.cloneNode?.(true),oldHeight=tracker.getBoundingClientRect?.().height||0;
     if(previous?.style&&globalThis.getComputedStyle)previous.style.background=getComputedStyle(currentPanel).background;
+    if(previous?.style&&tracker.classList?.contains?.('tracker-compact')){
+      previous.classList.add('tracker-outgoing-compact');
+      Object.assign(previous.style,{height:oldHeight+'px',top:'auto',bottom:'0'});
+    }
     const starting=!ready&&!!session.startedAt&&!!previous?.querySelector('.workout-start');
     const oldFill=tracker.querySelector('.tracker-rest-fill'),priorRestWidth=oldFill?.getBoundingClientRect?.().width;
     tracker.getAnimations?.().forEach(animation=>animation.cancel());tracker.style.overflow='';
@@ -324,7 +328,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
         const fill=previous.querySelector('.tracker-rest-fill');if(fill&&Number.isFinite(priorRestWidth))fill.style.width=priorRestWidth+'px';
         previous.classList.add('tracker-transition-old');previous.inert=true;previous.setAttribute('aria-hidden','true');
         for(const item of previous.querySelectorAll('[id]'))item.removeAttribute('id');tracker.appendChild(previous);
-        previous.animate?.([{opacity:1},{opacity:0}],{duration:240}).finished.catch(()=>{}).finally(()=>previous.remove());
+        previous.animate?.([{opacity:1},{opacity:0}],{duration:240,fill:'forwards'}).finished.catch(()=>{}).finally(()=>previous.remove());
       }
       lastTrackerKey=key;return;
     }

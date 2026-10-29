@@ -881,6 +881,6 @@
   /* Ongoing-workout prompt: same fixed bottom edge and footer as the full tracker. */
   .workout-tracker.tracker-compact { aspect-ratio: 644 / 302; background: linear-gradient(179.38deg,#000 .54%,#1a1a1a 25.27%,#474747 98.93%); }
   .tracker-compact > .tracker-panel { background: linear-gradient(179.38deg,#000 .54%,#1a1a1a 25.27%,#474747 98.93%); color: #fff; }
-  .tracker-compact .tracker-message-title { top: 5.745342cqw; color: #fff; }
-  .tracker-compact .tracker-confirm-buttons { top: 25.776398cqw; }
+  .tracker-compact .tracker-message-title, .tracker-outgoing-compact .tracker-message-title { top: 5.745342cqw; color: #fff; }
+  .tracker-compact .tracker-confirm-buttons, .tracker-outgoing-compact .tracker-confirm-buttons { top: 25.776398cqw; }
   .tracker-compact .workout-upload-spinner { border-color: rgba(255,255,255,.25); border-top-color: #fff; }
