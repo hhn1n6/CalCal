@@ -19,6 +19,8 @@ export const chinese = {
   "Delete this workout?":"刪除這個訓練？",
   "Delete this workout and end its current session?":"刪除這個訓練並結束目前的訓練紀錄？",
   "Finish this workout?":"結束這次訓練？",
+  "Workout Finished":"訓練完成",
+  "Tap to close":"輕觸關閉",
   "The current exercise cannot be deleted.":"無法刪除目前組數所屬的動作。",
   "Unnamed workout":"未命名訓練",
   "Minimum reps":"最低次數",

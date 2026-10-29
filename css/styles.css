@@ -814,7 +814,8 @@
 
   /* Ongoing set: Figma YT3N2xGGM3yxnotnIaAEdZ, 644 × 387 design coordinates. */
   .workout-tracker.tracker-live { container-type: inline-size; height: auto; aspect-ratio: 644 / 387; padding: 0; border: 0; border-radius: calc(20px * var(--tracker-scale,.745)); background: linear-gradient(179.6249346deg,#000 .53683%,#1a1a1a 25.268%,#474747 99.463%); color: #fff; box-shadow: none; }
-  .tracker-live .tracker-live-panel { inset: 0; display: block; }
+  .tracker-live .tracker-panel { inset: 0; display: block; border-radius: inherit; }
+  .tracker-live-panel { background: linear-gradient(179.6249346deg,#000 .53683%,#1a1a1a 25.268%,#474747 99.463%); }
   .tracker-live-title { position: absolute; top: 1.708075cqw; left: 0; right: 0; height: 13.509317cqw; min-width: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
   .tracker-live-title strong { flex-shrink: 0; display: block; width: max-content; font-family: 'Times New Roman MT Condensed','Times New Roman',Times,serif; font-size: 10.869565cqw; line-height: 13.509317cqw; font-weight: 700; letter-spacing: -.02em; white-space: nowrap; transform: translate(-.18cqw,-.48cqw) scaleX(var(--tracker-title-scale,.838)); transform-origin: center; }
   .tracker-live-metrics { position: absolute; top: 15.217391cqw; left: 9.31677%; right: 8.695652%; height: 22.049689cqw; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 0; padding: 0; }
@@ -857,3 +858,20 @@
   .tracker-rest .tracker-control-circle { background: rgba(0,0,0,.15); }
   .tracker-rest .tracker-live-footer { pointer-events: none; }
   .tracker-rest .tracker-live-footer button { pointer-events: auto; }
+
+  /* Confirmation, completion and upload share the 644 × 387 tracker frame. */
+  .workout-tracker.tracker-message { background: #fff; }
+  .tracker-message > .tracker-panel { background: #fff; color: #000; }
+  .tracker-message .tracker-finish-confirm, .tracker-message .tracker-finished { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; margin: 0; border: 0; border-radius: inherit; background: transparent; color: #000; }
+  .tracker-message-title { position: absolute; top: 18.322981cqw; left: 7.298137cqw; right: 7.298137cqw; height: 15.062112cqw; display: flex; align-items: center; justify-content: center; }
+  .tracker-message-title strong { display: block; flex-shrink: 0; width: max-content; font-family: 'Times New Roman MT Condensed','Times New Roman',Times,serif; font-size: 10.869565cqw; line-height: 12.732919cqw; font-weight: 700; letter-spacing: -.03em; white-space: nowrap; transform: scaleX(var(--tracker-message-title-scale,.838)); transform-origin: center; }
+  .tracker-confirm-buttons { position: absolute; top: 33.074534cqw; left: 7.298137cqw; right: 7.298137cqw; height: 8.695652cqw; display: grid; grid-template-columns: 1fr 1fr; gap: 1.552795cqw; }
+  .tracker-confirm-buttons .btn { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 0; height: 100%; padding: 0; border: calc(1px * var(--tracker-scale,.745)) solid #000; border-radius: calc(10px * var(--tracker-scale,.745)); font-family: 'Times New Roman',Times,serif; font-size: 3.726708cqw; line-height: 4.347826cqw; font-weight: 700; letter-spacing: -.03em; }
+  .tracker-confirm-buttons .btn-secondary { background: #f0f0f0; color: #000; }
+  .tracker-confirm-buttons .btn-primary { background: #000; color: #fff; }
+  .tracker-finished { cursor: pointer; }
+  .tracker-finished .tracker-message-title { top: 22.515528cqw; }
+  .tracker-finished-hint { position: absolute; bottom: 1.863354cqw; left: 0; right: 0; height: 4.347826cqw; color: #c3c3c3; font-family: 'Times New Roman',Times,serif; font-size: 3.726708cqw; line-height: 4.347826cqw; font-weight: 700; letter-spacing: -.03em; text-align: center; }
+  .tracker-message .tracker-upload { position: absolute; inset: 0; height: auto; }
+  .tracker-message .tracker-upload:not(.tracker-uploading) { display: flex; flex-direction: column; padding: 16px; gap: 12px; }
+  .tracker-message .tracker-upload:not(.tracker-uploading) .tracker-display { flex: 1; height: auto; }
