@@ -840,6 +840,6 @@
   .tracker-live-footer .tracker-control-circle { top: 0; left: 0; width: 94px; height: 94px; }
   .tracker-live-footer .tracker-finish-art { top: 2.795031cqw; left: 4.347826cqw; width: 49px; height: 57px; }
   .tracker-live-footer .tracker-next-art { top: 2.639752cqw; left: 2.639752cqw; width: 60px; height: 60px; }
-  .tracker-live #workout-elapsed { position: absolute; left: 0; right: 0; width: auto; padding: 0; display: flex; justify-content: center; --tracker-clock-scale: .84; min-width: 0; color: #fff; font-family: 'Times New Roman MT Condensed','Times New Roman',Times,serif; font-size: 20.186335cqw; line-height: 23.602484cqw; font-weight: 700; letter-spacing: -.08em; white-space: nowrap; text-align: center; transform: translateY(-.341615cqw); }
+  .tracker-live #workout-elapsed { pointer-events: none; position: absolute; left: 0; right: 0; width: auto; padding: 0; display: flex; justify-content: center; --tracker-clock-scale: .84; min-width: 0; color: #fff; font-family: 'Times New Roman MT Condensed','Times New Roman',Times,serif; font-size: 20.186335cqw; line-height: 23.602484cqw; font-weight: 700; letter-spacing: -.08em; white-space: nowrap; text-align: center; transform: translateY(-.341615cqw); }
 
   .tracker-clock-digits { display: block; width: max-content; flex-shrink: 0; font-kerning: none; transform: translateX(var(--clock-ink-offset,0px)) scaleX(var(--tracker-clock-scale,.84)); transform-origin: center; }
