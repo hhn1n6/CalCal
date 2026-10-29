@@ -323,7 +323,8 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
       if(!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches){
         const newHeight=tracker.getBoundingClientRect().height;
         if(Math.abs(newHeight-oldHeight)>.5)tracker.animate?.([{height:oldHeight+'px'},{height:newHeight+'px'}],{duration:420,easing:'cubic-bezier(.22,.8,.25,1)'});
-        const body=tracker.querySelector(resting?'.tracker-rest-layer':'.tracker-phase-content');body?.animate?.([{opacity:0},{opacity:1}],{duration:240});
+        const resuming=previous?.classList?.contains?.('tracker-outgoing-compact')&&!compact;
+        const body=tracker.querySelector(resting?'.tracker-rest-layer':'.tracker-phase-content');body?.animate?.([{opacity:0},{opacity:1}],{duration:240,delay:resuming?240:0,fill:'backwards'});
         previous.querySelector('.tracker-live-footer')?.remove();
         const fill=previous.querySelector('.tracker-rest-fill');if(fill&&Number.isFinite(priorRestWidth))fill.style.width=priorRestWidth+'px';
         previous.classList.add('tracker-transition-old');previous.inert=true;previous.setAttribute('aria-hidden','true');
