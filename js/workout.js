@@ -230,7 +230,8 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
   }
   function renderTracker(){
     const current=locate(session),ex=current?.exercise,set=current?.set,ready=session.phase==='ready';
-    const previous=tracker.querySelector('.tracker-panel')?.cloneNode?.(true),oldHeight=tracker.getBoundingClientRect?.().height||0;
+    const currentPanel=tracker.querySelector('.tracker-panel');
+    const previous=currentPanel?.cloneNode?.(true),oldHeight=tracker.getBoundingClientRect?.().height||0;
     const starting=!ready&&!!session.startedAt&&!!previous?.querySelector('.workout-start');
     const oldFill=tracker.querySelector('.tracker-rest-fill'),priorRestWidth=oldFill?.getBoundingClientRect?.().width;
     tracker.getAnimations?.().forEach(animation=>animation.cancel());tracker.style.overflow='';
@@ -269,10 +270,19 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
     tracker.classList.toggle('tracker-ready',ready);
     tracker.classList.toggle('tracker-live',live||resting);
     tracker.classList.toggle('tracker-rest',resting);
-    tracker.innerHTML=`<div class="tracker-panel${live||resting?' tracker-live-panel':''}">${content}</div>`;
+    const sharedPhase=!!currentPanel?.classList?.contains?.('tracker-live-panel')&&(live||resting);
+    if(sharedPhase){
+      // Keep the connected footer and its foreground nodes throughout phase changes.
+      const footer=currentPanel.querySelector('.tracker-live-footer');
+      for(const child of [...currentPanel.children])if(child!==footer)child.remove();
+      currentPanel.insertAdjacentHTML('afterbegin',content.slice(0,content.indexOf('<div class="tracker-live-footer">')));
+      const next=footer.querySelector('[data-action="skip"], [data-action="complete"]');
+      next.dataset.action=resting?'skip':'complete';
+      next.setAttribute('aria-label',tr(resting?'Skip rest':'Complete set'));
+      tracker.querySelectorAll('.tracker-transition-old').forEach(panel=>panel.remove());
+    }else tracker.innerHTML=`<div class="tracker-panel${live||resting?' tracker-live-panel':''}">${content}</div>`;
     if(live||resting)fitLiveTracker();
     animateRestFill(priorRestWidth);tickText();
-    const sharedPhase=!!previous?.classList?.contains('tracker-live-panel')&&(live||resting);
     if(sharedPhase&&key!==lastTrackerKey){
       if(!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches){
         const body=tracker.querySelector(resting?'.tracker-rest-layer':'.tracker-phase-content');body?.animate?.([{opacity:0},{opacity:1}],{duration:240});
