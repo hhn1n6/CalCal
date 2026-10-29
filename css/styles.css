@@ -526,7 +526,7 @@
   .workout-picker details { margin-top: 14px; }
   .workout-picker details label { display: block; margin: 12px 0; }
   .workout-session-end { display: flex; justify-content: space-between; gap: 12px; margin: 20px 0; }
-  .workout-has-tracker { padding-bottom: max(calc(var(--workout-tracker-height, 320px) + 24px),75dvh); }
+  .workout-has-tracker { padding-bottom: calc(var(--workout-tracker-height, 320px) + 24px); }
   .workout-tracker { position: fixed; z-index: 60; bottom: calc(var(--nav-base-height) + var(--nav-bottom-gap) + 12px); left: 16px; right: 16px; max-width: 480px; margin: auto; padding: 14px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); box-shadow: 0 4px 22px rgba(0,0,0,.12); max-height: calc(100dvh - 190px); overflow-y: auto; }
   .workout-tracker-header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 12px; font-size: 12px; }
   .workout-tracker-header strong { font-size: 18px; }
