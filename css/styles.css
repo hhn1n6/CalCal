@@ -819,21 +819,25 @@
   .tracker-live-title strong { flex-shrink: 0; display: block; width: max-content; font-family: 'Times New Roman MT Condensed','Times New Roman',Times,serif; font-size: 10.869565cqw; line-height: 13.509317cqw; font-weight: 700; letter-spacing: -.02em; white-space: nowrap; transform: translate(-.18cqw,-.48cqw) scaleX(var(--tracker-title-scale,.838)); transform-origin: center; }
   .tracker-live-metrics { position: absolute; top: 15.217391cqw; left: 9.31677%; right: 8.695652%; height: 22.049689cqw; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 0; padding: 0; }
   .tracker-live .tracker-live-metric { position: relative; display: block; min-width: 0; height: 100%; margin: 0; font-family: 'Times New Roman',Times,serif; }
+  .tracker-live .tracker-live-metric:first-child { transform: translateX(-5.900621cqw); }
+  .tracker-live .tracker-live-reps { transform: translateX(6.21118cqw); }
   .tracker-live-metric > span { display: block; width: 100%; height: 5.745342cqw; color: #d9d9d9; font-family: 'Times New Roman MT Condensed','Times New Roman',Times,serif; font-size: 4.968944cqw; line-height: 5.745342cqw; letter-spacing: -.02em; font-weight: 400; white-space: nowrap; text-align: center; transform: translate(-.07764cqw,0) scaleX(.87); }
   .tracker-live .tracker-live-metric input, .tracker-live .tracker-set-number { position: absolute; top: 3.26087cqw; left: 0; display: block; width: 100%; max-width: none; min-height: 0; height: 18.78882cqw; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; color: #fff; -webkit-text-fill-color: #fff; font-family: 'Times New Roman',Times,serif; font-size: 16.304348cqw; line-height: 18.78882cqw; letter-spacing: -.02em; font-weight: 400; text-align: center; }
   .tracker-live .tracker-live-metric input { caret-color: #fff; font-size: calc(16.304348cqw * var(--tracker-number-scale,1)); }
   .tracker-live .tracker-set-number { left: -.232919cqw; }
   .tracker-live .tracker-live-weight input { left: -.372671cqw; }
   .tracker-live .tracker-live-reps input { left: -.590062cqw; }
-  .tracker-live .tracker-live-reps > span { transform: translateX(-.310559cqw) scaleX(.87); }
+  .tracker-live .tracker-live-metric:first-child > span, .tracker-live .tracker-live-reps > span { font-family: 'Times New Roman',Times,serif; transform: none; }
   .tracker-live .tracker-live-metric input:focus { border: 0; outline: none; }
   .tracker-live .tracker-input-line { position: absolute; top: 19.409938cqw; left: calc(50% - .07764cqw); transform: translateX(-50%) scale(var(--tracker-scale,.745)); transform-origin: top center; pointer-events: none; }
   .tracker-live-weight .tracker-input-line { width: 153px; height: 1px; }
   .tracker-live-reps .tracker-input-line { width: 107px; height: 1px; }
-  .tracker-live-footer { position: absolute; top: 36.490683cqw; left: 15.372671%; right: 15.372671%; height: 23.602484cqw; display: grid; grid-template-columns: 14.596273cqw minmax(0,1fr) 14.596273cqw; align-items: start; gap: 0; padding: 0; min-width: 0; }
+  .tracker-live-footer { position: absolute; top: 36.490683cqw; left: 0; right: 0; height: 23.602484cqw; display: block; padding: 0; min-width: 0; }
   .tracker-live-footer .tracker-action { position: relative; display: block; width: 14.596273cqw; height: 14.596273cqw; min-width: 44px; min-height: 44px; margin-top: 4.503106cqw; padding: 0; border: 0; border-radius: 50%; background: transparent; box-shadow: none; }
+  .tracker-live-footer .tracker-action[data-action="finish"] { position: absolute; left: 9.782609cqw; }
+  .tracker-live-footer .tracker-action[data-action="complete"] { position: absolute; right: 9.006211cqw; }
   .tracker-live-footer .tracker-action img { position: absolute; display: block; max-width: none; filter: none; transform: scale(var(--tracker-scale,.745)); transform-origin: top left; pointer-events: none; }
   .tracker-live-footer .tracker-control-circle { top: 0; left: 0; width: 94px; height: 94px; }
   .tracker-live-footer .tracker-finish-art { top: 2.795031cqw; left: 4.347826cqw; width: 49px; height: 57px; }
   .tracker-live-footer .tracker-next-art { top: 2.639752cqw; left: 2.639752cqw; width: 60px; height: 60px; }
-  .tracker-live #workout-elapsed { display: block; min-width: 0; color: #fff; font-family: 'Times New Roman MT Condensed','Times New Roman',Times,serif; font-size: 20.186335cqw; line-height: 23.602484cqw; font-weight: 700; letter-spacing: -.08em; white-space: nowrap; text-align: center; transform: translate(-.621118cqw,-.341615cqw) scaleX(.84); }
+  .tracker-live #workout-elapsed { position: absolute; left: 32.608696cqw; width: 34.782609cqw; display: block; min-width: 0; color: #fff; font-family: 'Times New Roman MT Condensed','Times New Roman',Times,serif; font-size: 20.186335cqw; line-height: 23.602484cqw; font-weight: 700; letter-spacing: -.08em; white-space: nowrap; text-align: center; transform: translate(-.621118cqw,-.341615cqw) scaleX(.84); }
