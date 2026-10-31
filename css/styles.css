@@ -884,3 +884,13 @@
   .tracker-compact .tracker-message-title, .tracker-outgoing-compact .tracker-message-title { top: 5.745342cqw; color: #fff; }
   .tracker-compact .tracker-confirm-buttons, .tracker-outgoing-compact .tracker-confirm-buttons { top: 25.776398cqw; }
   .tracker-compact .workout-upload-spinner { border-color: rgba(255,255,255,.25); border-top-color: #fff; }
+
+  #page-workout.workout-detail { touch-action: pan-x pan-y; }
+  .workout-exercise.has-alternatives { padding: 0; margin-bottom: 12px; min-width: 0; }
+  .workout-alternatives { position: relative; display: flex; align-items: flex-start; gap: 12px; width: 100%; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; touch-action: pan-x pan-y; scrollbar-width: none; }
+  .workout-alternatives::-webkit-scrollbar { display: none; }
+  .workout-alternatives > .workout-variant { flex: 0 0 100%; width: 100%; min-width: 0; padding: 16px; margin: 0; scroll-snap-align: center; scroll-snap-stop: always; }
+  .workout-exercise-heading > .workout-add-alternative { flex-shrink: 0; width: 30px; height: 34px; padding: 6px; justify-content: center; }
+  .alternative-pagination { display: flex; justify-content: center; gap: 5px; height: 12px; align-items: center; }
+  .alternative-pagination span { width: 4px; height: 4px; background: #d9d9d9; border-radius: 50%; }
+  .alternative-pagination .selected { background: #676767; }

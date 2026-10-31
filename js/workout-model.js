@@ -18,9 +18,13 @@ export function targetReps(value){const bounds=targetRepBounds(value);return bou
 export function trackerRepDefault(value){return targetRepBounds(value)?.min??null;}
 export function newSet(){return {id:uid(),weight:null,reps:null};}
 export function exerciseInstance(exercise){return {id:uid(),exerciseId:exercise.id,name:exercise.name,category:exercise.category,restSeconds:90,sets:[newSet()]};}
-export function positions(workout){return workout.exercises.flatMap(exercise=>exercise.sets.map(set=>({exerciseId:exercise.id,setId:set.id})));}
+export const exerciseVariants=exercise=>[exercise,...(exercise.alternatives||[])];
+export const allExercises=workout=>(workout?.exercises||[]).flatMap(exerciseVariants);
+export const exerciseGroup=(workout,id)=>workout.exercises.find(group=>exerciseVariants(group).some(ex=>ex.id===id));
+export const activeExercise=group=>exerciseVariants(group).find(ex=>ex.id===group.selectedExerciseId)||group;
+export function positions(workout){return workout.exercises.flatMap(group=>{const exercise=activeExercise(group);return exercise.sets.map(set=>({exerciseId:exercise.id,setId:set.id}));});}
 export function locate(session,position=session.current){
-  const exercise=session.workout.exercises.find(e=>e.id===position?.exerciseId);
+  const exercise=allExercises(session.workout).find(e=>e.id===position?.exerciseId);
   const index=exercise?.sets.findIndex(s=>s.id===position?.setId)??-1;
   return index<0?null:{exercise,set:exercise.sets[index],index};
 }
@@ -68,16 +72,35 @@ export function restProgress(session,now=Date.now()){
 }
 export function selectSet(session,exerciseId,setId){
   if(!locate(session,{exerciseId,setId}))throw Error('This set no longer exists.');
+  const group=exerciseGroup(session.workout,exerciseId);group.selectedExerciseId=exerciseId;
   session.current={exerciseId,setId};session.restUntil=null;if(session.startedAt)session.phase='set';
   session.cursorIndex=positions(session.workout).findIndex(p=>p.setId===setId);
+}
+export function selectAlternative(session,groupId,exerciseId){
+  const group=session.workout.exercises.find(ex=>ex.id===groupId);
+  if(!group||!exerciseVariants(group).some(ex=>ex.id===exerciseId))throw Error('This exercise no longer exists.');
+  const currentGroup=exerciseGroup(session.workout,session.current?.exerciseId);
+  group.selectedExerciseId=exerciseId;
+  if(!session.startedAt){session.current=positions(session.workout)[0]||null;return;}
+  if(currentGroup===group&&['set','rest'].includes(session.phase)){
+    const following=session.workout.exercises.slice(session.workout.exercises.indexOf(group));
+    session.current=positions({exercises:following}).find(p=>!session.results[p.setId])||null;
+    session.phase=session.current?'set':'complete';session.restUntil=null;session.pending=null;
+  }
+  session.cursorIndex=session.current?positions(session.workout).findIndex(p=>p.setId===session.current.setId):positions(session.workout).length;
 }
 export function validateWorkout(workout,{allowDraft=false}={}){
   if(typeof workout.name!=='string'||workout.name.length>100)throw Error('Enter a workout name.');
   if(!Array.isArray(workout.exercises)||(!allowDraft&&!workout.exercises.length)||workout.exercises.length>50)throw Error('Add between 1 and 50 exercises.');
-  for(const exercise of workout.exercises){
+  for(const group of workout.exercises){
+    if(group.alternatives&&(!Array.isArray(group.alternatives)||group.alternatives.length>50))throw Error('Each exercise supports up to 50 alternatives.');
+    if(group.selectedExerciseId&&!exerciseVariants(group).some(ex=>ex.id===group.selectedExerciseId))throw Error('This exercise no longer exists.');
+    for(const exercise of exerciseVariants(group)){
+    if(exercise!==group&&exercise.alternatives?.length)throw Error('Alternative exercises cannot contain alternatives.');
     if(!exercise.sets?.length||exercise.sets.length>50)throw Error('Each exercise needs between 1 and 50 sets.');
     if(!Number.isInteger(Number(exercise.restSeconds))||exercise.restSeconds<0||exercise.restSeconds>3600)throw Error('Rest time must be 0–3600 seconds.');
     for(const set of exercise.sets){set.weight=optionalNumber(set.weight,'weight');set.reps=targetReps(set.reps);}
+    }
   }
   return workout;
 }

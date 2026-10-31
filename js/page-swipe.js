@@ -11,7 +11,7 @@ export function setupPageSwipes({canSwitch,switchPage}){
     const available=()=>canSwitch()&&!document.querySelector('.modal-overlay.open');
     page.addEventListener('touchstart',event=>{
       gesture=null;
-      if(!available()||event.touches.length!==1||event.target.closest('button,input,select,textarea,a,[contenteditable],.food-drag-handle'))return;
+      if(!available()||event.touches.length!==1||event.target.closest('button,input,select,textarea,a,[contenteditable],.food-drag-handle,.workout-alternatives'))return;
       const touch=event.touches[0];
       gesture={x:touch.clientX,y:touch.clientY,time:Date.now(),axis:null};
     },{passive:true});

@@ -2,7 +2,8 @@ import {createRepRangeSelector} from './rep-range-selector.js?v=1.2.43';
 import {alignTrackerClock} from './tracker-clock.js?v=1.2.47';
 import {captureSetLayout,animateSetLayout} from './workout-set-motion.js?v=1.2.54';
 import {currentSetScrollTop} from './workout-set-follow.js?v=1.2.56';
-import {copy,uid,newSet,exerciseInstance,positions,locate,createSession,nextPosition,startSession,completeSet,advanceRest,extendRest,restProgress,selectSet,validateWorkout,optionalNumber,targetReps,trackerRepDefault} from './workout-model.js?v=1.2.57';
+import {createAlternativeCarousels} from './workout-alternative-carousel.js?v=1.2.61';
+import {copy,uid,newSet,exerciseInstance,exerciseVariants,allExercises,exerciseGroup,activeExercise,selectAlternative,positions,locate,createSession,nextPosition,startSession,completeSet,advanceRest,extendRest,restProgress,selectSet,validateWorkout,optionalNumber,targetReps,trackerRepDefault} from './workout-model.js?v=1.2.61';
 import {defaultExercises} from './workout-catalog.js?v=1.2.43';
 import {setupCompactReorder} from './compact-reorder.js?v=1.2.43';
 import {mountRestWheel} from './workout-rest-wheel.js?v=1.2.43';
@@ -15,7 +16,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
   let owner=null,epoch=0,loaded=false,loading=false,busy=false,visible=false,view='library',templates=[],catalog=[],bests={},session=null,draft=null,history=[],error='',timer=null,dirty=false,lastSaved=0,revision=0,pendingCreate=false;
   let expanded=new Set(),pickerOpen=false,lastCurrent=null,lastCurrentSet=null,lastFollowTarget=null,lastView='library',transitioning=false,followRevision=0;
   let editTail=Promise.resolve(),editFailure=null,newWorkoutId=null;
-  let localTail=Promise.resolve(),localFailure=null,localBusy=false,pendingCompletion=null;
+  let localTail=Promise.resolve(),localFailure=null,localBusy=false,pendingCompletion=null,alternativeTarget=null;
   function fitLiveTracker(){
     const width=tracker.getBoundingClientRect?.().width||tracker.clientWidth;
     if(width)tracker.style.setProperty?.('--tracker-scale',String(width/644));
@@ -34,6 +35,22 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
   const button=(action,label,extra='')=>`<button type="button" class="btn btn-secondary btn-sm" data-action="${action}" ${extra}>${escape(tr(label))}</button>`;
   const number=(value,field,extra='')=>`<input type="number" inputmode="decimal" min="0" step="${(field==='reps'||field==='current-reps')?'1':'any'}" data-field="${field}" value="${value??''}" ${extra}>`;
   const currentWorkout=()=>view==='editor'?draft:session?.workout;
+  const alternativeCarousels=createAlternativeCarousels(root,{getSelected:groupId=>{
+    const group=currentWorkout()?.exercises.find(ex=>ex.id===groupId);return group?activeExercise(group).id:null;
+  },onSelect:changeAlternative});
+  async function changeAlternative(groupId,exerciseId){
+    if(busy||localBusy||pendingCompletion||!getUid()||owner!==getUid())return false;
+    const group=currentWorkout()?.exercises.find(ex=>ex.id===groupId);
+    if(!group||!exerciseVariants(group).some(ex=>ex.id===exerciseId))return false;
+    if(activeExercise(group).id===exerciseId)return true;
+    const apply=()=>{
+      if(view==='session')selectAlternative(session,groupId,exerciseId);else group.selectedExerciseId=exerciseId;
+      repairCurrent();saveEdit();
+    };
+    if(view==='session'&&session?.startedAt)await performLocal(async()=>{apply();await saveSession();});
+    else{apply();render();}
+    const saved=currentWorkout()?.exercises.find(ex=>ex.id===groupId);return !!saved&&activeExercise(saved).id===exerciseId;
+  }
   function saveEditSnapshot(job){
     if(job.generation!==epoch)return Promise.resolve();
     return (async()=>{
@@ -82,7 +99,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
     const panel=whole?tracker:tracker.querySelector('.tracker-finished, .tracker-finish-confirm, .tracker-upload')||tracker.querySelector('.tracker-panel');
     await panel?.animate?.([{opacity:1},{opacity:0}],{duration:180,fill:'forwards'}).finished.catch(()=>{});
   }
-  function reset(){finishRequested=false;localTail=Promise.resolve();localFailure=null;localBusy=false;pendingCompletion=null;editTail=Promise.resolve();editFailure=null;newWorkoutId=null;exercisePicker?.reset();repsPicker?.close();reorder?.cancel();libraryReorder?.cancel();root.getAnimations?.().forEach(animation=>animation.cancel());transitioning=false;expanded.clear();pickerOpen=false;lastCurrent=null;lastView='library';root.closest('.page')?.classList?.remove?.('workout-detail');epoch++;if(timer)clearInterval(timer);timer=null;owner=null;loaded=false;loading=false;busy=false;visible=false;view='library';pendingCreate=false;templates=[];catalog=[];bests={};session=null;draft=null;history=[];error='';dirty=false;root.innerHTML='';tracker.innerHTML='';tracker.hidden=true;}
+  function reset(){finishRequested=false;alternativeCarousels.reset();alternativeTarget=null;localTail=Promise.resolve();localFailure=null;localBusy=false;pendingCompletion=null;editTail=Promise.resolve();editFailure=null;newWorkoutId=null;exercisePicker?.reset();repsPicker?.close();reorder?.cancel();libraryReorder?.cancel();root.getAnimations?.().forEach(animation=>animation.cancel());transitioning=false;expanded.clear();pickerOpen=false;lastCurrent=null;lastView='library';root.closest('.page')?.classList?.remove?.('workout-detail');epoch++;if(timer)clearInterval(timer);timer=null;owner=null;loaded=false;loading=false;busy=false;visible=false;view='library';pendingCreate=false;templates=[];catalog=[];bests={};session=null;draft=null;history=[];error='';dirty=false;root.innerHTML='';tracker.innerHTML='';tracker.hidden=true;}
   async function open(main=false,animateMain=true){
     if(!getUid())return;
     visible=true;
@@ -196,6 +213,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
   }
   function render(){
     let autoExpand=null;
+    const previousAlternativeHeights=new Map([...root.querySelectorAll('.workout-alternatives')].map(viewport=>[viewport.dataset.alternativeGroup,viewport.getBoundingClientRect().height]));
     root.closest('.page')?.classList?.toggle('workout-detail',view!=='library');
     if(view!==lastView){lastView=view;root.animate?.([{opacity:0},{opacity:1}],{duration:220});}
     if(session?.startedAt&&['set','rest'].includes(session.phase)&&(session.current?.exerciseId!==lastCurrent||session.current?.setId!==lastCurrentSet)){lastCurrent=session.current?.exerciseId;lastCurrentSet=session.current?.setId;if(lastCurrent){if(!expanded.has(lastCurrent))autoExpand=lastCurrent;expanded.add(lastCurrent);}}
@@ -208,14 +226,15 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
     }else{
       const workout=currentWorkout(),running=view==='session';
       const canStart=!(session?.startedAt);
-      root.innerHTML=`<div class="workout-detail-header"><div class="workout-name-row"><button type="button" class="btn-icon glass-circle main-action-button workout-quit" data-action="library" aria-label="${escape(tr('Back to workouts'))}"><img src="./assets/icons/chevron-left.svg?v=1.2.43" width="24" height="24" alt=""></button><input id="workout-name" class="workout-name-input${workout.name.trim()?' named':''}" type="text" maxlength="100" data-field="name" value="${escape(workout.name)}" placeholder="${escape(tr('Workout'))}" aria-label="${escape(tr('Workout name'))}"></div><div class="workout-detail-actions"><button type="button" class="btn-icon" data-action="delete-workout" aria-label="${escape(tr('Delete workout'))}"><img src="./assets/icons/delete.svg?v=1.2.43" width="24" height="24" alt=""></button><button type="button" class="btn-icon workout-header-play" ${canStart?'': 'disabled data-workout-locked="true"'} data-action="start" aria-label="${escape(tr('Start workout'))}"><img src="./assets/icons/play.svg?v=1.2.43" width="26" height="26" alt=""></button><button type="button" class="btn-icon" data-action="toggle-picker" aria-label="${escape(tr('Add exercise'))}" aria-haspopup="dialog"><img src="./assets/icons/add.svg?v=1.2.43" width="26" height="26" alt=""></button></div></div>`+alert+`<div class="workout-exercise-list">${workout.exercises.map(ex=>exerciseCard(ex,running)).join('')}</div>`;
+      root.innerHTML=`<div class="workout-detail-header"><div class="workout-name-row"><button type="button" class="btn-icon glass-circle main-action-button workout-quit" data-action="library" aria-label="${escape(tr('Back to workouts'))}"><img src="./assets/icons/chevron-left.svg?v=1.2.43" width="24" height="24" alt=""></button><input id="workout-name" class="workout-name-input${workout.name.trim()?' named':''}" type="text" maxlength="100" data-field="name" value="${escape(workout.name)}" placeholder="${escape(tr('Workout'))}" aria-label="${escape(tr('Workout name'))}"></div><div class="workout-detail-actions"><button type="button" class="btn-icon" data-action="delete-workout" aria-label="${escape(tr('Delete workout'))}"><img src="./assets/icons/delete.svg?v=1.2.43" width="24" height="24" alt=""></button><button type="button" class="btn-icon workout-header-play" ${canStart?'': 'disabled data-workout-locked="true"'} data-action="start" aria-label="${escape(tr('Start workout'))}"><img src="./assets/icons/play.svg?v=1.2.43" width="26" height="26" alt=""></button><button type="button" class="btn-icon" data-action="toggle-picker" aria-label="${escape(tr('Add exercise'))}" aria-haspopup="dialog"><img src="./assets/icons/add.svg?v=1.2.43" width="26" height="26" alt=""></button></div></div>`+alert+`<div class="workout-exercise-list">${workout.exercises.map(ex=>exerciseGroupCard(ex,running)).join('')}</div>`;
 
       for(const input of root.querySelectorAll('[data-field="rest"]')){const viewport=input.parentElement.querySelector('.workout-rest-wheel');if(viewport)mountRestWheel(input,viewport);}
-      if(autoExpand)animateExerciseBody(root.querySelector(`[data-reorder-id="${autoExpand}"] .workout-exercise-body`),true,0);
+      if(autoExpand)animateExerciseBody(root.querySelector(`[data-variant-id="${autoExpand}"] .workout-exercise-body`),true,0);
     }
     const reveal=tracker.hidden;tracker.hidden=!visible||!['session','library'].includes(view)||!session?.startedAt;
     if(!tracker.hidden){renderTracker();if(reveal&&!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches)tracker.animate?.([{opacity:0},{opacity:1}],{duration:300});}else tracker.innerHTML='';
     root.classList.toggle('workout-has-tracker',!tracker.hidden);
+    alternativeCarousels.mount(previousAlternativeHeights);
     if(oldScroll!==undefined&&root.closest('.page'))root.closest('.page').scrollTop=oldScroll;
     disable(busy);
     const followTarget=visible&&view==='session'&&session?.startedAt&&session.current?session.id+':'+session.current.setId:null;
@@ -228,13 +247,19 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
     animation.finished.then(()=>{body.hidden=!opening;body.style.overflow='';animation.cancel();}).catch(()=>{});
   }
   function toggleExercise(id){
-    const opening=!expanded.has(id),body=root.querySelector(`[data-reorder-id="${id}"] .workout-exercise-body`),height=opening?0:body?.getBoundingClientRect?.().height||0;
+    const opening=!expanded.has(id),body=root.querySelector(`[data-variant-id="${id}"] .workout-exercise-body`),height=opening?0:body?.getBoundingClientRect?.().height||0;
     opening?expanded.add(id):expanded.delete(id);render();
-    animateExerciseBody(root.querySelector(`[data-reorder-id="${id}"] .workout-exercise-body`),opening,height);
+    animateExerciseBody(root.querySelector(`[data-variant-id="${id}"] .workout-exercise-body`),opening,height);
   }
-  function exerciseCard(ex,running){
-    const isOpen=expanded.has(ex.id),locked=!!(running&&session.startedAt&&session.current?.exerciseId===ex.id);
-    return `<section class="card workout-exercise" data-reorder-id="${ex.id}"><div class="workout-exercise-heading"><button type="button" class="workout-exercise-name" data-action="toggle-exercise" data-id="${ex.id}" aria-expanded="${isOpen}">${escape(ex.name)}</button><button type="button" class="btn-icon workout-drag" aria-label="${escape(tr('Reorder'))} ${escape(ex.name)}">☰</button><button type="button" class="btn-icon" data-action="remove-exercise" data-id="${ex.id}" data-workout-locked="${locked}" ${locked?'disabled':''} title="${escape(tr(locked?'The current exercise cannot be deleted.':'Remove exercise'))}" aria-label="${escape(tr('Remove exercise'))}"><img src="./assets/icons/close.svg?v=1.2.43" width="18" height="18" alt=""></button></div><div class="workout-exercise-body" ${isOpen?'':'hidden'}><div class="workout-exercise-options"><label class="workout-set-count"><input type="number" inputmode="decimal" min="1" max="50" step="1" data-field="count" data-ex="${ex.id}" value="${ex.sets.length}" aria-label="${escape(tr('Sets'))}"><span>${escape(tr('sets'))}</span></label><div class="workout-rest-setting"><span>${escape(tr('Rest'))}:</span><div class="workout-rest-control"><input hidden type="number" inputmode="decimal" min="0" max="3600" step="1" data-field="rest" data-ex="${ex.id}" value="${ex.restSeconds}" aria-label="${escape(tr('Rest (seconds)'))}"><div class="workout-rest-wheel" role="spinbutton" tabindex="0" aria-label="${escape(tr('Rest (seconds)'))}" aria-valuemin="0" aria-valuemax="3600"></div></div><span>s</span></div></div><div class="workout-set-head"><span>${escape(tr('Set'))}</span><span>${escape(tr('Target kg'))}</span><span>${escape(tr('Target reps'))}</span><span></span></div><div data-set-list="${ex.id}">${setRows(ex,running)}</div><button type="button" class="btn-icon workout-add-set" data-action="add-set" data-ex="${ex.id}" aria-label="${escape(tr('Add set'))}">+</button></div></section>`;
+  function exerciseGroupCard(group,running){
+    if(!group.alternatives?.length)return exerciseCard(group,running);
+    const selected=activeExercise(group).id;
+    return `<div class="workout-exercise has-alternatives" data-reorder-id="${group.id}"><div class="workout-alternatives" data-alternative-group="${group.id}" tabindex="0" role="group" aria-roledescription="carousel" aria-label="${escape(tr('Exercise alternatives'))}">${exerciseVariants(group).map(ex=>exerciseCard(ex,running,group.id)).join('')}</div><div class="alternative-pagination" aria-hidden="true">${exerciseVariants(group).map(ex=>`<span class="${ex.id===selected?'selected':''}"></span>`).join('')}</div></div>`;
+  }
+  function exerciseCard(ex,running,groupId=null){
+    const group=exerciseGroup(currentWorkout(),ex.id),currentGroup=running?exerciseGroup(session.workout,session.current?.exerciseId):null;
+    const isOpen=expanded.has(ex.id),locked=!!(running&&session.startedAt&&(session.current?.exerciseId===ex.id||(ex.id===group?.id&&currentGroup===group)));
+    return `<section class="card ${groupId?'workout-variant':'workout-exercise'}${groupId&&activeExercise(group).id===ex.id?' alternative-centred':''}" ${groupId?'':'data-reorder-id="'+ex.id+'"'} data-variant-id="${ex.id}"><div class="workout-exercise-heading"><button type="button" class="workout-exercise-name" data-action="toggle-exercise" data-id="${ex.id}" aria-expanded="${isOpen}">${escape(ex.name)}</button><button type="button" class="btn-icon workout-add-alternative" data-action="add-alternative" data-id="${ex.id}" aria-label="${escape(tr('Add alternative exercise'))}"><img src="./assets/icons/alternative.svg?v=1.2.61" width="18" height="18" alt=""></button><button type="button" class="btn-icon workout-drag" aria-label="${escape(tr('Reorder'))} ${escape(ex.name)}">☰</button><button type="button" class="btn-icon" data-action="remove-exercise" data-id="${ex.id}" data-workout-locked="${locked}" ${locked?'disabled':''} title="${escape(tr(locked?'The current exercise cannot be deleted.':'Remove exercise'))}" aria-label="${escape(tr('Remove exercise'))}"><img src="./assets/icons/close.svg?v=1.2.43" width="18" height="18" alt=""></button></div><div class="workout-exercise-body" ${isOpen?'':'hidden'}><div class="workout-exercise-options"><label class="workout-set-count"><input type="number" inputmode="decimal" min="1" max="50" step="1" data-field="count" data-ex="${ex.id}" value="${ex.sets.length}" aria-label="${escape(tr('Sets'))}"><span>${escape(tr('sets'))}</span></label><div class="workout-rest-setting"><span>${escape(tr('Rest'))}:</span><div class="workout-rest-control"><input hidden type="number" inputmode="decimal" min="0" max="3600" step="1" data-field="rest" data-ex="${ex.id}" value="${ex.restSeconds}" aria-label="${escape(tr('Rest (seconds)'))}"><div class="workout-rest-wheel" role="spinbutton" tabindex="0" aria-label="${escape(tr('Rest (seconds)'))}" aria-valuemin="0" aria-valuemax="3600"></div></div><span>s</span></div></div><div class="workout-set-head"><span>${escape(tr('Set'))}</span><span>${escape(tr('Target kg'))}</span><span>${escape(tr('Target reps'))}</span><span></span></div><div data-set-list="${ex.id}">${setRows(ex,running)}</div><button type="button" class="btn-icon workout-add-set" data-action="add-set" data-ex="${ex.id}" aria-label="${escape(tr('Add set'))}">+</button></div></section>`;
   }
   function setRows(ex,running){return ex.sets.map((set,index)=>{const result=running?session.results[set.id]:null,selected=running&&!!session.startedAt&&session.current?.setId===set.id;return `<div data-set-id="${set.id}" class="workout-set-row${selected?' current':''}${result?' completed':''}"><button type="button" data-action="jump" data-ex="${ex.id}" data-set="${set.id}" aria-label="${escape(tr('Select set'))} ${index+1}">${result?'<img class="workout-set-tick" src="./assets/icons/tick.svg?v=1.2.43" width="20" height="20" alt="">':index+1}</button>${number(set.weight,'weight',`data-ex="${ex.id}" data-set="${set.id}" aria-label="${escape(ex.name+' '+tr('Set')+' '+(index+1)+' kg')}"`)}${targetRepInput(ex,set,index)}<button type="button" class="btn-icon" data-action="remove-set" data-ex="${ex.id}" data-set="${set.id}" aria-label="${escape(tr('Remove set'))} ${index+1}"><img src="./assets/icons/close.svg?v=1.2.43" width="18" height="18" alt=""></button></div>`;}).join('');}
   function targetRepInput(ex,set,index){return `<input type="text" readonly inputmode="none" data-action="target-reps" data-field="reps" data-ex="${ex.id}" data-set="${set.id}" value="${escape(set.reps??'')}" aria-label="${escape(ex.name+' '+tr('Set')+' '+(index+1)+' '+tr('Target reps'))}" aria-haspopup="dialog">`;}
@@ -397,7 +422,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
       session.pending[field==='current-weight'?'weight':'reps']=el.value;
       fitLiveTracker();
     }else{
-      const exercise=workout.exercises.find(ex=>ex.id===el.dataset.ex);if(!exercise)return;
+      const exercise=allExercises(workout).find(ex=>ex.id===el.dataset.ex);if(!exercise)return;
       if(field==='rest')exercise.restSeconds=el.value===''?0:Number(el.value);
       else if(field!=='count'){
         const set=exercise.sets.find(item=>item.id===el.dataset.set);if(!set)return;
@@ -409,7 +434,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
   }
   function changed(event,soft=false){
     if(event.target.dataset.field!=='count')return;
-    const count=Number(event.target.value),exercise=currentWorkout()?.exercises.find(ex=>ex.id===event.target.dataset.ex);
+    const count=Number(event.target.value),exercise=allExercises(currentWorkout()).find(ex=>ex.id===event.target.dataset.ex);
     if(!exercise||!Number.isInteger(count)||count<1||count>50){if(!soft){error=tr('Each exercise needs between 1 and 50 sets.');render();}return;}
     const before=captureSetLayout(root.querySelector('[data-set-list="'+exercise.id+'"]'));
     while(exercise.sets.length<count)exercise.sets.push(newSet());
@@ -438,9 +463,11 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
     if(type==='retry-upload'){await finishWorkout();return;}
     if(type==='retry-local'){const failed=localFailure;if(failed){try{await saveLocalRecord(failed.record);}catch{}render();}return;}
     if(type==='retry-edits'){const job=editFailure;if(job){editTail=editTail.then(()=>saveEditSnapshot(job));await editTail;}return;}
-    if(type==='target-reps'){const set=workout?.exercises.find(ex=>ex.id===target.dataset.ex)?.sets.find(item=>item.id===target.dataset.set);if(set)repsPicker.open(set.reps,{ex:target.dataset.ex,set:target.dataset.set,generation:epoch});return;}
+    if(type==='target-reps'){const set=allExercises(workout).find(ex=>ex.id===target.dataset.ex)?.sets.find(item=>item.id===target.dataset.set);if(set)repsPicker.open(set.reps,{ex:target.dataset.ex,set:target.dataset.set,generation:epoch});return;}
     if(type==='toggle-exercise'){toggleExercise(target.dataset.id);return;}
-    if(type==='toggle-picker'){exercisePicker.open(catalog);return;}
+    if(type==='toggle-picker'){alternativeTarget=null;exercisePicker.open(catalog);return;}
+    if(type==='add-alternative'){const group=exerciseGroup(workout,target.dataset.id);if(group){alternativeTarget=group.id;exercisePicker.open(catalog);}return;}
+    if(type==='select-alternative'){await changeAlternative(target.dataset.group,target.dataset.id);return;}
     if(type==='delete-workout'){
       const active=session?.startedAt&&session.templateId===workout?.id;
       if(!workout||!globalThis.confirm?.(tr(active?'Delete this workout and end its current session?':'Delete this workout?')))return;
@@ -461,12 +488,21 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
       await navigate('session',()=>{session=createSession(templates.find(item=>item.id===target.dataset.id));dirty=false;error='';});return;
     }
     if(type==='add-exercise'){const ex=catalog.find(item=>item.id===target.dataset.id);if(ex){workout.exercises.push(exerciseInstance(ex));repairCurrent();saveEdit();render();}return;}
-    if(type==='add-set'){const ex=workout.exercises.find(item=>item.id===target.dataset.ex);if(ex&&ex.sets.length<50){const before=captureSetLayout(root.querySelector('[data-set-list="'+ex.id+'"]'));ex.sets.push(newSet());repairCurrent();saveEdit();render();animateSetLayout(root.querySelector('[data-set-list="'+ex.id+'"]'),before);}return;}
-    if(type==='remove-exercise'){if(view==='session'&&session?.startedAt&&session.current?.exerciseId===target.dataset.id)return;if(!globalThis.confirm?.(tr('Delete this exercise?')))return;expanded.delete(target.dataset.id);workout.exercises=workout.exercises.filter(ex=>ex.id!==target.dataset.id);repairCurrent();saveEdit();render();return;}
-    if(type==='remove-set'){const ex=workout.exercises.find(item=>item.id===target.dataset.ex);if(ex&&ex.sets.length>1){const before=captureSetLayout(root.querySelector('[data-set-list="'+ex.id+'"]'));ex.sets=ex.sets.filter(set=>set.id!==target.dataset.set);repairCurrent();saveEdit();render();animateSetLayout(root.querySelector('[data-set-list="'+ex.id+'"]'),before);}else{error=tr('Each exercise needs between 1 and 50 sets.');render();}return;}
+    if(type==='add-set'){const ex=allExercises(workout).find(item=>item.id===target.dataset.ex);if(ex&&ex.sets.length<50){const before=captureSetLayout(root.querySelector('[data-set-list="'+ex.id+'"]'));ex.sets.push(newSet());repairCurrent();saveEdit();render();animateSetLayout(root.querySelector('[data-set-list="'+ex.id+'"]'),before);}return;}
+    if(type==='remove-exercise'){
+      const group=exerciseGroup(workout,target.dataset.id);if(!group)return;
+      const currentGroup=view==='session'&&session?.startedAt?exerciseGroup(workout,session.current?.exerciseId):null;
+      if(currentGroup===group&&(target.dataset.id===group.id||target.dataset.id===session.current?.exerciseId))return;
+      if(!globalThis.confirm?.(tr(target.dataset.id===group.id&&group.alternatives?.length?'Delete this exercise and its alternatives?':'Delete this exercise?')))return;
+      expanded.delete(target.dataset.id);
+      if(target.dataset.id===group.id)workout.exercises=workout.exercises.filter(ex=>ex.id!==group.id);
+      else{group.alternatives=group.alternatives.filter(ex=>ex.id!==target.dataset.id);if(group.selectedExerciseId===target.dataset.id)group.selectedExerciseId=group.id;}
+      repairCurrent();saveEdit();render();return;
+    }
+    if(type==='remove-set'){const ex=allExercises(workout).find(item=>item.id===target.dataset.ex);if(ex&&ex.sets.length>1){const before=captureSetLayout(root.querySelector('[data-set-list="'+ex.id+'"]'));ex.sets=ex.sets.filter(set=>set.id!==target.dataset.set);repairCurrent();saveEdit();render();animateSetLayout(root.querySelector('[data-set-list="'+ex.id+'"]'),before);}else{error=tr('Each exercise needs between 1 and 50 sets.');render();}return;}
     if(type==='jump'||type==='jump-exercise'){
       if(view!=='session')return;
-      const exercise=workout.exercises.find(ex=>ex.id===(target.dataset.ex||target.dataset.id));
+      const exercise=allExercises(workout).find(ex=>ex.id===(target.dataset.ex||target.dataset.id));
       const set=type==='jump'?exercise?.sets.find(s=>s.id===target.dataset.set):exercise?.sets.find(s=>!session.results[s.id])||exercise?.sets[0];
       if(set)await performLocal(async()=>{selectSet(session,exercise.id,set.id);session.pending=null;await saveSession();});return;
     }
@@ -490,9 +526,9 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
       }
     });
   }
-  const reorder=setupCompactReorder(root,{items:'.workout-exercise',handle:'.workout-drag',canDrag:()=>!busy&&!localBusy&&!pendingCompletion&&!transitioning,getLabel:row=>row.querySelector('.workout-exercise-name').textContent,getCompactHeight:row=>{
-    const body=row.querySelector('.workout-exercise-body'),hidden=body.hidden;
-    try{body.hidden=true;return row.getBoundingClientRect().height;}finally{body.hidden=hidden;}
+  const reorder=setupCompactReorder(root,{items:'.workout-exercise',handle:'.workout-drag',canDrag:()=>!busy&&!localBusy&&!pendingCompletion&&!transitioning,getLabel:row=>(row.querySelector('.alternative-centred .workout-exercise-name')||row.querySelector('.workout-exercise-name')).textContent,getCompactHeight:row=>{
+    const card=row.querySelector('.alternative-centred')||row,body=card.querySelector('.workout-exercise-body'),hidden=body.hidden;
+    try{body.hidden=true;return card.getBoundingClientRect().height;}finally{body.hidden=hidden;}
   },onDrop:order=>{
     const workout=currentWorkout();if(!workout)return;
     workout.exercises=order.map(id=>workout.exercises.find(ex=>ex.id===id)).filter(Boolean);saveEdit();render();
@@ -508,7 +544,10 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
     if(!chosen.length||!currentWorkout())return false;
     let success=false;
     await perform(async()=>{
-      const workout=copy(currentWorkout());workout.exercises.push(...chosen.map(exerciseInstance));validateWorkout(workout,{allowDraft:true});workout.updatedAt=Date.now();
+      const workout=copy(currentWorkout());
+      if(alternativeTarget){const group=workout.exercises.find(ex=>ex.id===alternativeTarget);if(!group)throw Error('This exercise no longer exists.');group.alternatives=[...(group.alternatives||[]),...chosen.map(exerciseInstance)];}
+      else workout.exercises.push(...chosen.map(exerciseInstance));
+      validateWorkout(workout,{allowDraft:true});workout.updatedAt=Date.now();
       const additions=chosen.filter(item=>!catalog.some(existing=>existing.id===item.id)),nextCatalog=[...catalog,...additions];
       const writes=[{path:path('workoutTemplates',workout.id),value:workout}];
       if(additions.length)writes.push({path:path('settings','workoutCatalog'),value:{exercises:nextCatalog}});
@@ -527,7 +566,7 @@ export function createWorkoutFeature({root,tracker,getUid,store,tr,localStore=cr
   }
   const repsPicker=createRepRangeSelector(document.getElementById?.('modal-target-reps'),{tr,onApply:(value,context)=>{
     if(!context||context.generation!==epoch||owner!==getUid())return;
-    const set=currentWorkout()?.exercises.find(ex=>ex.id===context.ex)?.sets.find(item=>item.id===context.set);if(!set)return;
+    const set=allExercises(currentWorkout()).find(ex=>ex.id===context.ex)?.sets.find(item=>item.id===context.set);if(!set)return;
     set.reps=value;saveEdit();render();
   }});
   root.addEventListener('click',action);tracker.addEventListener('click',action);
