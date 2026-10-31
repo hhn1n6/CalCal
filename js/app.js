@@ -1,5 +1,5 @@
 import { finishWorkoutInCloud } from './workout-sync.js?v=1.2.43';
-import { createWorkoutFeature } from './workout.js?v=1.2.61';
+import { createWorkoutFeature } from './workout.js?v=1.2.62';
 import { tr, setLanguage, getLanguage, validLanguage, locale } from './i18n.js?v=1.2.61';
 import { calculateSuggestedGoals, activityFactors, roundDailyGoals } from './goal-calculator.js?v=1.2.43';
 import { ageFromBirthday, currentProfileWeight } from './profile-utils.js?v=1.2.43';

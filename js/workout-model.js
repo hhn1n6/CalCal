@@ -19,9 +19,41 @@ export function trackerRepDefault(value){return targetRepBounds(value)?.min??nul
 export function newSet(){return {id:uid(),weight:null,reps:null};}
 export function exerciseInstance(exercise){return {id:uid(),exerciseId:exercise.id,name:exercise.name,category:exercise.category,restSeconds:90,sets:[newSet()]};}
 export const exerciseVariants=exercise=>[exercise,...(exercise.alternatives||[])];
+export const exerciseRowId=group=>group.rowId||group.id;
 export const allExercises=workout=>(workout?.exercises||[]).flatMap(exerciseVariants);
 export const exerciseGroup=(workout,id)=>workout.exercises.find(group=>exerciseVariants(group).some(ex=>ex.id===id));
 export const activeExercise=group=>exerciseVariants(group).find(ex=>ex.id===group.selectedExerciseId)||group;
+function packExerciseRow(members,rowId,selectedId){
+  const clean=members.map(({alternatives,selectedExerciseId,rowId,...exercise})=>exercise);
+  return {...clean[0],rowId,alternatives:clean.slice(1),selectedExerciseId:clean.some(ex=>ex.id===selectedId)?selectedId:clean[0].id};
+}
+export function removeExerciseFromRow(workout,exerciseId){
+  const row=exerciseGroup(workout,exerciseId);if(!row)return false;
+  const members=exerciseVariants(row),index=members.findIndex(ex=>ex.id===exerciseId),remaining=members.filter(ex=>ex.id!==exerciseId),rowIndex=workout.exercises.indexOf(row);
+  if(!remaining.length)workout.exercises.splice(rowIndex,1);
+  else workout.exercises[rowIndex]=packExerciseRow(remaining,exerciseRowId(row),activeExercise(row).id===exerciseId?remaining[Math.min(index,remaining.length-1)].id:activeExercise(row).id);
+  return true;
+}
+export function moveExerciseInRows(workout,{exerciseId,targetRowId=null,index=0,beforeRowId=null}){
+  const source=exerciseGroup(workout,exerciseId);if(!source)throw Error('This exercise no longer exists.');
+  const sourceId=exerciseRowId(source),members=exerciseVariants(source),moving=members.find(ex=>ex.id===exerciseId);
+  if(!targetRowId&&beforeRowId===sourceId&&members.length===1)return sourceId;
+  const target=targetRowId?workout.exercises.find(row=>exerciseRowId(row)===targetRowId):null;
+  if(targetRowId&&!target)throw Error('This exercise no longer exists.');
+  if(target===source){
+    const remaining=members.filter(ex=>ex.id!==exerciseId);remaining.splice(Math.max(0,Math.min(index,remaining.length)),0,moving);
+    workout.exercises[workout.exercises.indexOf(source)]=packExerciseRow(remaining,sourceId,exerciseId);return sourceId;
+  }
+  if(target&&exerciseVariants(target).length>=51)throw Error('Each exercise supports up to 50 alternatives.');
+  removeExerciseFromRow(workout,exerciseId);
+  if(target){
+    const targetIndex=workout.exercises.findIndex(row=>exerciseRowId(row)===targetRowId),row=workout.exercises[targetIndex],remaining=exerciseVariants(row);
+    remaining.splice(Math.max(0,Math.min(index,remaining.length)),0,moving);
+    workout.exercises[targetIndex]=packExerciseRow(remaining,targetRowId,exerciseId);return targetRowId;
+  }
+  const rowId=members.length===1?sourceId:uid(),before=workout.exercises.findIndex(row=>exerciseRowId(row)===beforeRowId);
+  workout.exercises.splice(before<0?workout.exercises.length:before,0,packExerciseRow([moving],rowId,exerciseId));return rowId;
+}
 export function positions(workout){return workout.exercises.flatMap(group=>{const exercise=activeExercise(group);return exercise.sets.map(set=>({exerciseId:exercise.id,setId:set.id}));});}
 export function locate(session,position=session.current){
   const exercise=allExercises(session.workout).find(e=>e.id===position?.exerciseId);
@@ -77,7 +109,7 @@ export function selectSet(session,exerciseId,setId){
   session.cursorIndex=positions(session.workout).findIndex(p=>p.setId===setId);
 }
 export function selectAlternative(session,groupId,exerciseId){
-  const group=session.workout.exercises.find(ex=>ex.id===groupId);
+  const group=session.workout.exercises.find(ex=>exerciseRowId(ex)===groupId);
   if(!group||!exerciseVariants(group).some(ex=>ex.id===exerciseId))throw Error('This exercise no longer exists.');
   const currentGroup=exerciseGroup(session.workout,session.current?.exerciseId);
   group.selectedExerciseId=exerciseId;
